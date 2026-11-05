@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AayushOS</title>
+  <meta name="description" content="AayushOS: the desktop inside Aayush Agrawal's 3D portfolio. Projects, resume, experience and contact." />
+  <link rel="icon" href="../images/favicon.ico" />
+  <link rel="stylesheet" href="vendor/98css/98.css" />
+  <link rel="stylesheet" href="os.css" />
+  <script>
+    // Forward input to the 3D scene around the monitor (camera + keyboard/mouse sounds).
+    (function () {
+      if (window.parent === window) return;
+      var send = function (msg) { window.parent.postMessage(msg, '*'); };
+      addEventListener('mousemove', function (e) { send({ type: 'mousemove', clientX: e.clientX, clientY: e.clientY }); });
+      addEventListener('mousedown', function () { send({ type: 'mousedown' }); });
+      addEventListener('mouseup', function () { send({ type: 'mouseup' }); });
+      addEventListener('keydown', function (e) { send({ type: 'keydown', key: e.key }); });
+      addEventListener('keyup', function (e) { send({ type: 'keyup', key: e.key }); });
+    })();
+  </script>
+</head>
+<body>
+  <div id="boot" class="boot">
+    <div class="boot-logo">
+      <span class="boot-mark">A</span>
+      <div>
+        <div class="boot-title">AayushOS <span>98</span></div>
+        <div class="boot-sub">Bangalore Edition</div>
+      </div>
+    </div>
+    <div class="boot-bar"><span></span></div>
+    <p class="boot-note">Starting AayushOS...</p>
+  </div>
+
+  <main id="desktop" class="desktop" aria-label="Desktop">
+    <div id="icons" class="icons"></div>
+    <div id="windows"></div>
+  </main>
+
+  <div id="start-menu" class="start-menu window" hidden>
+    <div class="start-side"><span>AayushOS<b>98</b></span></div>
+    <ul id="start-list" class="start-list"></ul>
+  </div>
+
+  <footer class="taskbar">
+    <button id="start-btn" class="start-btn"><span class="start-logo">A</span><b>Start</b></button>
+    <div id="task-buttons" class="task-buttons"></div>
+    <div class="tray status-field-border">
+      <span id="clock"></span>
+    </div>
+  </footer>
+
+  <script src="os.js"></script>
+</body>
+</html>
