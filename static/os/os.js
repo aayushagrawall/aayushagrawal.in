@@ -40,6 +40,7 @@
     instagram: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><defs><linearGradient id="igg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".35" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset=".85" stop-color="#962fbf"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs><rect x="3" y="3" width="26" height="26" rx="7" fill="url(#igg)" stroke="#000"/><rect x="8" y="8" width="16" height="16" rx="5" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="16" cy="16" r="4" fill="none" stroke="#fff" stroke-width="2.5"/><rect x="21" y="9" width="2.5" height="2.5" fill="#fff"/></svg>',
     github: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="3" y="3" width="26" height="26" rx="13" fill="#24292f" stroke="#000"/><path d="M10 9l3 3h6l3-3v5c1 1 1.5 2.5 1.5 4 0 3.5-2.5 5.5-6 6v3h-3v-3c-3.5-.5-6-2.5-6-6 0-1.5.5-3 1.5-4z" fill="#fff"/><path d="M9 23c1.5 0 2 1.5 4 1.5" stroke="#fff" stroke-width="1.5" fill="none"/></svg>',
     linkedin: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="3" y="3" width="26" height="26" rx="3" fill="#0a66c2" stroke="#000"/><rect x="8" y="13" width="4" height="12" fill="#fff"/><rect x="8" y="7" width="4" height="4" fill="#fff"/><path d="M15 13h4v2c1-1.5 2.5-2.3 4.3-2.3 2.6 0 3.7 1.7 3.7 4.6V25h-4v-7c0-1.5-.6-2.3-1.9-2.3-1.4 0-2.1 1-2.1 2.6V25h-4z" fill="#fff"/></svg>',
+    terminal: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="2" y="4" width="28" height="24" fill="#c0c0c0" stroke="#000"/><rect x="2" y="4" width="28" height="4" fill="#000080"/><rect x="4" y="10" width="24" height="16" fill="#000"/><path d="M6 13h2v1h1v1h1v1h-1v1h-1v1H6v-1h1v-1h1v-1H7v-1H6z" fill="#c0c0c0"/><rect x="12" y="18" width="7" height="2" fill="#c0c0c0"/></svg>',
     doc: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M6 2h14l6 6v22H6z" fill="#fff" stroke="#000"/><path d="M20 2v6h6" fill="#ddd" stroke="#000"/><rect x="9" y="12" width="14" height="2" fill="#000080"/><rect x="9" y="16" width="14" height="2" fill="#777"/><rect x="9" y="20" width="10" height="2" fill="#777"/><rect x="9" y="24" width="12" height="2" fill="#777"/></svg>',
     computer: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="3" width="24" height="18" fill="#c0c0c0" stroke="#000"/><rect x="7" y="6" width="18" height="12" fill="#008080"/><rect x="9" y="8" width="5" height="4" fill="#fff"/><rect x="12" y="21" width="8" height="3" fill="#888"/><rect x="6" y="24" width="20" height="5" fill="#c0c0c0" stroke="#000"/></svg>',
     tetris: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="12" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="10" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="4" y="2" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="4" y="10" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="12" y="10" width="8" height="8" fill="#a347d6" stroke="#000"/></svg>',
@@ -49,6 +50,9 @@
     power: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="3" y="3" width="26" height="26" fill="#c0c0c0" stroke="#000"/><path d="M11 10a8 8 0 1 0 10 0" fill="none" stroke="#c00" stroke-width="3"/><rect x="14.5" y="6" width="3" height="10" fill="#c00"/></svg>',
     speaker: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><path d="M2 6h3l4-3v10l-4-3H2z" fill="#ff0" stroke="#000"/><path d="M11 5c1.5 1.5 1.5 4.5 0 6M13 3c2.7 2.7 2.7 7.3 0 10" fill="none" stroke="#000"/></svg>'
   };
+
+  var TOUCH = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+  var SMALL = window.matchMedia && matchMedia('(max-width: 760px)').matches;
 
   // ---------- Helpers ----------
   function el(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
@@ -234,6 +238,12 @@
       }
     },
 
+    terminal: {
+      title: 'C:\\WINDOWS\\cmd.exe', short: 'Terminal', icon: 'terminal', w: 860, h: 600, x: 260, y: 60,
+      render: function () { return '<div class="term" id="term"></div>'; },
+      mount: function (win) { Terminal(win.querySelector('#term'), win); }
+    },
+
     tetris: {
       title: 'Tetris', icon: 'tetris', w: 0, h: 0, x: 380, y: 30, fixed: true,
       status: 'Arrow keys to play · Space to drop',
@@ -264,7 +274,7 @@
     site: { title: 'My Website', icon: 'globe', external: ME.site }
   };
 
-  var DESKTOP = ['showcase', 'projects', 'resume', 'tetris', 'mycomputer', 'github', 'linkedin', 'instagram', 'site', 'credits'];
+  var DESKTOP = ['showcase', 'projects', 'resume', 'terminal', 'tetris', 'mycomputer', 'github', 'linkedin', 'instagram', 'site', 'credits'];
 
   // ---------- Window manager ----------
   var windowsEl = document.getElementById('windows');
@@ -311,6 +321,7 @@
     win.style.left = (app.x + offset) + 'px';
     win.style.top = (app.y + offset) + 'px';
     if (!app.fixed) { win.style.width = app.w + 'px'; win.style.height = app.h + 'px'; }
+    if (SMALL) win.classList.add('max');
     windowsEl.appendChild(win);
 
     var task = el('<button>' + I[app.icon] + '<span>' + esc(label(app)) + '</span></button>');
@@ -383,6 +394,7 @@
       b.classList.add('selected');
     });
     b.addEventListener('dblclick', function () { openApp(id); });
+    if (TOUCH) b.addEventListener('click', function () { openApp(id); });
     b.addEventListener('keydown', function (e) { if (e.key === 'Enter') openApp(id); });
     iconsEl.appendChild(b);
   });
@@ -400,7 +412,7 @@
   var START = [
     ['showcase', null, 'My Showcase'], ['showcase', 'about', 'About'], ['showcase', 'experience', 'Experience'],
     ['showcase', 'projects', 'Projects'], ['showcase', 'contact', 'Contact'], '-',
-    ['resume', null], ['tetris', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['credits', null], '-', 'shutdown'
+    ['resume', null], ['terminal', null], ['tetris', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['credits', null], '-', 'shutdown'
   ];
   START.forEach(function (item) {
     if (item === '-') { startList.appendChild(el('<hr>')); return; }
@@ -449,6 +461,183 @@
   function tick() { clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
   tick(); setInterval(tick, 10000);
 
+  // ---------- Terminal ----------
+  function Terminal(root, win) {
+    var PROMPT = 'C:\\AAYUSH>';
+    var hist = [], hi = 0;
+    root.innerHTML = '<div class="term-out" id="term-out"></div>' +
+      '<div class="term-line"><span class="term-prompt">' + PROMPT + '</span><input id="term-in" class="term-in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal input"></div>';
+    var out = root.querySelector('#term-out'), input = root.querySelector('#term-in');
+
+    function print(html, cls) { var d = document.createElement('div'); d.className = 'term-row' + (cls ? ' ' + cls : ''); d.innerHTML = html; out.appendChild(d); }
+    function lines(arr, cls) { arr.forEach(function (l) { print(l, cls); }); }
+    function link(url, text) { return '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(text || url) + '</a>'; }
+    function scroll() { root.scrollTop = root.scrollHeight; }
+
+    var FILES = {
+      'about.txt': function () { return CMDS.about(); },
+      'resume.pdf': function () { openApp('resume'); return ['Opening Resume.pdf...']; },
+      'tetris.exe': function () { openApp('tetris'); return ['Starting TETRIS.EXE...']; },
+      'secret.txt': function () { return ['Nice try. The only secret is that I debug with print statements.']; },
+      'projects': function () { return CMDS.projects(); }
+    };
+
+    var CMDS = {
+      help: function () {
+        return [
+          'Available commands:',
+          '  <b>about</b>        Who I am',
+          '  <b>projects</b>     List my projects  (project &lt;number&gt; for details)',
+          '  <b>experience</b>   Education, leadership and certifications',
+          '  <b>skills</b>       Languages and tools I use',
+          '  <b>resume</b>       Open my resume',
+          '  <b>contact</b>      Email and socials',
+          '  <b>open</b> &lt;x&gt;     Open github, linkedin, instagram, site, showcase or tetris',
+          '  <b>neofetch</b>     System info',
+          '  <b>dir</b>, <b>type</b> &lt;file&gt;, <b>cls</b>, <b>date</b>, <b>echo</b>, <b>history</b>, <b>exit</b>',
+          '',
+          'Psst... try <b>sudo hire aayush</b>'
+        ];
+      },
+      about: function () {
+        return [
+          '<b>Aayush Agrawal</b> · Developer & AI/ML student · Bangalore, India',
+          'B.E. Artificial Intelligence & Machine Learning, BMS College of Engineering (2028).',
+          'I build small, useful software: Python tools, Discord bots and websites.',
+          'Member of @clienterrverse, building open source with other developers.',
+          'Open to internships & collaborations.'
+        ];
+      },
+      whoami: function () { return ['guest@aayushos — but you\'re looking at <b>Aayush Agrawal</b>\'s portfolio. Type <b>about</b>.']; },
+      projects: function () {
+        return ['Projects (type <b>project &lt;number&gt;</b> for details):', ''].concat(
+          PROJECTS.map(function (p, i) { return '  [' + (i + 1) + '] <b>' + esc(p.name) + '</b>  <span class="dim">' + esc(p.type) + '</span>'; }));
+      },
+      project: function (args) {
+        var q = args.join(' ').toLowerCase(), n = parseInt(q, 10), p = null;
+        if (!isNaN(n)) p = PROJECTS[n - 1];
+        if (!p && q) p = PROJECTS.filter(function (x) { return x.name.toLowerCase().indexOf(q) >= 0; })[0];
+        if (!p) return ['Usage: project &lt;number&gt;   (see <b>projects</b>)'];
+        return ['<b>' + esc(p.name) + '</b>' + (p.date ? '  <span class="dim">' + esc(p.date) + '</span>' : ''),
+          esc(p.type) + ' · ' + p.stack.map(esc).join(', '), esc(p.desc), link(p.url, p.urlLabel)];
+      },
+      experience: function () {
+        return ['<b>EDUCATION</b>',
+          '  BMS College of Engineering — B.E. AI & ML ............ expected 2028',
+          '  Shiv Jyoti International School — CBSE 11–12, Kota ......... 2024',
+          '  Mayo College — CBSE 5–10, Ajmer .......................... 2022',
+          '', '<b>LEADERSHIP</b>',
+          '  Student Volunteer, BMSCE UTSAV (merch distribution) .. 2025–2026',
+          '  Member, Rotaract Club of BMSCE (40+ service hours) .... 2023–2024',
+          '', '<b>CERTIFICATIONS</b>',
+          '  C for Beginners — Great Learning ..................... Jan 2025',
+          '  Using MongoDB with Python — MongoDB .................. Nov 2024'];
+      },
+      skills: function () {
+        return ['<b>Languages</b>   Python, JavaScript, Java, C, HTML & CSS',
+          '<b>Tools</b>       Node.js, Discord.js, Git, Machine Learning',
+          '<b>Databases</b>   MySQL, MongoDB',
+          '<b>Spoken</b>      English, Hindi, Nepali'];
+      },
+      resume: function () { openApp('resume'); return ['Opening Resume.pdf... (' + link(ME.resume, 'direct link') + ')']; },
+      contact: function () {
+        return ['Email      ' + link('mailto:' + ME.email, ME.email),
+          'GitHub     ' + link(ME.github, 'github.com/aayushagrawall'),
+          'LinkedIn   ' + link(ME.linkedin, 'linkedin.com/in/aayush-agrawall'),
+          'Instagram  ' + link(ME.instagram, '@_aayush.agrawal'),
+          'Website    ' + link(ME.site, 'aayushagrawal.codes')];
+      },
+      open: function (args) {
+        var t = (args[0] || '').toLowerCase();
+        var urls = { github: ME.github, linkedin: ME.linkedin, instagram: ME.instagram, site: ME.site, website: ME.site };
+        if (urls[t]) { window.open(urls[t], '_blank', 'noopener'); return ['Opening ' + t + '...']; }
+        if (APPS[t] && !APPS[t].external) { openApp(t); return ['Opening ' + t + '...']; }
+        return ['Usage: open github | linkedin | instagram | site | showcase | tetris | resume'];
+      },
+      tetris: function () { openApp('tetris'); return ['Starting TETRIS.EXE...']; },
+      neofetch: function () {
+        var art = ['   ▄▄▄▄▄▄   ', '  █▀    ▀█  ', '  █▄▄▄▄▄▄█  ', '  █      █  ', '  ▀      ▀  '];
+        var info = ['<b>guest</b>@<b>aayushos</b>', '----------------', '<b>OS</b>: AayushOS 98 (Bangalore Edition)', '<b>Host</b>: aayushagrawal.in',
+          '<b>Owner</b>: Aayush Agrawal', '<b>Kernel</b>: Curiosity 3.0', '<b>Shell</b>: cmd.js', '<b>Fuel</b>: Chai'];
+        var r = [];
+        for (var i = 0; i < info.length; i++) r.push('<span class="accent">' + (art[i] || '            ').replace(/ /g, '&nbsp;') + '</span>  ' + info[i]);
+        return r;
+      },
+      dir: function () {
+        return [' Directory of C:\\AAYUSH', '',
+          '11/06/2026  02:00 AM    &lt;DIR&gt;          projects',
+          '11/06/2026  02:00 AM             1,024 about.txt',
+          '11/06/2026  02:00 AM           177,525 resume.pdf',
+          '11/06/2026  02:00 AM            31,337 tetris.exe',
+          '11/06/2026  02:00 AM                42 secret.txt',
+          '               4 File(s)        209,928 bytes'];
+      },
+      ls: function () { return CMDS.dir(); },
+      type: function (args) {
+        var f = (args[0] || '').toLowerCase();
+        if (!f) return ['Usage: type &lt;file&gt;   (try <b>dir</b>)'];
+        return FILES[f] ? FILES[f]() : ['File not found - ' + esc(f.toUpperCase())];
+      },
+      cat: function (a) { return CMDS.type(a); },
+      cd: function (args) {
+        var d = (args[0] || '').toLowerCase().replace(/\\$/, '');
+        if (d === 'projects') return CMDS.projects();
+        return ['Access denied. You\'re already in the best folder.'];
+      },
+      date: function () { return [new Date().toString()]; },
+      time: function () { return [new Date().toLocaleTimeString()]; },
+      echo: function (args) { return [esc(args.join(' '))]; },
+      history: function () { return hist.map(function (h, i) { return '  ' + (i + 1) + '  ' + esc(h); }); },
+      cls: function () { out.innerHTML = ''; return []; },
+      clear: function () { return CMDS.cls(); },
+      exit: function () { setTimeout(function () { closeApp('terminal'); }, 150); return ['Goodbye!']; },
+      hire: function () { return CMDS.sudo(['hire', 'aayush']); },
+      sudo: function (args) {
+        if (args.join(' ').toLowerCase() === 'hire aayush') {
+          setTimeout(function () { openApp('showcase', 'contact'); }, 900);
+          return ['[sudo] password for recruiter: ********',
+            '<span class="ok">Permission granted. Excellent choice.</span>',
+            'Opening the contact page so you can say hi...'];
+        }
+        return ['guest is not in the sudoers file. This incident will be reported.'];
+      },
+      chai: function () { return ['☕ Brewing chai... done. Productivity +10.']; },
+      coffee: function () { return ['Error 418: I\'m a chai person.']; },
+      hello: function () { return ['Hi there! Type <b>help</b> to see what I can do.']; },
+      hi: function () { return CMDS.hello(); }
+    };
+
+    function run(raw) {
+      var line = raw.trim();
+      print('<span class="term-prompt">' + PROMPT + '</span>' + esc(raw));
+      if (!line) return;
+      hist.push(line); hi = hist.length;
+      var parts = line.split(/\s+/), cmd = parts[0].toLowerCase(), args = parts.slice(1);
+      var fn = CMDS[cmd];
+      var res = fn ? fn(args) : ["'" + esc(parts[0]) + "' is not recognized as an internal or external command.", 'Type <b>help</b> for a list of commands.'];
+      lines(res);
+      print('&nbsp;');
+    }
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { run(input.value); input.value = ''; scroll(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); if (hi > 0) { hi--; input.value = hist[hi]; } }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); if (hi < hist.length - 1) { hi++; input.value = hist[hi]; } else { hi = hist.length; input.value = ''; } }
+      else if (e.key === 'Tab') {
+        e.preventDefault();
+        var v = input.value.toLowerCase();
+        var m = Object.keys(CMDS).filter(function (c) { return c.indexOf(v) === 0; });
+        if (m.length === 1) input.value = m[0] + ' ';
+        else if (m.length > 1) { print('<span class="term-prompt">' + PROMPT + '</span>' + esc(input.value)); print(m.join('   ')); scroll(); }
+      }
+    });
+    root.addEventListener('mouseup', function () { if (!window.getSelection().toString()) input.focus(); });
+
+    lines(['AayushOS 98 [Version 2026.11]', '(C) Aayush Agrawal. All rights reserved.', '',
+      'Welcome! Type <b>help</b> to see what you can do here.', '&nbsp;']);
+    setTimeout(function () { input.focus(); }, 50);
+  }
+
   // ---------- Tetris ----------
   function Tetris(root, win) {
     var COLS = 10, ROWS = 20, S = 30;
@@ -473,6 +662,7 @@
         '<fieldset><legend>Best</legend><div class="tt-num" id="tt-best">0</div></fieldset>' +
         '<button id="tt-start">Start</button>' +
         '<p class="tt-help">← → move<br>↑ rotate<br>↓ soft drop<br>Space hard drop<br>P pause</p>' +
+        (TOUCH ? '<div class="tt-pad"><button data-tk="ArrowLeft">◀</button><button data-tk="ArrowUp">⟳</button><button data-tk="ArrowRight">▶</button><button data-tk="ArrowDown">▼</button><button data-tk=" ">⤓</button></div>' : '') +
       '</div>';
     var board = root.querySelector('#tt-board'), ctx = board.getContext('2d');
     var nextC = root.querySelector('#tt-next'), nctx = nextC.getContext('2d');
@@ -581,12 +771,17 @@
     overlay.addEventListener('click', function () { if (state === 'idle' || state === 'over') start(); else if (state === 'paused') pause(); });
     board.addEventListener('mousedown', function () { board.focus(); });
 
+    root.querySelectorAll('[data-tk]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) { e.preventDefault(); act(btn.dataset.tk); });
+    });
     document.addEventListener('keydown', function onKey(e) {
       if (!document.body.contains(board)) { document.removeEventListener('keydown', onKey); return; }
       if (win.hidden || !win.classList.contains('active')) return;
       if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
-      var k = e.key;
-      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '].indexOf(k) >= 0) e.preventDefault();
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '].indexOf(e.key) >= 0) e.preventDefault();
+      act(e.key);
+    });
+    function act(k) {
       if (k === 'Enter' && (state === 'idle' || state === 'over')) { start(); return; }
       if (k === 'p' || k === 'P' || k === 'Escape') { pause(); return; }
       if (state !== 'playing') return;
@@ -596,7 +791,7 @@
       else if (k === 'ArrowDown') softDrop();
       else if (k === ' ') hardDrop();
       updateHud(); draw();
-    });
+    }
 
     grid = newGrid(); draw(); drawNext();
     function loop(t) {
