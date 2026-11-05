@@ -56,7 +56,7 @@
   // ---------- Apps ----------
   var APPS = {
     about: {
-      title: 'About Me', icon: 'me', w: 640, h: 560, x: 150, y: 40,
+      title: 'About Me', icon: 'me', w: 820, h: 760, x: 170, y: 30,
       status: 'aayushagrawal.in',
       render: function () {
         return '<div class="page">' +
@@ -88,7 +88,7 @@
     },
 
     projects: {
-      title: 'Projects', icon: 'folder', w: 700, h: 460, x: 210, y: 90,
+      title: 'Projects', icon: 'folder', w: 900, h: 600, x: 190, y: 60,
       status: PROJECTS.length + ' object(s)',
       render: function () {
         return '<div class="addr"><span>Address</span><input id="proj-addr" readonly value="C:\\Aayush\\Projects\\' + esc(PROJECTS[0].name) + '"></div>' +
@@ -120,7 +120,7 @@
     },
 
     experience: {
-      title: 'Experience', icon: 'briefcase', w: 620, h: 520, x: 260, y: 60,
+      title: 'Experience', icon: 'briefcase', w: 820, h: 740, x: 230, y: 40,
       status: 'Education, leadership & certifications',
       render: function () {
         return '<div class="page">' +
@@ -147,7 +147,7 @@
     },
 
     resume: {
-      title: 'Resume.pdf', icon: 'doc', w: 660, h: 620, x: 300, y: 30,
+      title: 'Resume.pdf', icon: 'doc', w: 820, h: 800, x: 260, y: 20,
       status: 'Aayush-Agrawal-Resume.pdf',
       render: function () {
         return '<div class="addr"><span>File</span><input readonly value="C:\\Aayush\\Documents\\Aayush-Agrawal-Resume.pdf">' +
@@ -158,7 +158,7 @@
     },
 
     contact: {
-      title: 'Contact', icon: 'mail', w: 520, h: 520, x: 340, y: 80,
+      title: 'Contact', icon: 'mail', w: 700, h: 720, x: 300, y: 50,
       status: 'Replies usually within a day or two',
       render: function () {
         return '<div class="page">' +
@@ -190,11 +190,11 @@
     },
 
     mycomputer: {
-      title: 'This Computer', icon: 'computer', w: 460, h: 400, x: 380, y: 120,
+      title: 'This Computer', icon: 'computer', w: 600, h: 560, x: 340, y: 90,
       status: 'System properties',
       render: function () {
         return '<div class="page" style="text-align:center">' +
-          '<div style="width:72px;margin:6px auto 10px">' + I.computer + '</div>' +
+          '<div style="width:96px;margin:6px auto 10px">' + I.computer + '</div>' +
           '<h2 style="border:none;margin-top:0">AayushOS 98</h2>' +
           '<p>Bangalore Edition · Build 2026.11</p>' +
           '<p class="muted">Registered to: Aayush Agrawal</p>' +
@@ -225,7 +225,7 @@
     },
 
     credits: {
-      title: 'Credits', icon: 'star', w: 520, h: 460, x: 360, y: 90,
+      title: 'Credits', icon: 'star', w: 700, h: 620, x: 320, y: 70,
       status: '© 2026 Aayush Agrawal',
       render: function () {
         return '<div class="page credits">' +
@@ -337,7 +337,7 @@
   function resize(win, handle) {
     handle.addEventListener('mousedown', function (e) {
       var sx = e.clientX, sy = e.clientY, ow = win.offsetWidth, oh = win.offsetHeight;
-      function move(ev) { win.style.width = Math.max(300, ow + ev.clientX - sx) + 'px'; win.style.height = Math.max(160, oh + ev.clientY - sy) + 'px'; }
+      function move(ev) { win.style.width = Math.max(380, ow + ev.clientX - sx) + 'px'; win.style.height = Math.max(220, oh + ev.clientY - sy) + 'px'; }
       function up() { removeEventListener('mousemove', move); removeEventListener('mouseup', up); }
       addEventListener('mousemove', move); addEventListener('mouseup', up);
       e.preventDefault(); e.stopPropagation();
@@ -419,7 +419,7 @@
     root.innerHTML =
       '<div class="mines-top status-field-border"><span class="lcd" id="ms-left"></span>' +
       '<button class="smiley" id="ms-face">🙂</button><span class="lcd" id="ms-time"></span></div>' +
-      '<div class="grid status-field-border" id="ms-grid" style="grid-template-columns:repeat(' + W + ',24px)"></div>';
+      '<div class="grid status-field-border" id="ms-grid" style="grid-template-columns:repeat(' + W + ',32px)"></div>';
     var grid = root.querySelector('#ms-grid'), face = root.querySelector('#ms-face');
     var left = root.querySelector('#ms-left'), time = root.querySelector('#ms-time');
     function pad(n) { return ('00' + Math.max(0, n)).slice(-3); }

@@ -186,3 +186,48 @@ a.button-link:active { box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, 
 .start-list li svg { width: 28px; height: 28px; }
 .start-list li:hover { background: var(--navy); color: #fff; }
 .start-list hr { margin: 3px 2px; border: none; border-top: 1px solid grey; border-bottom: 1px solid #fff; }
+
+/* ===== Larger scale: the OS is viewed through a 3D monitor, so everything is sized up ===== */
+body, button, input, label, select, textarea, li, ul.tree-view { font-size: 16px; }
+.title-bar { padding: 5px 4px 5px 6px; }
+.title-bar-text, .win .title-bar-text { font-size: 16px; gap: 8px; }
+.win .title-bar-text svg { width: 20px; height: 20px; }
+.title-bar-controls button { min-width: 22px; min-height: 20px; padding: 0; background-size: auto; background-position: center; }
+.title-bar-controls button + button { margin-left: 3px; }
+button { min-width: 90px; min-height: 30px; padding: 0 16px; }
+input[type=text], input:not([type]), textarea { font-size: 16px; height: auto; padding: 5px 6px; }
+.status-bar-field { font-size: 14px; padding: 3px 6px; }
+
+.page { font-size: 17px; line-height: 1.6; padding: 26px 30px; }
+.page h1 { font-size: 36px; }
+.page h2 { font-size: 22px; }
+.page h3 { font-size: 18px; }
+.date { font-size: 15px; }
+.tag { font-size: 14px; padding: 3px 10px; }
+.facts { grid-template-columns: 150px 1fr; }
+.avatar { width: 128px; height: 128px; font-size: 64px; }
+a.button-link, .btn-row a.button-link { min-height: 30px; font-size: 16px; padding: 0 16px; }
+.addr { font-size: 16px; gap: 8px; margin-bottom: 8px; }
+.explorer .list { width: 280px; }
+.explorer .tree-view li { padding: 4px 6px; }
+
+.icons { top: 18px; left: 14px; grid-template-rows: repeat(9, 98px); gap: 2px 8px; }
+.icon, button.icon, button.icon:active, button.icon:focus { width: 116px; font-size: 15px; gap: 6px; }
+.icon svg { width: 52px; height: 52px; }
+
+.taskbar { height: 44px; padding: 4px; gap: 6px; }
+.desktop { bottom: 44px; }
+.start-btn { height: 34px; min-width: 96px !important; font-size: 17px; }
+.start-logo { width: 22px; height: 22px; font-size: 14px; }
+.task-buttons button { width: 210px; height: 34px; font-size: 15px; }
+.task-buttons button svg { width: 20px; height: 20px; }
+.tray { height: 34px; font-size: 15px; padding: 0 14px; }
+.start-menu { bottom: 43px; width: 330px; }
+.start-side span { font-size: 24px; }
+.start-list li { font-size: 17px; padding: 8px 12px; gap: 12px; }
+.start-list li svg { width: 34px; height: 34px; }
+
+.lcd { font-size: 28px; min-width: 64px; }
+.smiley { min-width: 44px !important; height: 44px; font-size: 24px; }
+.cell { width: 32px; height: 32px; font-size: 18px; }
+.desktop::after { font-size: 17px; }
