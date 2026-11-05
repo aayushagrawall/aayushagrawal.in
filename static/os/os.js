@@ -1,5 +1,6 @@
 /* AayushOS 98 — a small retro desktop for aayushagrawal.in
- * Original code by Aayush Agrawal. UI styling from 98.css (MIT, Jordan Scales).
+ * Original code by Aayush Agrawal. UI chrome from 98.css (MIT, Jordan Scales).
+ * Fonts: Fraunces (OFL) and Tinos (Apache 2.0).
  */
 (function () {
   'use strict';
@@ -28,164 +29,165 @@
       desc: 'Source for the Clienterrverse website, built together with the open-source community.' },
     { name: 'Attendance Calculator', type: 'iOS Shortcut', stack: ['iOS Shortcuts'], url: 'https://routinehub.co/shortcut/25458/', urlLabel: 'Get the shortcut',
       desc: 'An iPhone Shortcut that tells you how many classes you can skip, or must attend, to stay above 85% attendance.' },
-    { name: 'aayushagrawal.codes', type: 'Website', stack: ['HTML', 'CSS', 'JavaScript'], url: 'https://aayushagrawal.codes', urlLabel: 'Open site',
+    { name: 'aayushagrawal.codes', type: 'Website', stack: ['HTML', 'CSS', 'JavaScript'], url: 'https://aayushagrawal.codes', urlLabel: 'Visit site',
       desc: 'My minimal portfolio: light and dark themes, no build step, hosted on GitHub Pages.' }
   ];
 
   // ---------- Icons (original pixel art) ----------
   var I = {
-    me: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="2" width="24" height="28" fill="#fff" stroke="#000"/><rect x="11" y="6" width="10" height="9" fill="#e9b48a"/><rect x="10" y="5" width="12" height="3" fill="#2b1a10"/><rect x="8" y="17" width="16" height="10" fill="#ff6a1a"/><rect x="13" y="16" width="6" height="2" fill="#e9b48a"/></svg>',
-    folder: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M2 8h11l2 3h15v17H2z" fill="#f6c94d" stroke="#000"/><rect x="2" y="13" width="28" height="15" fill="#ffdd6e" stroke="#000"/></svg>',
+    showcase: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="2" y="3" width="28" height="26" fill="#fff" stroke="#000"/><rect x="2" y="3" width="28" height="5" fill="#000080"/><rect x="25" y="4" width="3" height="3" fill="#c0c0c0"/><path d="M9 26l5-15h4l5 15h-3l-1-3h-6l-1 3zm5-6h4l-2-6z" fill="#000"/></svg>',
     doc: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M6 2h14l6 6v22H6z" fill="#fff" stroke="#000"/><path d="M20 2v6h6" fill="#ddd" stroke="#000"/><rect x="9" y="12" width="14" height="2" fill="#000080"/><rect x="9" y="16" width="14" height="2" fill="#777"/><rect x="9" y="20" width="10" height="2" fill="#777"/><rect x="9" y="24" width="12" height="2" fill="#777"/></svg>',
-    briefcase: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="12" y="5" width="8" height="5" fill="none" stroke="#000" stroke-width="2"/><rect x="3" y="9" width="26" height="18" fill="#8a5a2b" stroke="#000"/><rect x="3" y="15" width="26" height="2" fill="#5c3a19"/><rect x="14" y="14" width="4" height="4" fill="#f6c94d" stroke="#000"/></svg>',
-    mail: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="3" y="8" width="26" height="17" fill="#fff" stroke="#000"/><path d="M3 8l13 10L29 8" fill="none" stroke="#000"/><rect x="22" y="3" width="7" height="7" fill="#ff6a1a" stroke="#000"/></svg>',
-    phone: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="9" y="2" width="14" height="28" rx="2" fill="#222" stroke="#000"/><rect x="11" y="5" width="10" height="19" fill="#4fc3f7"/><rect x="13" y="8" width="6" height="3" fill="#fff"/><rect x="13" y="13" width="6" height="3" fill="#ff6a1a"/><rect x="15" y="26" width="2" height="2" fill="#888"/></svg>',
-    computer: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="3" width="24" height="18" fill="#c0c0c0" stroke="#000"/><rect x="7" y="6" width="18" height="12" fill="#0f6f6a"/><rect x="9" y="8" width="5" height="4" fill="#ff6a1a"/><rect x="12" y="21" width="8" height="3" fill="#888"/><rect x="6" y="24" width="20" height="5" fill="#c0c0c0" stroke="#000"/></svg>',
+    computer: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="3" width="24" height="18" fill="#c0c0c0" stroke="#000"/><rect x="7" y="6" width="18" height="12" fill="#008080"/><rect x="9" y="8" width="5" height="4" fill="#fff"/><rect x="12" y="21" width="8" height="3" fill="#888"/><rect x="6" y="24" width="20" height="5" fill="#c0c0c0" stroke="#000"/></svg>',
     tetris: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="12" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="10" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="4" y="2" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="4" y="10" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="12" y="10" width="8" height="8" fill="#a347d6" stroke="#000"/></svg>',
     globe: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><circle cx="16" cy="16" r="12" fill="#4fa3e0" stroke="#000"/><path d="M10 9h6v5h-4v4h-3v-4H7zM18 16h6v6h-3v4h-4v-6h1z" fill="#3c9a3c"/><path d="M4 16h24M16 4v24" stroke="#1d5f99" fill="none"/></svg>',
-    star: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M16 3l4 9 10 1-7.5 7 2 10L16 25l-8.5 5 2-10L2 13l10-1z" fill="#f6c94d" stroke="#000"/></svg>',
-    power: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="3" y="3" width="26" height="26" fill="#c0c0c0" stroke="#000"/><path d="M11 10a8 8 0 1 0 10 0" fill="none" stroke="#c00" stroke-width="3"/><rect x="14.5" y="6" width="3" height="10" fill="#c00"/></svg>'
+    credits: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M6 2h20v28H6z" fill="#fff" stroke="#000"/><rect x="9" y="6" width="14" height="2" fill="#000"/><rect x="11" y="11" width="10" height="2" fill="#555"/><rect x="9" y="15" width="14" height="2" fill="#000"/><rect x="11" y="20" width="10" height="2" fill="#555"/><rect x="9" y="24" width="14" height="2" fill="#000"/></svg>',
+    mail: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="3" y="8" width="26" height="17" fill="#fff" stroke="#000"/><path d="M3 8l13 10L29 8" fill="none" stroke="#000"/></svg>',
+    power: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="3" y="3" width="26" height="26" fill="#c0c0c0" stroke="#000"/><path d="M11 10a8 8 0 1 0 10 0" fill="none" stroke="#c00" stroke-width="3"/><rect x="14.5" y="6" width="3" height="10" fill="#c00"/></svg>',
+    speaker: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><path d="M2 6h3l4-3v10l-4-3H2z" fill="#ff0" stroke="#000"/><path d="M11 5c1.5 1.5 1.5 4.5 0 6M13 3c2.7 2.7 2.7 7.3 0 10" fill="none" stroke="#000"/></svg>'
   };
 
   // ---------- Helpers ----------
   function el(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function ext(url, label) { return '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(label || url) + '</a>'; }
-  function btnLink(url, label) { return '<a class="button-link" href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(label) + '</a>'; }
+
+  // ---------- Showcase (the main "website" window) ----------
+  var NAV = [['home', 'Home'], ['about', 'About'], ['experience', 'Experience'], ['projects', 'Projects'], ['contact', 'Contact']];
+
+  var PAGES = {
+    about: function () {
+      return '<h1 class="sc-title">Welcome</h1>' +
+        '<h3 class="sc-sub">I\'m Aayush Agrawal!</h3>' +
+        '<div class="sc-body">' +
+        '<p>I\'m an undergraduate in Artificial Intelligence &amp; Machine Learning at <b>BMS College of Engineering</b> in Bangalore, expected to graduate in 2028. I build small, useful software: Python tools, Discord bots and websites.</p>' +
+        '<p>I like building things from scratch, whether that\'s a quick Python utility, a bot for a community, or a long dig into how a model actually learns. I\'m part of <b>@clienterrverse</b>, where I work on open-source projects with other developers and learn how real-world software gets made.</p>' +
+        '<div class="sc-callout"><p>Looking for my resume?</p>' +
+        '<a href="' + ME.resume + '" download><b>Click here to download it!</b></a></div>' +
+        '<h3 class="sc-h">Quick facts</h3>' +
+        '<table class="sc-facts"><tbody>' +
+        '<tr><td>Degree</td><td>B.E. AI &amp; ML (expected Apr 2028)</td></tr>' +
+        '<tr><td>College</td><td>BMS College of Engineering</td></tr>' +
+        '<tr><td>Based in</td><td>Bangalore, India</td></tr>' +
+        '<tr><td>Languages</td><td>English, Hindi, Nepali</td></tr>' +
+        '<tr><td>Status</td><td>Open to internships &amp; collaborations</td></tr>' +
+        '</tbody></table>' +
+        '<h3 class="sc-h">Tools I use</h3>' +
+        '<p>Python, JavaScript, Java, C, HTML &amp; CSS, Node.js, Discord.js, MySQL, MongoDB, Machine Learning and Git.</p>' +
+        '<p>When I\'m not coding, I\'m reading docs, taking things apart to see how they work, and collecting ideas for the next side project. Thanks for stopping by!</p>' +
+        '</div>';
+    },
+    experience: function () {
+      function job(title, where, date, bullets) {
+        return '<div class="sc-job"><div class="sc-row"><h2>' + title + '</h2><span>' + date + '</span></div>' +
+          '<div class="sc-row"><h3><i>' + where + '</i></h3></div>' +
+          (bullets ? '<ul>' + bullets.map(function (b) { return '<li>' + b + '</li>'; }).join('') + '</ul>' : '') + '</div>';
+      }
+      return '<h1 class="sc-title">Experience</h1>' +
+        '<div class="sc-body">' +
+        '<div class="sc-callout"><p>Want the one-page version?</p><a href="' + ME.resume + '" download><b>Download my resume</b></a></div>' +
+        '<h3 class="sc-h">Education</h3>' +
+        job('BMS College of Engineering', 'B.E. Artificial Intelligence &amp; Machine Learning, Bengaluru', 'Expected 2028') +
+        job('Shiv Jyoti International School', 'CBSE Grade 11–12, Physics, Chemistry, Math, Kota', '2024') +
+        job('Mayo College', 'CBSE Grade 5–10, Ajmer', '2022') +
+        '<h3 class="sc-h">Leadership</h3>' +
+        job('Student Volunteer', 'BMSCE UTSAV, college fest', '2025 – 2026', [
+          'Managed end-to-end distribution of festival merchandise across sales counters.',
+          'Worked with committee members on merch strategy and sales targets for the fest.']) +
+        job('Member', 'Rotaract Club of BMSCE', '2023 – 2024', [
+          'Community service and leadership initiatives across Bengaluru.',
+          'Contributed 40+ hours of social and community service.']) +
+        '<h3 class="sc-h">Certifications</h3>' +
+        job('C for Beginners', 'Great Learning', 'Jan 2025') +
+        job('Using MongoDB with Python', 'MongoDB', 'Nov 2024') +
+        '</div>';
+    },
+    projects: function () {
+      return '<h1 class="sc-title">Projects</h1>' +
+        '<h3 class="sc-sub">&amp; side quests</h3>' +
+        '<div class="sc-body"><p>Things I\'ve built, from Python tools to bots and websites. Click a link to see the code or try it out.</p>' +
+        PROJECTS.map(function (p) {
+          return '<div class="sc-project">' +
+            '<div class="sc-row"><h2>' + esc(p.name) + '</h2>' + (p.date ? '<span>' + esc(p.date) + '</span>' : '') + '</div>' +
+            '<p class="sc-meta"><b>' + esc(p.type) + '</b> · ' + p.stack.map(esc).join(', ') + '</p>' +
+            '<p>' + esc(p.desc) + '</p>' +
+            '<p>' + ext(p.url, p.urlLabel + ' »') + '</p></div>';
+        }).join('') +
+        '</div>';
+    },
+    contact: function () {
+      return '<h1 class="sc-title">Contact</h1>' +
+        '<div class="sc-body">' +
+        '<p>I\'m open to internships, collaborations, or just a chat about AI and ML. Send me a message here or reach me at ' + ext('mailto:' + ME.email, ME.email) + '.</p>' +
+        '<div class="sc-socials">' +
+          '<a class="sc-social" href="' + ME.github + '" target="_blank" rel="noopener"><b>GitHub</b><span>aayushagrawall</span></a>' +
+          '<a class="sc-social" href="' + ME.linkedin + '" target="_blank" rel="noopener"><b>LinkedIn</b><span>aayush-agrawall</span></a>' +
+          '<a class="sc-social" href="' + ME.instagram + '" target="_blank" rel="noopener"><b>Instagram</b><span>_aayush.agrawal</span></a>' +
+        '</div>' +
+        '<form class="sc-form" id="sc-form">' +
+          '<label><span>Your name <span class="req">*</span></span><input id="sc-name" type="text" required></label>' +
+          '<label><span>Message <span class="req">*</span></span><textarea id="sc-msg" required></textarea></label>' +
+          '<div><button type="submit" class="sc-send">Send Message</button></div>' +
+        '</form></div>';
+    }
+  };
+
+  function Showcase(win) {
+    var root = win.querySelector('.sc');
+    function render(page) {
+      if (page === 'home') {
+        root.className = 'sc sc-home';
+        root.innerHTML =
+          '<div class="sc-hero">' +
+            '<h1>Aayush<br>Agrawal</h1>' +
+            '<h2>Developer &amp; AI/ML Student</h2>' +
+            '<nav class="sc-hnav">' + NAV.slice(1).map(function (n) { return '<a href="#" data-page="' + n[0] + '">' + n[1].toUpperCase() + '</a>'; }).join('') + '</nav>' +
+          '</div>';
+      } else {
+        root.className = 'sc sc-inner';
+        root.innerHTML =
+          '<aside class="sc-side">' +
+            '<h1>Aayush<br>Agrawal</h1>' +
+            '<h3>Showcase \'26</h3>' +
+            '<nav class="sc-vnav">' + NAV.map(function (n) {
+              return '<a href="#" data-page="' + n[0] + '"' + (n[0] === page ? ' class="cur"' : '') + '>' + n[1].toUpperCase() + '</a>';
+            }).join('') + '</nav>' +
+          '</aside>' +
+          '<main class="sc-main">' + PAGES[page]() + '</main>';
+        var form = root.querySelector('#sc-form');
+        if (form) form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var name = root.querySelector('#sc-name').value.trim(), msg = root.querySelector('#sc-msg').value.trim();
+          window.open('mailto:' + ME.email + '?subject=' + encodeURIComponent('Hello from ' + (name || 'aayushagrawal.in')) + '&body=' + encodeURIComponent(msg + '\n\n— ' + name), '_blank');
+        });
+      }
+      root.scrollTop = 0;
+      var main = root.querySelector('.sc-main'); if (main) main.scrollTop = 0;
+    }
+    root.addEventListener('click', function (e) {
+      var a = e.target.closest('[data-page]');
+      if (a) { e.preventDefault(); render(a.dataset.page); }
+    });
+    win.showPage = render;
+    render('home');
+  }
 
   // ---------- Apps ----------
   var APPS = {
-    about: {
-      title: 'About Me', icon: 'me', w: 820, h: 760, x: 170, y: 30,
-      status: 'aayushagrawal.in',
-      render: function () {
-        return '<div class="page">' +
-          '<div class="hero"><div class="avatar">A</div><div>' +
-          '<h1>Aayush Agrawal</h1>' +
-          '<p class="accent"><b>Developer · AI &amp; ML student · Bangalore</b></p>' +
-          '<p>I build small, useful software: Python tools, Discord bots and websites.</p>' +
-          '</div></div>' +
-          '<h2>About</h2>' +
-          '<p>I\'m an undergraduate in Artificial Intelligence &amp; Machine Learning at <b>BMS College of Engineering</b>, Bangalore. I enjoy building things from scratch: a quick Python utility, a bot for a community, or a long dig into how a model actually learns.</p>' +
-          '<p>I\'m part of <b>@clienterrverse</b>, where I work on open-source projects with other developers and learn how real-world software gets made.</p>' +
-          '<p>When I\'m not coding, I\'m reading docs, taking things apart to see how they work, and collecting ideas for the next side project.</p>' +
-          '<dl class="facts">' +
-          '<dt>Degree</dt><dd>B.E. AI &amp; ML (expected Apr 2028)</dd>' +
-          '<dt>College</dt><dd>BMS College of Engineering</dd>' +
-          '<dt>Location</dt><dd>Bangalore, India</dd>' +
-          '<dt>Languages</dt><dd>English, Hindi, Nepali</dd>' +
-          '<dt>Status</dt><dd>Open to internships &amp; collaborations</dd>' +
-          '</dl>' +
-          '<h2>Tools I use</h2><div class="tags">' +
-          ['Python', 'JavaScript', 'Java', 'C', 'HTML & CSS', 'Node.js', 'Discord.js', 'MySQL', 'MongoDB', 'Machine Learning', 'Git'].map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') +
-          '</div>' +
-          '<div class="btn-row">' +
-          '<button data-open="projects">My Projects</button>' +
-          '<button data-open="resume">Resume</button>' +
-          '<button data-open="contact">Contact</button>' +
-          '</div></div>';
-      }
-    },
-
-    projects: {
-      title: 'Projects', icon: 'folder', w: 900, h: 600, x: 190, y: 60,
-      status: PROJECTS.length + ' object(s)',
-      render: function () {
-        return '<div class="addr"><span>Address</span><input id="proj-addr" readonly value="C:\\Aayush\\Projects\\' + esc(PROJECTS[0].name) + '"></div>' +
-          '<div class="explorer">' +
-          '<div class="list"><ul class="tree-view" id="proj-list">' +
-          PROJECTS.map(function (p, i) { return '<li data-i="' + i + '"' + (i === 0 ? ' class="sel"' : '') + '>📁 ' + esc(p.name) + '</li>'; }).join('') +
-          '</ul></div>' +
-          '<div class="detail"><div class="page" id="proj-detail"></div></div>' +
-          '</div>';
-      },
-      mount: function (win) {
-        var list = win.querySelector('#proj-list');
-        var detail = win.querySelector('#proj-detail');
-        var addr = win.querySelector('#proj-addr');
-        function show(i) {
-          var p = PROJECTS[i];
-          detail.innerHTML =
-            '<div class="row"><h1>' + esc(p.name) + '</h1>' + (p.date ? '<span class="date">' + esc(p.date) + '</span>' : '') + '</div>' +
-            '<p class="accent"><b>' + esc(p.type) + '</b></p>' +
-            '<p>' + esc(p.desc) + '</p>' +
-            '<div class="tags">' + p.stack.map(function (s) { return '<span class="tag">' + esc(s) + '</span>'; }).join('') + '</div>' +
-            '<div class="btn-row">' + btnLink(p.url, p.urlLabel) + '</div>';
-          addr.value = 'C:\\Aayush\\Projects\\' + p.name;
-          Array.prototype.forEach.call(list.children, function (li) { li.classList.toggle('sel', +li.dataset.i === i); });
-        }
-        list.addEventListener('click', function (e) { var li = e.target.closest('li'); if (li) show(+li.dataset.i); });
-        show(0);
-      }
-    },
-
-    experience: {
-      title: 'Experience', icon: 'briefcase', w: 820, h: 740, x: 230, y: 40,
-      status: 'Education, leadership & certifications',
-      render: function () {
-        return '<div class="page">' +
-          '<h1>Experience</h1><p class="muted">Education, leadership and certifications.</p>' +
-          '<h2>Education</h2>' +
-          '<div class="row"><h3>BMS College of Engineering</h3><span class="date">Expected Apr 2028</span></div>' +
-          '<p>B.E. in Artificial Intelligence &amp; Machine Learning, Bengaluru</p>' +
-          '<div class="row"><h3>Shiv Jyoti International School</h3><span class="date">Apr 2024</span></div>' +
-          '<p>CBSE Grade 11–12: Physics, Chemistry, Math, Kota</p>' +
-          '<div class="row"><h3>Mayo College</h3><span class="date">Jul 2022</span></div>' +
-          '<p>CBSE Grade 5–10, Ajmer</p>' +
-          '<h2>Leadership</h2>' +
-          '<div class="row"><h3>Student Volunteer, BMSCE UTSAV</h3><span class="date">Apr 2025 – May 2026</span></div>' +
-          '<ul><li>Managed end-to-end distribution of festival merchandise across sales counters.</li>' +
-          '<li>Worked with committee members on merch strategy and sales targets for the fest.</li></ul>' +
-          '<div class="row"><h3>Rotaract Club of BMSCE, Member</h3><span class="date">Apr 2023 – Apr 2024</span></div>' +
-          '<ul><li>Community service and leadership initiatives across Bengaluru.</li>' +
-          '<li>40+ hours of social and community service.</li></ul>' +
-          '<h2>Certifications</h2>' +
-          '<div class="row"><p><b>C for Beginners</b>, Great Learning</p><span class="date">Jan 2025</span></div>' +
-          '<div class="row"><p><b>Using MongoDB with Python</b>, MongoDB</p><span class="date">Nov 2024</span></div>' +
-          '</div>';
-      }
+    showcase: {
+      title: 'Aayush Agrawal - Showcase 2026', short: 'My Showcase', icon: 'showcase', w: 1060, h: 860, x: 120, y: 24, ie: true,
+      status: '© Copyright 2026 Aayush Agrawal',
+      render: function () { return '<div class="sc"></div>'; },
+      mount: Showcase
     },
 
     resume: {
-      title: 'Resume.pdf', icon: 'doc', w: 820, h: 800, x: 260, y: 20,
+      title: 'Resume.pdf', icon: 'doc', w: 820, h: 820, x: 300, y: 20,
       status: 'Aayush-Agrawal-Resume.pdf',
       render: function () {
         return '<div class="addr"><span>File</span><input readonly value="C:\\Aayush\\Documents\\Aayush-Agrawal-Resume.pdf">' +
           '<a class="button-link" href="' + ME.resume + '" download>Download</a>' +
           '<a class="button-link" href="' + ME.resume + '" target="_blank" rel="noopener">Open</a></div>' +
           '<iframe class="resume-frame" src="' + ME.resume + '#view=FitH" title="Aayush Agrawal resume"></iframe>';
-      }
-    },
-
-    contact: {
-      title: 'Contact', icon: 'mail', w: 700, h: 720, x: 300, y: 50,
-      status: 'Replies usually within a day or two',
-      render: function () {
-        return '<div class="page">' +
-          '<h1>Say hi 👋</h1>' +
-          '<p>Want to collaborate, talk about AI and ML, or offer an internship? My inbox is open.</p>' +
-          '<form class="form" id="contact-form">' +
-          '<div class="field-row-stacked"><label for="c-name">Your name</label><input id="c-name" type="text" required></div>' +
-          '<div class="field-row-stacked"><label for="c-msg">Message</label><textarea id="c-msg" required></textarea></div>' +
-          '<div class="btn-row" style="margin-top:2px"><button type="submit">Send email</button></div>' +
-          '</form>' +
-          '<h2>Elsewhere</h2>' +
-          '<ul>' +
-          '<li>Email: ' + ext('mailto:' + ME.email, ME.email) + '</li>' +
-          '<li>GitHub: ' + ext(ME.github, 'github.com/aayushagrawall') + '</li>' +
-          '<li>LinkedIn: ' + ext(ME.linkedin, 'linkedin.com/in/aayush-agrawall') + '</li>' +
-          '<li>Instagram: ' + ext(ME.instagram, '@_aayush.agrawal') + '</li>' +
-          '<li>Website: ' + ext(ME.site, 'aayushagrawal.codes') + '</li>' +
-          '</ul></div>';
-      },
-      mount: function (win) {
-        win.querySelector('#contact-form').addEventListener('submit', function (e) {
-          e.preventDefault();
-          var name = win.querySelector('#c-name').value.trim();
-          var msg = win.querySelector('#c-msg').value.trim();
-          var url = 'mailto:' + ME.email + '?subject=' + encodeURIComponent('Hello from ' + (name || 'aayushagrawal.in')) + '&body=' + encodeURIComponent(msg + '\n\n— ' + name);
-          window.open(url, '_blank');
-        });
       }
     },
 
@@ -198,7 +200,7 @@
           '<h2 style="border:none;margin-top:0">AayushOS 98</h2>' +
           '<p>Bangalore Edition · Build 2026.11</p>' +
           '<p class="muted">Registered to: Aayush Agrawal</p>' +
-          '<div class="facts" style="text-align:left;max-width:320px;margin:14px auto">' +
+          '<div class="facts" style="text-align:left;max-width:340px;margin:14px auto">' +
           '<dt>Processor</dt><dd>Curiosity @ 3.0 GHz</dd>' +
           '<dt>Memory</dt><dd>Too many open tabs</dd>' +
           '<dt>Fuel</dt><dd>Chai</dd>' +
@@ -225,7 +227,7 @@
     },
 
     credits: {
-      title: 'Credits', icon: 'star', w: 700, h: 620, x: 320, y: 70,
+      title: 'Credits', icon: 'credits', w: 700, h: 640, x: 320, y: 70,
       status: '© 2026 Aayush Agrawal',
       render: function () {
         return '<div class="page credits">' +
@@ -234,22 +236,22 @@
           '<h2>3D scene</h2><p>Based on the open-source portfolio by <b>Henry Heffernan</b> ' + ext('https://github.com/henryjeff/portfolio-website', '(MIT licence)') + '</p>' +
           '<p>Computer model: Mickael Boitte · Environment models: Sean Nicolas</p>' +
           '<h2>Interface</h2><p>' + ext('https://github.com/jdan/98.css', '98.css') + ' by Jordan Scales (MIT licence)</p>' +
+          '<h2>Fonts</h2><p>Fraunces (SIL Open Font Licence) · Tinos (Apache 2.0)</p>' +
           '</div>';
       }
     },
 
-    site: {
-      title: 'My Website', icon: 'globe', external: ME.site
-    }
+    site: { title: 'My Website', icon: 'globe', external: ME.site }
   };
 
-  var DESKTOP = ['about', 'projects', 'experience', 'resume', 'contact', 'mycomputer', 'tetris', 'site', 'credits'];
+  var DESKTOP = ['showcase', 'resume', 'tetris', 'mycomputer', 'site', 'credits'];
 
   // ---------- Window manager ----------
   var windowsEl = document.getElementById('windows');
   var taskEl = document.getElementById('task-buttons');
   var open = {};
   var z = 10;
+  function label(app) { return app.short || app.title; }
 
   function focus(id) {
     Object.keys(open).forEach(function (k) {
@@ -259,15 +261,19 @@
     if (open[id]) open[id].win.style.zIndex = ++z;
   }
 
-  function openApp(id) {
+  function openApp(id, page) {
     var app = APPS[id];
     if (!app) return;
     if (app.external) { window.open(app.external, '_blank', 'noopener'); return; }
     closeStart();
-    if (open[id]) { open[id].win.hidden = false; focus(id); return; }
+    if (open[id]) {
+      open[id].win.hidden = false; focus(id);
+      if (page && open[id].win.showPage) open[id].win.showPage(page);
+      return;
+    }
 
     var win = el(
-      '<div class="window win" role="dialog" aria-label="' + esc(app.title) + '">' +
+      '<div class="window win' + (app.ie ? ' ie' : '') + '" role="dialog" aria-label="' + esc(app.title) + '">' +
         '<div class="title-bar"><div class="title-bar-text">' + I[app.icon] + '<span>' + esc(app.title) + '</span></div>' +
         '<div class="title-bar-controls">' +
           '<button aria-label="Minimize"></button>' +
@@ -275,7 +281,8 @@
           '<button aria-label="Close"></button>' +
         '</div></div>' +
         '<div class="window-body">' + app.render() + '</div>' +
-        (app.status ? '<div class="status-bar"><p class="status-bar-field">' + esc(app.status) + '</p></div>' : '') +
+        (app.status ? '<div class="status-bar"><p class="status-bar-field">' + esc(app.status) + '</p>' +
+          (app.ie ? '<p class="status-bar-field sb-sm"></p><p class="status-bar-field sb-sm"></p><p class="status-bar-field sb-md"></p>' : '') + '</div>' : '') +
         (app.fixed ? '' : '<div class="resize"></div>') +
       '</div>');
 
@@ -285,7 +292,7 @@
     if (!app.fixed) { win.style.width = app.w + 'px'; win.style.height = app.h + 'px'; }
     windowsEl.appendChild(win);
 
-    var task = el('<button>' + I[app.icon] + '<span>' + esc(app.title) + '</span></button>');
+    var task = el('<button>' + I[app.icon] + '<span>' + esc(label(app)) + '</span></button>');
     taskEl.appendChild(task);
     open[id] = { win: win, task: task };
 
@@ -309,6 +316,7 @@
       if (b) openApp(b.dataset.open);
     });
     if (app.mount) app.mount(win);
+    if (page && win.showPage) win.showPage(page);
     focus(id);
   }
 
@@ -348,7 +356,7 @@
   var iconsEl = document.getElementById('icons');
   DESKTOP.forEach(function (id) {
     var app = APPS[id];
-    var b = el('<button class="icon" title="' + esc(app.title) + '">' + I[app.icon] + '<span>' + esc(app.title) + '</span></button>');
+    var b = el('<button class="icon" title="' + esc(label(app)) + '">' + I[app.icon] + '<span>' + esc(label(app)) + '</span></button>');
     b.addEventListener('click', function () {
       Array.prototype.forEach.call(iconsEl.children, function (c) { c.classList.remove('selected'); });
       b.classList.add('selected');
@@ -368,16 +376,23 @@
   var startBtn = document.getElementById('start-btn');
   var startMenu = document.getElementById('start-menu');
   var startList = document.getElementById('start-list');
-  ['about', 'projects', 'experience', 'resume', 'contact', '-', 'tetris', 'site', 'credits', '-', 'shutdown'].forEach(function (id) {
-    if (id === '-') { startList.appendChild(el('<hr>')); return; }
-    if (id === 'shutdown') {
+  var START = [
+    ['showcase', null, 'My Showcase'], ['showcase', 'about', 'About'], ['showcase', 'experience', 'Experience'],
+    ['showcase', 'projects', 'Projects'], ['showcase', 'contact', 'Contact'], '-',
+    ['resume', null], ['tetris', null], ['site', null], ['credits', null], '-', 'shutdown'
+  ];
+  START.forEach(function (item) {
+    if (item === '-') { startList.appendChild(el('<hr>')); return; }
+    if (item === 'shutdown') {
       var s = el('<li>' + I.power + '<span>Shut Down...</span></li>');
       s.addEventListener('click', shutdown);
       startList.appendChild(s);
       return;
     }
-    var li = el('<li>' + I[APPS[id].icon] + '<span>' + esc(APPS[id].title) + '</span></li>');
-    li.addEventListener('click', function () { openApp(id); });
+    var app = APPS[item[0]];
+    var icon = item[1] === 'contact' ? I.mail : (item[1] ? I.doc : I[app.icon]);
+    var li = el('<li>' + icon + '<span>' + esc(item[2] || label(app)) + '</span></li>');
+    li.addEventListener('click', function () { openApp(item[0], item[1]); });
     startList.appendChild(li);
   });
   function closeStart() { startMenu.hidden = true; startBtn.classList.remove('active'); }
@@ -403,11 +418,12 @@
       boot.querySelector('.boot-note').textContent = 'Starting AayushOS...';
       var bar = boot.querySelector('.boot-bar span');
       bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
-      setTimeout(function () { boot.classList.add('done'); openApp('about'); }, 1700);
+      setTimeout(function () { boot.classList.add('done'); openApp('showcase'); }, 1700);
     });
   }
 
-  // ---------- Clock ----------
+  // ---------- Tray ----------
+  document.getElementById('tray-speaker').innerHTML = I.speaker;
   var clock = document.getElementById('clock');
   function tick() { clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
   tick(); setInterval(tick, 10000);
@@ -578,6 +594,6 @@
   // ---------- Boot ----------
   setTimeout(function () {
     document.getElementById('boot').classList.add('done');
-    openApp('about');
+    openApp('showcase');
   }, 1800);
 })();
