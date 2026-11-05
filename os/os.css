@@ -231,3 +231,25 @@ a.button-link, .btn-row a.button-link { min-height: 30px; font-size: 16px; paddi
 .smiley { min-width: 44px !important; height: 44px; font-size: 24px; }
 .cell { width: 32px; height: 32px; font-size: 18px; }
 .desktop::after { font-size: 17px; }
+
+/* ===== Clarity: crisp, high-contrast reading font for content ===== */
+.page, .page p, .page li, .page dd, .page dt, .facts, .tag, .addr input, .form input, .form textarea, .form label {
+  font-family: Tahoma, Verdana, "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.page { font-size: 19px; line-height: 1.55; color: #000; }
+.page h1 { font-size: 40px; }
+.page h2 { font-size: 24px; }
+.page h3 { font-size: 20px; }
+.page .muted, .facts dt, .date { color: #333; }
+.date { font-size: 16px; }
+.tag { font-size: 15px; color: #000; }
+.title-bar-text, .win .title-bar-text { font-size: 17px; }
+.icon, button.icon, button.icon:active, button.icon:focus { font-size: 16px; }
+.icon span { text-shadow: 1px 1px 0 #000, 0 0 3px rgba(0,0,0,.6); }
+.task-buttons button, .tray { font-size: 16px; }
+
+.icon span { font-family: Tahoma, Verdana, "Segoe UI", Arial, sans-serif; font-size: 16px; -webkit-font-smoothing: antialiased; }
+.icon svg { width: 56px; height: 56px; }
+.icon, button.icon, button.icon:active, button.icon:focus { width: 132px; }
+.icon span { white-space: nowrap; }
