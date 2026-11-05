@@ -51,7 +51,7 @@ button, input, label, select, textarea { font-size: 16px; }
 
 /* ---------- Desktop ---------- */
 .desktop { position: fixed; inset: 0 0 44px 0; background: var(--desk); }
-.icons { position: absolute; top: 14px; left: 8px; display: grid; grid-auto-flow: column; grid-template-rows: repeat(8, 104px); gap: 4px 8px; }
+.icons { position: absolute; top: 14px; left: 8px; display: grid; grid-auto-flow: column; grid-template-rows: repeat(9, 100px); gap: 3px 8px; }
 button.icon, button.icon:active, button.icon:focus {
   width: 112px; min-width: 0; min-height: 0; height: auto; padding: 4px 2px;
   display: flex; flex-direction: column; align-items: center; gap: 6px;
