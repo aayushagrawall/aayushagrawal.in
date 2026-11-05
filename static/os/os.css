@@ -101,7 +101,7 @@ button { min-width: 90px; min-height: 30px; padding: 0 16px; }
 
 /* Inner pages */
 .sc-inner { display: flex; }
-.sc-side { flex: 0 0 330px; padding: 70px 24px 40px 48px; position: sticky; top: 0; align-self: flex-start; }
+.sc-side { flex: 0 0 330px; padding: 70px 24px 40px 48px; align-self: flex-start; }
 .sc-side h1 { font: 900 64px/.95 var(--display); font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144; letter-spacing: -1px; }
 .sc-side h3 { margin-top: 18px; font: 700 34px var(--serif); letter-spacing: 1px; }
 .sc-vnav { display: flex; flex-direction: column; gap: 34px; margin-top: 70px; }
@@ -209,3 +209,9 @@ a.button-link:active { box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, 
 .start-list li svg { width: 32px; height: 32px; }
 .start-list li:hover { background: var(--navy); color: #fff; }
 .start-list hr { margin: 3px 2px; border: none; border-top: 1px solid grey; border-bottom: 1px solid #fff; }
+
+/* Project sub-links under PROJECTS (side nav) */
+.sc-subnav { display: flex; flex-direction: column; gap: 12px; margin: 16px 0 0 24px; }
+.sc-subnav a { font: 700 18px var(--serif) !important; letter-spacing: .3px; }
+.sc-vnav { gap: 30px; }
+.sc { position: relative; }

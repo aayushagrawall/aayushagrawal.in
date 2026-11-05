@@ -36,6 +36,7 @@
   // ---------- Icons (original pixel art) ----------
   var I = {
     showcase: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="2" y="3" width="28" height="26" fill="#fff" stroke="#000"/><rect x="2" y="3" width="28" height="5" fill="#000080"/><rect x="25" y="4" width="3" height="3" fill="#c0c0c0"/><path d="M9 26l5-15h4l5 15h-3l-1-3h-6l-1 3zm5-6h4l-2-6z" fill="#000"/></svg>',
+    folder: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M2 8h11l2 3h15v17H2z" fill="#f6c94d" stroke="#000"/><rect x="2" y="13" width="28" height="15" fill="#ffdd6e" stroke="#000"/></svg>',
     doc: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M6 2h14l6 6v22H6z" fill="#fff" stroke="#000"/><path d="M20 2v6h6" fill="#ddd" stroke="#000"/><rect x="9" y="12" width="14" height="2" fill="#000080"/><rect x="9" y="16" width="14" height="2" fill="#777"/><rect x="9" y="20" width="10" height="2" fill="#777"/><rect x="9" y="24" width="12" height="2" fill="#777"/></svg>',
     computer: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="3" width="24" height="18" fill="#c0c0c0" stroke="#000"/><rect x="7" y="6" width="18" height="12" fill="#008080"/><rect x="9" y="8" width="5" height="4" fill="#fff"/><rect x="12" y="21" width="8" height="3" fill="#888"/><rect x="6" y="24" width="20" height="5" fill="#c0c0c0" stroke="#000"/></svg>',
     tetris: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="12" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="10" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="4" y="2" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="4" y="10" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="12" y="10" width="8" height="8" fill="#a347d6" stroke="#000"/></svg>',
@@ -106,7 +107,7 @@
         '<h3 class="sc-sub">&amp; side quests</h3>' +
         '<div class="sc-body"><p>Things I\'ve built, from Python tools to bots and websites. Click a link to see the code or try it out.</p>' +
         PROJECTS.map(function (p) {
-          return '<div class="sc-project">' +
+          return '<div class="sc-project" id="proj-' + PROJECTS.indexOf(p) + '">' +
             '<div class="sc-row"><h2>' + esc(p.name) + '</h2>' + (p.date ? '<span>' + esc(p.date) + '</span>' : '') + '</div>' +
             '<p class="sc-meta"><b>' + esc(p.type) + '</b> · ' + p.stack.map(esc).join(', ') + '</p>' +
             '<p>' + esc(p.desc) + '</p>' +
@@ -149,7 +150,11 @@
             '<h1>Aayush<br>Agrawal</h1>' +
             '<h3>Showcase \'26</h3>' +
             '<nav class="sc-vnav">' + NAV.map(function (n) {
-              return '<a href="#" data-page="' + n[0] + '"' + (n[0] === page ? ' class="cur"' : '') + '>' + n[1].toUpperCase() + '</a>';
+              var link = '<a href="#" data-page="' + n[0] + '"' + (n[0] === page ? ' class="cur"' : '') + '>' + n[1].toUpperCase() + '</a>';
+              if (n[0] === 'projects' && page === 'projects') {
+                link += '<div class="sc-subnav">' + PROJECTS.map(function (p, i) { return '<a href="#" data-proj="' + i + '">' + esc(p.name).toUpperCase() + '</a>'; }).join('') + '</div>';
+              }
+              return link;
             }).join('') + '</nav>' +
           '</aside>' +
           '<main class="sc-main">' + PAGES[page]() + '</main>';
@@ -164,6 +169,13 @@
       var main = root.querySelector('.sc-main'); if (main) main.scrollTop = 0;
     }
     root.addEventListener('click', function (e) {
+      var pj = e.target.closest('[data-proj]');
+      if (pj) {
+        e.preventDefault();
+        var t = root.querySelector('#proj-' + pj.dataset.proj);
+        if (t) root.scrollTo({ top: t.offsetTop - 30, behavior: 'smooth' });
+        return;
+      }
       var a = e.target.closest('[data-page]');
       if (a) { e.preventDefault(); render(a.dataset.page); }
     });
@@ -241,10 +253,12 @@
       }
     },
 
+    projects: { title: 'Projects', icon: 'folder', alias: ['showcase', 'projects'] },
+
     site: { title: 'My Website', icon: 'globe', external: ME.site }
   };
 
-  var DESKTOP = ['showcase', 'resume', 'tetris', 'mycomputer', 'site', 'credits'];
+  var DESKTOP = ['showcase', 'projects', 'resume', 'tetris', 'mycomputer', 'site', 'credits'];
 
   // ---------- Window manager ----------
   var windowsEl = document.getElementById('windows');
@@ -265,6 +279,7 @@
     var app = APPS[id];
     if (!app) return;
     if (app.external) { window.open(app.external, '_blank', 'noopener'); return; }
+    if (app.alias) { openApp(app.alias[0], app.alias[1]); return; }
     closeStart();
     if (open[id]) {
       open[id].win.hidden = false; focus(id);
@@ -390,7 +405,7 @@
       return;
     }
     var app = APPS[item[0]];
-    var icon = item[1] === 'contact' ? I.mail : (item[1] ? I.doc : I[app.icon]);
+    var icon = item[1] === 'contact' ? I.mail : item[1] === 'projects' ? I.folder : (item[1] ? I.doc : I[app.icon]);
     var li = el('<li>' + icon + '<span>' + esc(item[2] || label(app)) + '</span></li>');
     li.addEventListener('click', function () { openApp(item[0], item[1]); });
     startList.appendChild(li);
