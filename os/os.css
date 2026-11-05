@@ -296,3 +296,45 @@ button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px;
   #tt-next { width: 90px; height: 68px; }
   .tt-pad button { height: 44px; }
 }
+
+/* ---------- Message box ---------- */
+.win.msg { min-width: 360px; max-width: 520px; min-height: 0; }
+.msg-row { display: flex; gap: 16px; align-items: flex-start; padding: 16px 14px 8px; }
+.msg-icon svg { width: 40px; height: 40px; }
+.msg-row p { margin: 4px 0 0; font: 17px/1.45 var(--serif); -webkit-font-smoothing: antialiased; }
+.msg-btns { display: flex; justify-content: center; padding: 8px 0 12px; }
+
+/* ---------- Welcome ---------- */
+.wl { width: 600px; padding: 14px 16px 10px; }
+.wl-head { font: 900 40px/1 var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; letter-spacing: -.5px; margin-bottom: 14px; }
+.wl-head b { font-weight: 900; }
+.wl-98 { color: var(--accent); margin-left: 8px; }
+.wl-main { display: flex; gap: 14px; }
+.wl-tipbox { flex: 1; background: #ffffe1; box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a; padding: 14px 16px; min-height: 170px; }
+.wl-did { display: flex; align-items: center; gap: 10px; font: 700 20px var(--serif); margin-bottom: 10px; -webkit-font-smoothing: antialiased; }
+.wl-did svg { width: 34px; height: 34px; }
+.wl-tipbox p { margin: 0; font: 18px/1.5 var(--serif); -webkit-font-smoothing: antialiased; }
+.wl-btns { display: flex; flex-direction: column; gap: 8px; width: 150px; }
+.wl-btns button { width: 100%; }
+.wl-foot { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 15px; }
+.wl-foot label { font-size: 15px; }
+
+/* ---------- Recycle Bin ---------- */
+.recycle-icon { position: absolute !important; right: 16px; bottom: 12px; }
+.rb-bar { display: flex; gap: 8px; margin-bottom: 6px; }
+.rb-panel { flex: 1; min-height: 0; overflow: auto; background: #fff; }
+.rb-table { width: 100%; font-size: 16px; }
+.rb-table th { text-align: left; padding: 4px 8px; font-size: 15px; }
+.rb-table td { padding: 5px 8px; white-space: nowrap; cursor: default; }
+.win .window-body .status-bar { margin: 6px 0 0; }
+
+/* ---------- Screensaver ---------- */
+.saver { position: fixed; inset: 0; z-index: 9000; background: #000; cursor: none; }
+.saver[hidden] { display: none; }
+.saver canvas { position: absolute; inset: 0; }
+.saver-logo { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 14px; color: #fff;
+  font: 900 44px/1 var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; white-space: nowrap; will-change: transform; }
+.saver-logo b { color: var(--accent); font-weight: 900; }
+.saver-mark { width: 60px; height: 60px; display: grid; place-items: center; background: var(--accent); color: #fff;
+  box-shadow: inset -4px -4px 0 rgba(0,0,0,.35), inset 4px 4px 0 rgba(255,255,255,.35); font-size: 42px; }
+@media (max-width: 760px) { .wl { width: auto; } .wl-main { flex-direction: column; } .wl-btns { width: auto; flex-direction: row; } }
