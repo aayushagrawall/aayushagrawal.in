@@ -51,7 +51,7 @@ button, input, label, select, textarea { font-size: 16px; }
 
 /* ---------- Desktop ---------- */
 .desktop { position: fixed; inset: 0 0 44px 0; background: var(--desk); }
-.icons { position: absolute; top: 14px; left: 8px; display: grid; grid-auto-flow: column; grid-template-rows: repeat(9, 100px); gap: 3px 8px; }
+.icons { position: absolute; top: 16px; bottom: 12px; left: 16px; display: grid; grid-auto-flow: column; grid-template-rows: repeat(auto-fill, 86px); grid-auto-columns: 112px; gap: 2px 10px; align-content: start; }
 button.icon, button.icon:active, button.icon:focus {
   width: 112px; min-width: 0; min-height: 0; height: auto; padding: 4px 2px;
   display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -192,8 +192,9 @@ a.button-link:active { box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, 
 .start-btn.active { box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px grey; }
 .start-logo { width: 22px; height: 22px; display: grid; place-items: center; background: var(--accent); color: #fff; font: 900 16px/1 var(--display); }
 .task-buttons { flex: 1; display: flex; gap: 4px; overflow: hidden; }
-.task-buttons button { width: 220px; min-width: 0 !important; height: 34px; text-align: left; display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; font-size: 16px; }
+.task-buttons button { flex: 0 1 220px; width: auto; min-width: 0 !important; height: 34px; text-align: left; display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; font-size: 16px; }
 .task-buttons button svg { width: 20px; height: 20px; flex: none; }
+.task-buttons button span { overflow: hidden; text-overflow: ellipsis; }
 .task-buttons button.active { font-weight: bold; box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px grey; background: repeating-conic-gradient(#c0c0c0 0 25%, #fff 0 50%) 0 0 / 2px 2px; }
 .tray { height: 34px; padding: 0 12px; display: flex; align-items: center; gap: 10px; font-size: 16px; }
 .tray-speaker svg { width: 20px; height: 20px; display: block; }
@@ -215,3 +216,8 @@ a.button-link:active { box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, 
 .sc-subnav a { font: 700 18px var(--serif) !important; letter-spacing: .3px; }
 .sc-vnav { gap: 30px; }
 .sc { position: relative; }
+
+/* single-line icon labels so all icons fit one column */
+button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px; }
+.icon svg { width: 50px; height: 50px; }
+.icon span { white-space: nowrap; font-size: 15px; }
