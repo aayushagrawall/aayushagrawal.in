@@ -4,10 +4,12 @@ A 3D portfolio for **Aayush Agrawal**. Walk up to a retro computer and use **Aay
 
 Live at **[aayushagrawal.in](https://aayushagrawal.in)** · Minimal version at **[aayushagrawal.codes](https://aayushagrawal.codes)**
 
+![Walking up to the desk and using AayushOS](docs/demo.gif)
+
 ## How it works
 
 - **3D scene** (`src/`): Three.js scene of a desk and CRT computer. The monitor shows the OS through an iframe placed in 3D with `CSS3DRenderer`.
-- **AayushOS** (`static/os/`): plain HTML, CSS and JavaScript (no build step), styled with [98.css](https://github.com/jdan/98.css). Windows can be dragged, resized, minimised and maximised. The main "Showcase" window is a 90s-style website (Home, About, Experience, Projects, Contact) set in Fraunces and Tinos. Also includes Resume, Tetris, This Computer and Credits.
+- **AayushOS** (`static/os/`): plain HTML, CSS and JavaScript (no build step), styled with [98.css](https://github.com/jdan/98.css). Windows can be dragged, resized, minimised and maximised. The main "Showcase" window is a 90s-style website (Home, About, Experience, Projects, Contact) set in Fraunces and Tinos. Also includes a Terminal (try `help` or `sudo hire aayush`), Tetris with touch controls, Resume, a Recycle Bin, a Welcome tips dialog, a starfield screensaver after a minute idle, This Computer and Credits. Works on phones too.
 - **Deploy**: pushing to `main` runs `.github/workflows/deploy.yml`, which builds with webpack and publishes `public/` to GitHub Pages.
 
 ## Run locally

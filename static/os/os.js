@@ -41,6 +41,8 @@
     github: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="3" y="3" width="26" height="26" rx="13" fill="#24292f" stroke="#000"/><path d="M10 9l3 3h6l3-3v5c1 1 1.5 2.5 1.5 4 0 3.5-2.5 5.5-6 6v3h-3v-3c-3.5-.5-6-2.5-6-6 0-1.5.5-3 1.5-4z" fill="#fff"/><path d="M9 23c1.5 0 2 1.5 4 1.5" stroke="#fff" stroke-width="1.5" fill="none"/></svg>',
     linkedin: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="3" y="3" width="26" height="26" rx="3" fill="#0a66c2" stroke="#000"/><rect x="8" y="13" width="4" height="12" fill="#fff"/><rect x="8" y="7" width="4" height="4" fill="#fff"/><path d="M15 13h4v2c1-1.5 2.5-2.3 4.3-2.3 2.6 0 3.7 1.7 3.7 4.6V25h-4v-7c0-1.5-.6-2.3-1.9-2.3-1.4 0-2.1 1-2.1 2.6V25h-4z" fill="#fff"/></svg>',
     terminal: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="2" y="4" width="28" height="24" fill="#c0c0c0" stroke="#000"/><rect x="2" y="4" width="28" height="4" fill="#000080"/><rect x="4" y="10" width="24" height="16" fill="#000"/><path d="M6 13h2v1h1v1h1v1h-1v1h-1v1H6v-1h1v-1h1v-1H7v-1H6z" fill="#c0c0c0"/><rect x="12" y="18" width="7" height="2" fill="#c0c0c0"/></svg>',
+    recycle: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M7 9h18l-2 20H9z" fill="#dfe8e8" stroke="#000"/><rect x="5" y="6" width="22" height="3" fill="#c0c0c0" stroke="#000"/><rect x="13" y="3" width="6" height="3" fill="#c0c0c0" stroke="#000"/><path d="M12 13v12M16 13v12M20 13v12" stroke="#808080"/><rect x="10" y="18" width="5" height="4" fill="#fff" stroke="#000"/><rect x="16" y="15" width="5" height="4" fill="#ffdd6e" stroke="#000"/></svg>',
+    bulb: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><circle cx="16" cy="12" r="9" fill="#ff0" stroke="#000"/><rect x="12" y="20" width="8" height="5" fill="#c0c0c0" stroke="#000"/><rect x="13" y="25" width="6" height="3" fill="#808080" stroke="#000"/><path d="M13 13l3 4 3-4" fill="none" stroke="#a80"/></svg>',
     doc: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M6 2h14l6 6v22H6z" fill="#fff" stroke="#000"/><path d="M20 2v6h6" fill="#ddd" stroke="#000"/><rect x="9" y="12" width="14" height="2" fill="#000080"/><rect x="9" y="16" width="14" height="2" fill="#777"/><rect x="9" y="20" width="10" height="2" fill="#777"/><rect x="9" y="24" width="12" height="2" fill="#777"/></svg>',
     computer: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="3" width="24" height="18" fill="#c0c0c0" stroke="#000"/><rect x="7" y="6" width="18" height="12" fill="#008080"/><rect x="9" y="8" width="5" height="4" fill="#fff"/><rect x="12" y="21" width="8" height="3" fill="#888"/><rect x="6" y="24" width="20" height="5" fill="#c0c0c0" stroke="#000"/></svg>',
     tetris: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="12" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="10" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="4" y="2" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="4" y="10" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="12" y="10" width="8" height="8" fill="#a347d6" stroke="#000"/></svg>',
@@ -193,7 +195,7 @@
   // ---------- Apps ----------
   var APPS = {
     showcase: {
-      title: 'Aayush Agrawal - Showcase 2026', short: 'My Showcase', icon: 'showcase', w: 1060, h: 860, x: 120, y: 24, ie: true,
+      title: 'Aayush Agrawal - Showcase 2026', short: 'My Showcase', icon: 'showcase', w: 940, h: 860, x: 136, y: 24, ie: true,
       status: '© Copyright 2026 Aayush Agrawal',
       render: function () { return '<div class="sc"></div>'; },
       mount: Showcase
@@ -236,6 +238,35 @@
           up.textContent = (s >= 60 ? Math.floor(s / 60) + 'm ' : '') + (s % 60) + 's';
         }, 1000);
       }
+    },
+
+    welcome: {
+      title: 'Welcome', icon: 'bulb', w: 0, h: 0, x: 300, y: 160, fixed: true,
+      render: function () {
+        return '<div class="wl">' +
+          '<div class="wl-head">Welcome to <b>AayushOS</b><span class="wl-98">98</span></div>' +
+          '<div class="wl-main">' +
+            '<div class="wl-tipbox"><div class="wl-did">' + I.bulb + '<b>Did you know...</b></div><p id="wl-tip"></p></div>' +
+            '<div class="wl-btns"><button id="wl-new">What\'s New</button><button id="wl-next">Next Tip</button><button id="wl-close">Close</button></div>' +
+          '</div>' +
+          '<div class="wl-foot"><input type="checkbox" id="wl-show" checked><label for="wl-show">Show this Welcome Screen next time you start AayushOS</label></div>' +
+        '</div>';
+      },
+      mount: function (win) {
+        Welcome(win);
+        win.style.left = Math.max(10, (window.innerWidth - win.offsetWidth) / 2) + 'px';
+        win.style.top = Math.max(10, (window.innerHeight - 44 - win.offsetHeight) / 2) + 'px';
+      }
+    },
+
+    recycle: {
+      title: 'Recycle Bin', icon: 'recycle', w: 780, h: 470, x: 300, y: 150,
+      render: function () {
+        return '<div class="rb-bar"><button id="rb-restore">Restore</button><button id="rb-empty">Empty Recycle Bin</button></div>' +
+          '<div class="sunken-panel rb-panel"><table class="interactive rb-table"><thead><tr><th>Name</th><th>Type</th><th>Size</th></tr></thead><tbody id="rb-list"></tbody></table></div>' +
+          '<div class="status-bar"><p class="status-bar-field" id="rb-count"></p><p class="status-bar-field">Double-click a file to peek inside</p></div>';
+      },
+      mount: Recycle
     },
 
     terminal: {
@@ -398,6 +429,16 @@
     b.addEventListener('keydown', function (e) { if (e.key === 'Enter') openApp(id); });
     iconsEl.appendChild(b);
   });
+  (function () {
+    var rb = el('<button class="icon recycle-icon" title="Recycle Bin">' + I.recycle + '<span>Recycle Bin</span></button>');
+    rb.addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('.icon'), function (c) { c.classList.remove('selected'); });
+      rb.classList.add('selected');
+      if (TOUCH) openApp('recycle');
+    });
+    rb.addEventListener('dblclick', function () { openApp('recycle'); });
+    document.getElementById('desktop').appendChild(rb);
+  })();
   document.getElementById('desktop').addEventListener('mousedown', function (e) {
     if (e.target.id === 'desktop' || e.target.id === 'icons') {
       Array.prototype.forEach.call(iconsEl.children, function (c) { c.classList.remove('selected'); });
@@ -460,6 +501,115 @@
   var clock = document.getElementById('clock');
   function tick() { clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
   tick(); setInterval(tick, 10000);
+
+  // ---------- Message box ----------
+  function msgBox(title, text, kind) {
+    var icon = kind === 'warn'
+      ? '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M16 3L30 28H2z" fill="#ff0" stroke="#000"/><rect x="15" y="11" width="2" height="9" fill="#000"/><rect x="15" y="22" width="2" height="2" fill="#000"/></svg>'
+      : '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><circle cx="16" cy="16" r="13" fill="#fff" stroke="#000"/><rect x="15" y="13" width="3" height="11" fill="#000080"/><rect x="15" y="8" width="3" height="3" fill="#000080"/></svg>';
+    var w = el('<div class="window win msg active" role="alertdialog" aria-label="' + esc(title) + '">' +
+      '<div class="title-bar"><div class="title-bar-text"><span>' + esc(title) + '</span></div>' +
+      '<div class="title-bar-controls"><button aria-label="Close"></button></div></div>' +
+      '<div class="window-body"><div class="msg-row"><div class="msg-icon">' + icon + '</div><p>' + text + '</p></div>' +
+      '<div class="msg-btns"><button class="msg-ok">OK</button></div></div></div>');
+    windowsEl.appendChild(w);
+    w.style.left = Math.max(10, (window.innerWidth - w.offsetWidth) / 2) + 'px';
+    w.style.top = Math.max(10, (window.innerHeight - 44 - w.offsetHeight) / 2) + 'px';
+    w.style.zIndex = ++z + 1000;
+    drag(w, w.querySelector('.title-bar'));
+    function close() { w.remove(); }
+    w.querySelector('.msg-ok').addEventListener('click', close);
+    w.querySelector('[aria-label=Close]').addEventListener('click', close);
+    w.querySelector('.msg-ok').focus();
+  }
+
+  // ---------- Welcome dialog ----------
+  var TIPS = [
+    'Double-click <b>My Showcase</b> to read about me, my experience and my projects.',
+    'Open the <b>Terminal</b> and type <b>help</b>. Recruiters: try <b>sudo hire aayush</b>.',
+    'Bored? <b>Tetris</b> is on the desktop. Your best score is saved.',
+    'Want the one-page version? Double-click <b>Resume.pdf</b> to view or download it.',
+    'Leave the computer alone for a minute and the screensaver kicks in.',
+    'Something you shouldn\'t open is sitting in the <b>Recycle Bin</b>.',
+    'Prefer a modern site? <b>My Website</b> opens aayushagrawal.codes.'
+  ];
+  function Welcome(win) {
+    var i = 0, tip = win.querySelector('#wl-tip');
+    function show() { tip.innerHTML = TIPS[i]; }
+    win.querySelector('#wl-next').addEventListener('click', function () { i = (i + 1) % TIPS.length; show(); });
+    win.querySelector('#wl-new').addEventListener('click', function () { openApp('showcase', 'about'); });
+    win.querySelector('#wl-close').addEventListener('click', function () { closeApp('welcome'); });
+    var cb = win.querySelector('#wl-show');
+    cb.addEventListener('change', function () { try { localStorage.setItem('aayushos-welcome-off', cb.checked ? '' : '1'); } catch (e) {} });
+    show();
+  }
+
+  // ---------- Recycle Bin ----------
+  var TRASH = [
+    { name: 'first_website_2019.html', size: '4 KB', type: 'HTML Document', note: 'A marquee, three fonts and an autoplaying MIDI. It stays deleted.' },
+    { name: 'bug_i_never_fixed.py', size: '2 KB', type: 'Python File', note: 'Works on my machine. Moved here for everyone\'s safety.' },
+    { name: 'final_FINAL_v7_actually_final.docx', size: '86 KB', type: 'Word Document', note: 'There was a v8.' },
+    { name: 'attendance_74.9%.png', size: '1.2 MB', type: 'PNG Image', note: 'This is why the Attendance Calculator shortcut exists.' },
+    { name: 'tabs_vs_spaces.txt', size: '1 KB', type: 'Text Document', note: 'Spaces. Discussion closed.' },
+    { name: 'node_modules', size: '2.3 GB', type: 'File Folder', note: 'Deleted to free up space. Came back on its own.' }
+  ];
+  function Recycle(win) {
+    var tbody = win.querySelector('#rb-list'), sel = -1;
+    function render() {
+      tbody.innerHTML = TRASH.map(function (f, i) {
+        return '<tr data-i="' + i + '"' + (i === sel ? ' class="highlighted"' : '') + '><td>' + (f.type === 'File Folder' ? '📁' : '📄') + ' ' + esc(f.name) + '</td><td>' + esc(f.type) + '</td><td>' + esc(f.size) + '</td></tr>';
+      }).join('');
+      win.querySelector('#rb-count').textContent = TRASH.length + ' object(s)';
+    }
+    tbody.addEventListener('click', function (e) { var tr = e.target.closest('tr'); if (tr) { sel = +tr.dataset.i; render(); } });
+    tbody.addEventListener('dblclick', function (e) { var tr = e.target.closest('tr'); if (tr) msgBox(TRASH[+tr.dataset.i].name, esc(TRASH[+tr.dataset.i].note)); });
+    win.querySelector('#rb-restore').addEventListener('click', function () {
+      if (sel < 0) return msgBox('Recycle Bin', 'Select a file to restore first.');
+      msgBox('Restore', 'Restoring <b>' + esc(TRASH[sel].name) + '</b>?<br><br>Nope. Some things are better left in the bin.', 'warn');
+    });
+    win.querySelector('#rb-empty').addEventListener('click', function () {
+      msgBox('Confirm File Delete', 'Are you sure you want to delete these ' + TRASH.length + ' items?<br><br>Actually, they\'re load-bearing mistakes. They have to stay.', 'warn');
+    });
+    render();
+  }
+
+  // ---------- Screensaver ----------
+  (function () {
+    var IDLE_MS = 60000, idleT = null, on = false, raf = 0;
+    var saver = el('<div class="saver" hidden><canvas></canvas><div class="saver-logo"><span class="saver-mark">A</span><span>AayushOS <b>98</b></span></div></div>');
+    document.body.appendChild(saver);
+    var cv = saver.querySelector('canvas'), cx = cv.getContext('2d'), logo = saver.querySelector('.saver-logo');
+    var stars = [], lx = 80, ly = 80, vx = 1.6, vy = 1.2;
+    function size() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
+    function seed() { stars = []; for (var i = 0; i < 260; i++) stars.push({ x: (Math.random() - .5) * cv.width, y: (Math.random() - .5) * cv.height, z: Math.random() * cv.width }); }
+    function frame() {
+      var w = cv.width, h = cv.height;
+      cx.fillStyle = '#000'; cx.fillRect(0, 0, w, h);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i]; s.z -= 6;
+        if (s.z <= 1) { s.x = (Math.random() - .5) * w; s.y = (Math.random() - .5) * h; s.z = w; }
+        var k = 160 / s.z, px = s.x * k + w / 2, py = s.y * k + h / 2;
+        if (px < 0 || px > w || py < 0 || py > h) { s.z = w; continue; }
+        var r = Math.max(.6, 2.6 * (1 - s.z / w)); cx.fillStyle = '#fff'; cx.fillRect(px, py, r, r);
+      }
+      var lw = logo.offsetWidth, lh = logo.offsetHeight;
+      lx += vx; ly += vy;
+      if (lx <= 0 || lx + lw >= w) { vx = -vx; lx = Math.max(0, Math.min(lx, w - lw)); }
+      if (ly <= 0 || ly + lh >= h) { vy = -vy; ly = Math.max(0, Math.min(ly, h - lh)); }
+      logo.style.transform = 'translate(' + lx + 'px,' + ly + 'px)';
+      raf = requestAnimationFrame(frame);
+    }
+    function start() {
+      if (on || !document.getElementById('boot').classList.contains('done')) return;
+      on = true; saver.hidden = false; size(); seed(); raf = requestAnimationFrame(frame);
+    }
+    function stop() { if (!on) return; on = false; saver.hidden = true; cancelAnimationFrame(raf); }
+    function poke() { stop(); clearTimeout(idleT); idleT = setTimeout(start, IDLE_MS); }
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel'].forEach(function (ev) { addEventListener(ev, poke, { passive: true }); });
+    addEventListener('resize', function () { if (on) size(); });
+    window.__aayushosSaver = { start: start, stop: stop };
+    poke();
+  })();
 
   // ---------- Terminal ----------
   function Terminal(root, win) {
@@ -811,5 +961,7 @@
   setTimeout(function () {
     document.getElementById('boot').classList.add('done');
     openApp('showcase');
+    var off = false; try { off = localStorage.getItem('aayushos-welcome-off') === '1'; } catch (e) {}
+    if (!off && !SMALL) setTimeout(function () { openApp('welcome'); }, 700);
   }, 1800);
 })();
