@@ -239,7 +239,7 @@
     },
 
     site: {
-      title: 'aayushagrawal.codes', icon: 'globe', external: ME.site
+      title: 'My Website', icon: 'globe', external: ME.site
     }
   };
 
