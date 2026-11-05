@@ -253,3 +253,23 @@ a.button-link, .btn-row a.button-link { min-height: 30px; font-size: 16px; paddi
 .icon svg { width: 56px; height: 56px; }
 .icon, button.icon, button.icon:active, button.icon:focus { width: 132px; }
 .icon span { white-space: nowrap; }
+
+/* Tetris */
+.tetris { display: flex; gap: 12px; padding: 8px; background: var(--face); }
+.tetris-board { position: relative; padding: 0; line-height: 0; }
+.tetris-board canvas { display: block; outline: none; }
+.tt-overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  background: rgba(0,0,0,.6); color: #fff; line-height: 1.4; text-align: center; cursor: pointer;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+}
+.tt-overlay[hidden] { display: none; }
+.tt-overlay b { font-size: 34px; letter-spacing: 4px; color: var(--accent); }
+.tt-overlay span { font-size: 17px; }
+.tetris-side { width: 150px; display: flex; flex-direction: column; gap: 6px; }
+.tetris-side fieldset { margin: 0; padding: 4px 8px 6px; }
+.tetris-side legend { font-size: 14px; }
+.tetris-side canvas { display: block; margin: 0 auto; }
+.tt-num { font: bold 24px/1.2 "Courier New", monospace; text-align: right; color: #000; }
+.tetris-side button { width: 100%; margin-top: 4px; }
+.tt-help { margin: 6px 0 0; font: 14px/1.5 Tahoma, Verdana, Arial, sans-serif; color: #222; }
