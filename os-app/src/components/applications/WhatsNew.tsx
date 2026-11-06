@@ -8,6 +8,8 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '6 November 2026',
         items: [
+            'My resume as a web page at aayushagrawal.in/cv: easy to read on a phone and prints on one page.',
+            'After 7 pm in Bangalore the desktop switches to a night wallpaper to match the dark room.',
             'Short links with their own preview cards: aayushagrawal.in/projects, /resume, /about, /experience, /contact.',
             'Click the taskbar clock to see the time in Bangalore and what I am probably up to.',
             'This What’s New window.',

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import Window from '../os/Window';
-import { WALLPAPERS, getWallpaper, saveWallpaper } from '../../utils/wallpaper';
+import { WALLPAPERS, defaultWallpaper, saveWallpaper, savedWallpaperId } from '../../utils/wallpaper';
 
 export interface DisplayPropertiesProps extends WindowAppProps {}
 
 // Win98 "Display Properties" with a wallpaper picker and a little monitor preview
 const DisplayProperties: React.FC<DisplayPropertiesProps> = (props) => {
-    const [sel, setSel] = useState(getWallpaper().id);
-    const current = WALLPAPERS.find((w) => w.id === sel) || WALLPAPERS[0];
+    const [sel, setSel] = useState(savedWallpaperId());
+    const shownId = sel === 'auto' ? defaultWallpaper() : sel;
+    const current = WALLPAPERS.find((w) => w.id === shownId) || WALLPAPERS[0];
+    const options = [{ id: 'auto', name: 'Automatic (night after 7 pm IST)' }, ...WALLPAPERS];
     const left = Math.max(10, Math.round((window.innerWidth - 440) / 2));
 
     return (
@@ -32,7 +34,7 @@ const DisplayProperties: React.FC<DisplayPropertiesProps> = (props) => {
                 </div>
                 <p style={styles.label}>Wallpaper</p>
                 <div style={styles.list}>
-                    {WALLPAPERS.map((w) => (
+                    {options.map((w) => (
                         <p
                             key={w.id}
                             style={{ ...styles.item, ...(w.id === sel ? styles.itemSel : {}) }}
