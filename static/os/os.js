@@ -155,10 +155,13 @@
     }
     if (hitCount !== null) return paint(hitCount);
     var path = encodeURIComponent((location.host || 'aayushagrawal.in') + '/');
+    // GoatCounter answers 404 (with a JSON body of count 0) until the page has
+    // recorded visits, and its numbers lag a little, so read the body either way
+    // and include the current visitor (+1).
     fetch('https://clienterr.goatcounter.com/counter/' + path + '.json')
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
-      .then(function (j) { hitCount = j.count; paint(hitCount); })
-      .catch(function () {});
+      .then(function (r) { return r.json(); })
+      .then(function (j) { hitCount = (parseInt(String(j.count).replace(/\D/g, ''), 10) || 0) + 1; paint(hitCount); })
+      .catch(function () { hitCount = 1; paint(hitCount); });
   }
 
   function Showcase(win) {
