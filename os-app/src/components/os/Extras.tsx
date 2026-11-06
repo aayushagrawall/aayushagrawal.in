@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { achieve } from '../achievements/list';
 
 /**
  * Desktop extras carried over from AayushOS Lite:
@@ -48,6 +49,7 @@ const Extras: React.FC<ExtrasProps> = ({ onKonami }) => {
     // starfield + bouncing logo
     useEffect(() => {
         if (!saver) return;
+        achieve('afk');
         const cv = canvasRef.current!;
         const logo = logoRef.current!;
         const cx = cv.getContext('2d')!;
@@ -104,6 +106,7 @@ const Extras: React.FC<ExtrasProps> = ({ onKonami }) => {
             if (i === KONAMI.length) {
                 i = 0;
                 setConfetti((n) => n + 1);
+                achieve('konami');
                 setTimeout(() => konamiCb.current(), 400);
             }
         };

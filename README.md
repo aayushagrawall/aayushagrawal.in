@@ -9,7 +9,8 @@ Live at **[aayushagrawal.in](https://aayushagrawal.in)** · Minimal version at *
 ## How it works
 
 - **3D scene** (`src/`): Three.js scene of a desk and CRT computer. The monitor shows the OS through an iframe placed in 3D with `CSS3DRenderer`.
-- **AayushOS** (`os-app/`, served at `/os/`): a React desktop adapted from Henry Heffernan's [portfolio-inner-site](https://github.com/henryjeff/portfolio-inner-site), **used with his permission**. Outline window dragging and resizing, a Start menu, the Showcase site (Home, About, Experience, Projects, Contact), Resume, Codele (a Wordle spin-off), Credits and the shutdown sequence.
+- **AayushOS** (`os-app/`, served at `/os/`): a React desktop adapted from Henry Heffernan's [portfolio-inner-site](https://github.com/henryjeff/portfolio-inner-site), **used with his permission**. Outline window dragging and resizing, a Start menu, the Showcase site (Home, About, Experience, Projects, Contact), Resume, Codele (a Wordle spin-off), Credits and the shutdown sequence. Extras: 15 achievements, Chai the desk assistant, a screensaver, the Konami code and a boot screen with the startup chime.
+- **Shareable links**: `/os/#projects`, `#about`, `#experience`, `#contact`, `#resume`, `#terminal`, `#tetris`, `#paint`, `#codele`, `#achievements` open AayushOS straight to that window or page.
 - **AayushOS Lite** (`static/os-lite/`, served at `/os-lite/`): my original plain HTML/CSS/JS desktop built on [98.css](https://github.com/jdan/98.css). It is the phone-friendly version, and its Terminal (try `help` or `sudo hire aayush`), Tetris, Paint and Recycle Bin also run inside AayushOS windows through `/os-lite/?app=terminal` and friends.
 - **Deploy**: `npm run build` writes the whole site to `public/`, which is published to GitHub Pages (`gh-pages` branch, or `.github/workflows/deploy.yml`).
 
