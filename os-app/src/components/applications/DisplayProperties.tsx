@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import Window from '../os/Window';
 import { WALLPAPERS, defaultWallpaper, saveWallpaper, savedWallpaperId } from '../../utils/wallpaper';
+import { crtOn, setCrt } from '../../utils/crt';
+import { IN_MONITOR } from '../../utils/night';
 
 export interface DisplayPropertiesProps extends WindowAppProps {}
 
 // Win98 "Display Properties" with a wallpaper picker and a little monitor preview
 const DisplayProperties: React.FC<DisplayPropertiesProps> = (props) => {
     const [sel, setSel] = useState(savedWallpaperId());
+    const [crt, setCrtState] = useState(crtOn());
+    const apply = () => {
+        saveWallpaper(sel);
+        if (crt !== crtOn()) setCrt(crt);
+    };
     const shownId = sel === 'auto' ? defaultWallpaper() : sel;
     const current = WALLPAPERS.find((w) => w.id === shownId) || WALLPAPERS[0];
     const options = [{ id: 'auto', name: 'Automatic (night after 7 pm IST)' }, ...WALLPAPERS];
@@ -48,12 +55,19 @@ const DisplayProperties: React.FC<DisplayPropertiesProps> = (props) => {
                         </p>
                     ))}
                 </div>
+                {!IN_MONITOR && (
+                    // inside the 3D monitor the room draws the CRT look itself
+                    <label style={styles.check} onMouseDown={() => setCrtState(!crt)}>
+                        <span style={styles.box}>{crt ? '✓' : ''}</span>
+                        Vintage CRT effect (static, scanlines and glass)
+                    </label>
+                )}
                 <div style={styles.btns}>
                     <button
                         className="site-button"
                         style={styles.btn}
                         onMouseDown={() => {
-                            saveWallpaper(sel);
+                            apply();
                             props.onClose();
                         }}
                     >
@@ -62,7 +76,7 @@ const DisplayProperties: React.FC<DisplayPropertiesProps> = (props) => {
                     <button className="site-button" style={styles.btn} onMouseDown={props.onClose}>
                         Cancel
                     </button>
-                    <button className="site-button" style={styles.btn} onMouseDown={() => saveWallpaper(sel)}>
+                    <button className="site-button" style={styles.btn} onMouseDown={apply}>
                         Apply
                     </button>
                 </div>
@@ -81,6 +95,8 @@ const styles: StyleSheetCSS = {
     list: { flexDirection: 'column', alignSelf: 'stretch', background: '#fff', boxShadow: 'var(--border-field)', padding: 3, flex: 1, overflowY: 'auto' },
     item: { margin: 0, padding: '3px 6px', fontFamily: 'MSSerif', fontSize: 14, cursor: 'pointer' },
     itemSel: { background: '#0000a3', color: '#fff' },
+    check: { display: 'flex', alignSelf: 'flex-start', alignItems: 'center', gap: 8, marginTop: 12, fontFamily: 'MSSerif', fontSize: 14, cursor: 'pointer', userSelect: 'none' },
+    box: { display: 'inline-flex', flexShrink: 0, width: 13, height: 13, background: '#fff', boxShadow: 'var(--border-field)', fontSize: 12, lineHeight: '13px', justifyContent: 'center', fontFamily: 'sans-serif' },
     btns: { gap: 8, alignSelf: 'flex-end', marginTop: 12 },
     btn: { minWidth: 76, padding: '5px 10px', fontFamily: 'MSSerif', fontSize: 14 },
 };

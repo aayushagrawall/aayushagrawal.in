@@ -8,6 +8,7 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '6 November 2026',
         items: [
+            'Opened on its own, AayushOS now has the same vintage CRT look and mouse and keyboard clicks as the 3D monitor. Turn the effect off in Display Properties (right-click the desktop).',
             'Click the can on the desk in 3D for a fresh can of White, and a new achievement: Refuel.',
             'The taskbar clock shows live Bangalore weather, and when it rains there you can hear it in the 3D room.',
             'From 5 to 7 pm in Bangalore the 3D room glows with sunset light.',
