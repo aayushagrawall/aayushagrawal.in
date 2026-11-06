@@ -9,26 +9,32 @@ Live at **[aayushagrawal.in](https://aayushagrawal.in)** · Minimal version at *
 ## How it works
 
 - **3D scene** (`src/`): Three.js scene of a desk and CRT computer. The monitor shows the OS through an iframe placed in 3D with `CSS3DRenderer`.
-- **AayushOS** (`static/os/`): plain HTML, CSS and JavaScript (no build step), styled with [98.css](https://github.com/jdan/98.css). Windows can be dragged, resized, minimised and maximised. The main "Showcase" window is a 90s-style website (Home, About, Experience, Projects, Contact) set in Fraunces and Tinos. Also includes a Terminal (try `help` or `sudo hire aayush`), Paint, Tetris with touch controls, Resume, a Recycle Bin, a Welcome tips dialog, a starfield screensaver after a minute idle, This Computer and Credits. Works on phones too.
-- **Deploy**: pushing to `main` runs `.github/workflows/deploy.yml`, which builds with webpack and publishes `public/` to GitHub Pages.
+- **AayushOS** (`os-app/`, served at `/os/`): a React desktop adapted from Henry Heffernan's [portfolio-inner-site](https://github.com/henryjeff/portfolio-inner-site), **used with his permission**. Outline window dragging and resizing, a Start menu, the Showcase site (Home, About, Experience, Projects, Contact), Resume, Codele (a Wordle spin-off), Credits and the shutdown sequence.
+- **AayushOS Lite** (`static/os-lite/`, served at `/os-lite/`): my original plain HTML/CSS/JS desktop built on [98.css](https://github.com/jdan/98.css). It is the phone-friendly version, and its Terminal (try `help` or `sudo hire aayush`), Tetris, Paint and Recycle Bin also run inside AayushOS windows through `/os-lite/?app=terminal` and friends.
+- **Deploy**: `npm run build` writes the whole site to `public/`, which is published to GitHub Pages (`gh-pages` branch, or `.github/workflows/deploy.yml`).
 
 ## Run locally
 
 ```bash
 npm ci
-npm run dev      # dev server
-npm run build    # production build into public/
+npm run os:install   # once, installs the React OS
+npm run dev          # 3D scene dev server
+npm run build        # scene + OS, production build into public/
 ```
 
-To work on the OS alone, open `static/os/index.html` in a browser.
+To work on the OS alone, run `npm start` inside `os-app/`. The lite OS needs no build: open `static/os-lite/index.html`.
 
 ## Editing content
 
-All OS content (bio, projects, experience, links) lives at the top of `static/os/os.js`. The resume PDF is `static/os/files/Aayush-Agrawal-Resume.pdf`.
+- AayushOS: showcase pages are in `os-app/src/components/showcase/`, desktop apps in `os-app/src/components/os/Desktop.tsx`.
+- AayushOS Lite: all content lives at the top of `static/os-lite/os.js`.
+- Resume PDF: `os-app/public/files/` and `static/os-lite/files/`.
 
 ## Credits
 
-- 3D scene code is based on Henry Heffernan's open-source portfolio, [henryjeff/portfolio-website](https://github.com/henryjeff/portfolio-website) (MIT licence, see `LICENSE.md`). Computer model by Mickael Boitte, environment models by Sean Nicolas, as credited in that project.
-- [98.css](https://github.com/jdan/98.css) by Jordan Scales (MIT licence, see `static/os/vendor/98css/LICENSE`).
-- Fonts: Fraunces (SIL OFL) and Tinos (Apache 2.0), licences in `static/os/fonts/`.
-- AayushOS, its content and the startup chime are by Aayush Agrawal.
+- **Henry Heffernan** ([henryheffernan.com](https://henryheffernan.com)):
+  - The 3D scene is based on [henryjeff/portfolio-website](https://github.com/henryjeff/portfolio-website) (MIT licence, see `LICENSE.md`). Computer model by Mickael Boitte, environment models by Sean Nicolas, as credited in that project.
+  - AayushOS is adapted from [henryjeff/portfolio-inner-site](https://github.com/henryjeff/portfolio-inner-site), used with Henry's permission. See `NOTICE.md`. Thank you, Henry!
+- [98.css](https://github.com/jdan/98.css) by Jordan Scales (MIT licence, see `static/os-lite/vendor/98css/LICENSE`).
+- Fonts: Fraunces (SIL OFL), Tinos (Apache 2.0) and VT323 (SIL OFL), licences in `os-app/src/assets/fonts/` and `static/os-lite/fonts/`.
+- Content, icons, AayushOS Lite and the startup chime are by Aayush Agrawal.

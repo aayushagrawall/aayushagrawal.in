@@ -3,20 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AayushOS - Aayush Agrawal's Projects, Resume &amp; Contact</title>
+  <title>AayushOS Lite - Aayush Agrawal's Projects, Resume &amp; Contact</title>
   <meta name="description" content="AayushOS: the desktop inside Aayush Agrawal's 3D portfolio. Projects, resume, experience and contact." />
   <link rel="icon" href="../images/favicon.ico" sizes="any" />
   <link rel="icon" href="../images/favicon.svg" type="image/svg+xml" />
-  <link rel="canonical" href="https://aayushagrawal.in/os/" />
+  <link rel="canonical" href="https://aayushagrawal.in/os-lite/" />
   <meta name="robots" content="index, follow" />
   <link rel="stylesheet" href="vendor/98css/98.css" />
-  <link rel="stylesheet" href="os.css?v=40" />
+  <link rel="stylesheet" href="os.css?v=43" />
   <script>
     // Forward input to the 3D scene around the monitor (camera + keyboard/mouse sounds).
     (function () {
       if (window.parent === window) return;
-      var send = function (msg) { window.parent.postMessage(msg, '*'); };
-      addEventListener('mousemove', function (e) { send({ type: 'mousemove', clientX: e.clientX, clientY: e.clientY }); });
+      var single = /[?&]app=/.test(location.search);
+      if (single) document.documentElement.classList.add('single');
+      // nested inside the React desktop: talk straight to the 3D scene at the top
+      var target = single ? window.top : window.parent;
+      var send = function (msg) { if (target !== window) target.postMessage(msg, '*'); };
+      if (!single) addEventListener('mousemove', function (e) { send({ type: 'mousemove', clientX: e.clientX, clientY: e.clientY }); });
       addEventListener('mousedown', function () { send({ type: 'mousedown' }); });
       addEventListener('mouseup', function () { send({ type: 'mouseup' }); });
       addEventListener('keydown', function (e) { send({ type: 'keydown', key: e.key }); });
@@ -25,7 +29,7 @@
   </script>
   <!-- GoatCounter: only count /os/ when opened directly, not inside the 3D monitor -->
   <script>
-    if (window.parent === window) {
+    if (window.parent === window && !/[?&]app=/.test(location.search)) {
       window.goatcounter = { path: function (p) { return location.host + p } };
       var gc = document.createElement('script');
       gc.async = true; gc.src = 'https://gc.zgo.at/count.js';
@@ -76,6 +80,6 @@
     </div>
   </footer>
 
-  <script src="os.js?v=41"></script>
+  <script src="os.js?v=42"></script>
 </body>
 </html>
