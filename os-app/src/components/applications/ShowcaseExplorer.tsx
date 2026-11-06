@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from '../showcase/Home';
 import About from '../showcase/About';
@@ -18,12 +18,32 @@ export interface ShowcaseExplorerProps extends WindowAppProps {
 // Lets the desktop, Start menu and the Terminal open a specific page.
 const RouteBridge: React.FC<{ initialRoute?: string }> = ({ initialRoute }) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const first = React.useRef(true);
+
+    // report pages for achievements, and keep the address bar shareable (/os/#projects)
     useEffect(() => {
-        if (initialRoute) navigate(initialRoute);
-        const onRoute = (e: Event) => navigate((e as CustomEvent).detail);
+        window.postMessage({ type: 'aos-page', path: location.pathname }, '*');
+        if (first.current) {
+            first.current = false;
+            return;
+        }
+        if (window.parent !== window) return;
+        const hash = location.pathname === '/' ? '' : '#' + location.pathname.slice(1);
+        window.history.replaceState(null, '', window.location.pathname + window.location.search + hash);
+    }, [location.pathname]);
+
+    // navigate's identity changes with every page, so keep the latest in a ref
+    // and only apply the initial route once
+    const nav = React.useRef(navigate);
+    nav.current = navigate;
+    useEffect(() => {
+        if (initialRoute) nav.current(initialRoute);
+        const onRoute = (e: Event) => nav.current((e as CustomEvent).detail);
         window.addEventListener('aos-route', onRoute);
         return () => window.removeEventListener('aos-route', onRoute);
-    }, [initialRoute, navigate]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     return null;
 };
 

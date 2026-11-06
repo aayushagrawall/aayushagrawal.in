@@ -161,6 +161,22 @@ const Toolbar: React.FC<ToolbarProps> = ({
                             <div
                                 className="start-menu-option"
                                 style={styles.startMenuItem}
+                                onMouseDown={(e) => launch(e, 'achievements')}
+                            >
+                                <Icon style={styles.startMenuItemIcon} icon="trophyIcon" />
+                                <p style={styles.startMenuText}>Achie<u>v</u>ements</p>
+                            </div>
+                            <div
+                                className="start-menu-option"
+                                style={styles.startMenuItem}
+                                onMouseDown={(e) => launch(e, 'chai')}
+                            >
+                                <Icon style={styles.startMenuItemIcon} icon="chaiIcon" />
+                                <p style={styles.startMenuText}>Ask C<u>h</u>ai</p>
+                            </div>
+                            <div
+                                className="start-menu-option"
+                                style={styles.startMenuItem}
                                 onMouseDown={(e) => launch(e, 'mycomputer')}
                             >
                                 <Icon style={styles.startMenuItemIcon} icon="myComputer" />

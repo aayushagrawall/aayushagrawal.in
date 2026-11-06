@@ -63,6 +63,8 @@
   })();
   if (SINGLE) SMALL = false;
   function toParent(msg) { try { window.parent.postMessage(msg, '*'); } catch (e) {} }
+  // achievements live in the main AayushOS; the lite desktop just reports them
+  function achieve(id) { if (SINGLE) toParent({ type: 'aos-achieve', id: id }); }
 
   // ---------- Helpers ----------
   function el(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
@@ -634,7 +636,7 @@
       win.querySelector('#rb-count').textContent = TRASH.length + ' object(s)';
     }
     tbody.addEventListener('click', function (e) { var tr = e.target.closest('tr'); if (tr) { sel = +tr.dataset.i; render(); } });
-    tbody.addEventListener('dblclick', function (e) { var tr = e.target.closest('tr'); if (tr) msgBox(TRASH[+tr.dataset.i].name, esc(TRASH[+tr.dataset.i].note)); });
+    tbody.addEventListener('dblclick', function (e) { var tr = e.target.closest('tr'); if (tr) achieve('dumpster'); if (tr) msgBox(TRASH[+tr.dataset.i].name, esc(TRASH[+tr.dataset.i].note)); });
     win.querySelector('#rb-restore').addEventListener('click', function () {
       if (sel < 0) return msgBox('Recycle Bin', 'Select a file to restore first.');
       msgBox('Restore', 'Restoring <b>' + esc(TRASH[sel].name) + '</b>?<br><br>Nope. Some things are better left in the bin.', 'warn');
@@ -796,7 +798,7 @@
     root.querySelector('#pt-undo').addEventListener('click', function () { if (undo.length) cx.putImageData(undo.pop(), 0, 0); });
     root.querySelector('#pt-clear').addEventListener('click', function () { snapshot(); clear(); });
     root.querySelector('#pt-save').addEventListener('click', function () {
-      var a = document.createElement('a'); a.download = 'aayushos-paint.png'; a.href = cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
+      var a = document.createElement('a'); achieve('artist'); a.download = 'aayushos-paint.png'; a.href = cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
     });
     document.addEventListener('keydown', function onKey(e) {
       if (!document.body.contains(cv)) { document.removeEventListener('keydown', onKey); return; }
@@ -967,6 +969,7 @@
       hire: function () { return CMDS.sudo(['hire', 'aayush']); },
       sudo: function (args) {
         if (args.join(' ').toLowerCase() === 'hire aayush') {
+          achieve('recruiter');
           setTimeout(function () { openApp('showcase', 'contact'); }, 900);
           return ['[sudo] password for recruiter: ********',
             '<span class="ok">Permission granted. Excellent choice.</span>',
@@ -1088,6 +1091,8 @@
       if (cleared) {
         score += [0, 100, 300, 500, 800][cleared] * level;
         lines += cleared;
+        if (cleared === 4) achieve('tetris4');
+        if (score >= 1000) achieve('tetris');
         level = Math.floor(lines / 10) + 1;
       }
       updateHud();

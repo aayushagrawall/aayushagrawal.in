@@ -395,3 +395,32 @@ input:active {
 body.aos-moving iframe {
     pointer-events: none;
 }
+
+@keyframes aos-toast-in {
+    from { transform: translateY(-120%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes aos-chai-in {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+@keyframes aos-steam {
+    0%, 100% { transform: translateY(0); opacity: 0.9; }
+    50% { transform: translateY(-1px); opacity: 0.4; }
+}
+.chai-steam { animation: aos-steam 1.6s steps(4) infinite; }
+.chai-q:hover { color: #ff6a1a !important; }
+
+@keyframes boot-fill {
+    from { width: 0; }
+    to { width: 100%; }
+}
+.boot-fill {
+    background: repeating-linear-gradient(90deg, #0000a3 0 14px, transparent 14px 18px);
+    animation: boot-fill 1.7s steps(17) forwards;
+}
+@keyframes boot-blink {
+    50% { opacity: 0; }
+}
+.boot-blink { animation: boot-blink 1.2s steps(1) infinite; }

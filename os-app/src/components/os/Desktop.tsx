@@ -13,6 +13,11 @@ import LegacyApp from '../applications/LegacyApp';
 import ResumeApp from '../applications/ResumeApp';
 import { IconName } from '../../assets/icons';
 import Credits from '../applications/Credits';
+import AchievementsApp from '../achievements/AchievementsApp';
+import AchievementCenter from '../achievements/AchievementCenter';
+import { achieve } from '../achievements/list';
+import Assistant from './Assistant';
+import BootScreen from './BootScreen';
 
 export interface DesktopProps {}
 
@@ -27,6 +32,7 @@ type AppDef = {
     href?: string; // opens in a new tab instead of a window
     alias?: { app: string; route: string }; // opens another app at a page
     hidden?: boolean; // not shown on the desktop
+    message?: string; // posts this message type instead of opening a window
 };
 
 const legacy = (
@@ -55,8 +61,37 @@ const APPLICATIONS: { [key in string]: AppDef } = {
     site: { key: 'site', name: 'My Website', shortcutIcon: 'globeIcon', href: 'https://aayushagrawal.codes' },
     recycle: { key: 'recycle', name: 'Recycle Bin', shortcutIcon: 'recycleIcon', ...legacy('recycle', 'Recycle Bin', 'recycleSmall', 760, 470, 160, 320, 'Double-click a file to peek inside') },
     credits: { key: 'credits', name: 'Credits', shortcutIcon: 'credits', component: Credits },
+    achievements: { key: 'achievements', name: 'Achievements', shortcutIcon: 'trophyIcon', component: AchievementsApp },
+    chai: { key: 'chai', name: 'Ask Chai', shortcutIcon: 'chaiIcon', message: 'aos-assistant' },
     welcome: { key: 'welcome', name: 'Welcome', shortcutIcon: 'computerSmall', component: Welcome, hidden: true },
     cheat: { key: 'cheat', name: 'Cheat Code', shortcutIcon: 'windowGameIcon', component: CheatCode, hidden: true },
+};
+
+// Shareable links: /os/#projects opens the Showcase on Projects, /os/#tetris opens Tetris...
+const DEEP_LINKS: { [hash: string]: { app: string; route?: string } } = {
+    home: { app: 'showcase', route: '/' },
+    about: { app: 'showcase', route: '/about' },
+    experience: { app: 'showcase', route: '/experience' },
+    projects: { app: 'showcase', route: '/projects' },
+    'projects/software': { app: 'showcase', route: '/projects/software' },
+    'projects/tools': { app: 'showcase', route: '/projects/tools' },
+    contact: { app: 'showcase', route: '/contact' },
+    resume: { app: 'resume' },
+    terminal: { app: 'terminal' },
+    tetris: { app: 'tetris' },
+    paint: { app: 'paint' },
+    codele: { app: 'wordle' },
+    achievements: { app: 'achievements' },
+    computer: { app: 'mycomputer' },
+    recycle: { app: 'recycle' },
+    credits: { app: 'credits' },
+};
+
+const openDeepLink = (open: (key: string, route?: string) => void) => {
+    const hash = decodeURIComponent(window.location.hash.replace(/^#\/?/, '')).toLowerCase();
+    const link = DEEP_LINKS[hash];
+    if (link) open(link.app, link.route);
+    return !!link;
 };
 
 const highestZ = (wins: DesktopWindows) =>
@@ -68,6 +103,20 @@ const Desktop: React.FC<DesktopProps> = (props) => {
     const [shortcuts, setShortcuts] = useState<DesktopShortcutProps[]>([]);
 
     const [shutdown, setShutdown] = useState(false);
+    const [booted, setBooted] = useState(() => {
+        if (window.parent !== window) return true; // the 3D scene has its own boot screen
+        try {
+            return sessionStorage.getItem('aayushos-booted') === '1';
+        } catch (e) {
+            return false;
+        }
+    });
+    const finishBoot = () => {
+        setBooted(true);
+        try {
+            sessionStorage.setItem('aayushos-booted', '1');
+        } catch (e) {}
+    };
     const [numShutdowns, setNumShutdowns] = useState(1);
 
     useEffect(() => {
@@ -88,6 +137,12 @@ const Desktop: React.FC<DesktopProps> = (props) => {
             window.open(app.href, '_blank', 'noopener');
             return;
         }
+        if (app.message) {
+            window.postMessage({ type: app.message }, '*');
+            return;
+        }
+        window.postMessage({ type: 'aos-opened', app: key }, '*');
+        if (key === 'resume') achieve('resume');
         if (app.alias) {
             openApp(app.alias.app, app.alias.route);
             return;
@@ -128,13 +183,16 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         });
         openApp('showcase');
         setShortcuts(newShortcuts);
+        const deepLinked = openDeepLink(openApp);
+        const onHash = () => openDeepLink(openApp);
+        window.addEventListener('hashchange', onHash);
 
         // tips dialog on first visit, but not inside the 3D monitor (keeps the hero clean there)
         let welcomeOff = false;
         try {
             welcomeOff = localStorage.getItem(WELCOME_OFF_KEY) === '1';
         } catch (e) {}
-        const welcomeTimer = window.parent === window && !welcomeOff ? setTimeout(() => openApp('welcome'), 700) : undefined;
+        const welcomeTimer = window.parent === window && !welcomeOff && !deepLinked ? setTimeout(() => openApp('welcome'), 700) : undefined;
 
         // messages from Aayush's apps running in iframes (Terminal, Paint...)
         const onMessage = (e: MessageEvent) => {
@@ -147,6 +205,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         window.addEventListener('message', onMessage);
         return () => {
             window.removeEventListener('message', onMessage);
+            window.removeEventListener('hashchange', onHash);
             if (welcomeTimer) clearTimeout(welcomeTimer);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -203,6 +262,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
     );
 
     const startShutdown = useCallback(() => {
+        if (numShutdowns >= 5) achieve('shutdown');
         setTimeout(() => {
             setShutdown(true);
             setNumShutdowns(numShutdowns + 1);
@@ -227,7 +287,17 @@ const Desktop: React.FC<DesktopProps> = (props) => {
 
     const perColumn = Math.max(1, Math.floor((window.innerHeight - 70) / 96));
 
+    const overlays = (
+        <>
+            <Extras onKonami={() => openApp('cheat')} />
+            <AchievementCenter />
+            {!shutdown && <Assistant />}
+            {!booted && <BootScreen onDone={finishBoot} />}
+        </>
+    );
+
     return !shutdown ? (
+        <>
         <div style={styles.desktop}>
             {/* For each window in windows, loop over and render  */}
             {Object.keys(windows).map((key) => {
@@ -269,18 +339,19 @@ const Desktop: React.FC<DesktopProps> = (props) => {
                     );
                 })}
             </div>
-            <Extras onKonami={() => openApp('cheat')} />
             <Toolbar
                 windows={windows}
                 toggleMinimize={toggleMinimize}
                 shutdown={startShutdown}
             />
         </div>
+            {overlays}
+        </>
     ) : (
-        <ShutdownSequence
-            setShutdown={setShutdown}
-            numShutdowns={numShutdowns}
-        />
+        <>
+            <ShutdownSequence setShutdown={setShutdown} numShutdowns={numShutdowns} />
+            {overlays}
+        </>
     );
 };
 

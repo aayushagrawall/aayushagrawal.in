@@ -266,6 +266,7 @@ const Wordle: React.FC<WordleProps> = () => {
             if (guess === word) {
                 setGameOver(true);
                 setWon(true);
+                window.postMessage({ type: 'aos-achieve', id: 'codele' }, '*');
             }
         });
     }, [guesses]);
