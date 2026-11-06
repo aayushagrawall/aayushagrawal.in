@@ -563,3 +563,17 @@ html { font-synthesis: none; }
 .dm-pt { background: none; margin-bottom: 10px; }
 .dm-props fieldset p { margin: 4px 0; }
 .dm-ok { display: flex; justify-content: flex-end; margin-top: 10px; }
+
+/* ---------- Touch feedback on phones: respond on press, not on release ---------- */
+@media (pointer: coarse) {
+  html { -webkit-tap-highlight-color: transparent; }
+  button, .start-list li, .icon, a { touch-action: manipulation; }
+  button.icon:active svg { transform: scale(.92); filter: brightness(.85); }
+  button.icon svg, .start-list li { transition: transform .08s ease-out, background-color .08s ease-out; }
+  .start-list li:active { background: var(--navy); color: #fff; }
+  .task-buttons button:active { transform: translateY(1px); }
+  .title-bar { cursor: grab; }
+}
+@media (pointer: coarse) and (prefers-reduced-motion: reduce) {
+  button.icon:active svg { transform: none; }
+}
