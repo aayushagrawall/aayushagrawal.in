@@ -1189,6 +1189,14 @@
     if (w0) { w0.classList.add('active'); w0.style.left = ''; w0.style.top = ''; }
     // clicking inside brings the parent window to the front
     addEventListener('mousedown', function () { toParent({ type: 'aos-focus', app: SINGLE }); }, true);
+    // keep the parent's screensaver from starting while someone plays Tetris or types
+    var lastPing = 0;
+    ['keydown', 'mousemove', 'wheel', 'touchstart'].forEach(function (ev) {
+      addEventListener(ev, function () {
+        var t = Date.now();
+        if (t - lastPing > 2000) { lastPing = t; toParent({ type: 'aos-activity' }); }
+      }, { passive: true, capture: true });
+    });
     return;
   }
   setTimeout(function () {
