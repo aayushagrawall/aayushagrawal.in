@@ -8,6 +8,8 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '6 November 2026',
         items: [
+            'The 3D camera now glides on springs: click again mid-flight and it turns around smoothly instead of finishing the trip first.',
+            'On phones, pull a window down by its title bar to close it (a quick flick is enough), and pull the Start menu down to put it away.',
             'My skills as a Windows-style Device Manager: open Skills on the desktop and double-click a device.',
             'A desk lamp next to the papers in the 3D room. It switches on by itself at sunset, and you can click it to swap day and night.',
             'Search engines and screen readers now get a plain text version of About, Experience, Projects and Contact.',

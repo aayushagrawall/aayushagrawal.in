@@ -425,7 +425,7 @@
     },
 
     skills: {
-      title: 'Device Manager', icon: 'chip', w: 520, h: 560, x: 360, y: 60,
+      title: 'Device Manager', short: 'Skills', icon: 'chip', w: 520, h: 560, x: 360, y: 60,
       status: 'Double-click a device for details',
       render: function () {
         var tree = DEVICES.map(function (cat, ci) {
@@ -612,6 +612,7 @@
     win.querySelector('.title-bar').addEventListener('dblclick', function () { if (maxBtn) win.classList.toggle('max'); });
 
     drag(win, win.querySelector('.title-bar'));
+    swipeToClose(win, win.querySelector('.title-bar'), function () { closeApp(id); });
     var rz = win.querySelector('.resize');
     if (rz) resize(win, rz);
     win.addEventListener('click', function (e) {
@@ -640,6 +641,66 @@
     outline.style.left = r.left + 'px'; outline.style.top = r.top + 'px';
     outline.style.width = r.width + 'px'; outline.style.height = r.height + 'px';
     outline.hidden = false;
+  }
+
+  // ---------- Touch gestures on phones (fluid, Apple-style feel) ----------
+  // A critically damped spring (no overshoot) that starts from the current value and
+  // velocity, so a release hands the finger's speed straight to the animation.
+  function spring(from, to, velocity, response, onFrame, onDone) {
+    var w = 2 * Math.PI / response, x = from, v = velocity, last = performance.now();
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { onFrame(to); if (onDone) onDone(); return; }
+    (function step(now) {
+      var dt = Math.min(0.05, (now - last) / 1000); last = now;
+      for (var i = 0, n = Math.ceil(dt / 0.004), h = dt / n; i < n; i++) { v += (w * w * (to - x) - 2 * w * v) * h; x += v * h; }
+      if (Math.abs(to - x) < 0.5 && Math.abs(v) < 20) { onFrame(to); if (onDone) onDone(); return; }
+      onFrame(x); requestAnimationFrame(step);
+    })(last);
+  }
+  // where a flick would come to rest (Apple's scroll-deceleration projection)
+  function project(v) { var d = 0.998; return (v / 1000) * d / (1 - d); }
+  // past an edge things slow down before they stop instead of hitting a wall
+  function rubberband(over, dim) { var c = 0.55; return (over * dim * c) / (dim + c * Math.abs(over)); }
+
+  // Pull a full-screen window down by its title bar to dismiss it. It follows the finger
+  // 1:1, resists being pulled up, and a quick flick is enough: the release speed decides.
+  function swipeToClose(win, handle, close) {
+    if (!SMALL) return;
+    var id = null, y0 = 0, offset = 0, live = false, hist = [];
+    function set(y) {
+      offset = y;
+      var k = Math.max(0, Math.min(1, y / window.innerHeight));
+      win.style.transform = y ? 'translateY(' + y + 'px) scale(' + (1 - k * 0.06) + ')' : '';
+      win.style.opacity = y > 0 ? String(1 - k * 0.5) : '';
+    }
+    handle.style.touchAction = 'none';
+    handle.addEventListener('pointerdown', function (e) {
+      if (!win.classList.contains('max') || e.target.closest('button') || id !== null) return;
+      id = e.pointerId; y0 = e.clientY - offset; live = false; hist = [{ y: e.clientY, t: e.timeStamp }];
+      try { handle.setPointerCapture(id); } catch (err) {}
+    });
+    handle.addEventListener('pointermove', function (e) {
+      if (e.pointerId !== id) return;
+      var dy = e.clientY - y0;
+      if (!live && Math.abs(dy) < 8) return; // a little slack so taps stay taps
+      live = true;
+      hist.push({ y: e.clientY, t: e.timeStamp }); if (hist.length > 6) hist.shift();
+      set(dy >= 0 ? dy : rubberband(dy, window.innerHeight));
+    });
+    function end(e) {
+      if (e.pointerId !== id) return;
+      id = null;
+      if (!live) return;
+      var a = hist[0], b = hist[hist.length - 1];
+      var v = b.t > a.t ? ((b.y - a.y) / (b.t - a.t)) * 1000 : 0; // px per second
+      var h = window.innerHeight;
+      if (offset + project(v) > h * 0.35 && v > -200) {
+        spring(offset, h, Math.max(v, 800), 0.35, set, function () { close(); });
+      } else {
+        spring(offset, 0, v, 0.4, set);
+      }
+    }
+    handle.addEventListener('pointerup', end);
+    handle.addEventListener('pointercancel', end);
   }
 
   function drag(win, handle) {
@@ -813,6 +874,33 @@
     startList.appendChild(li);
   });
   function closeStart() { startMenu.hidden = true; startBtn.classList.remove('active'); }
+  if (SMALL) (function () {
+    // pull the Start menu down to put it away
+    var id = null, y0 = 0, off = 0, live = false, hist = [];
+    function set(y) { off = y; startMenu.style.transform = y ? 'translateY(' + y + 'px)' : ''; }
+    startMenu.addEventListener('pointerdown', function (e) { id = e.pointerId; y0 = e.clientY; live = false; hist = [{ y: e.clientY, t: e.timeStamp }]; });
+    startMenu.addEventListener('pointermove', function (e) {
+      if (e.pointerId !== id) return;
+      var dy = e.clientY - y0;
+      if (!live && dy < 12) return;
+      if (!live) { live = true; try { startMenu.setPointerCapture(id); } catch (err) {} }
+      hist.push({ y: e.clientY, t: e.timeStamp }); if (hist.length > 6) hist.shift();
+      set(dy >= 0 ? dy : rubberband(dy, startMenu.offsetHeight));
+    });
+    function end(e) {
+      if (e.pointerId !== id) return;
+      id = null;
+      if (!live) return;
+      var a = hist[0], b = hist[hist.length - 1];
+      var v = b.t > a.t ? ((b.y - a.y) / (b.t - a.t)) * 1000 : 0;
+      if (off + project(v) > startMenu.offsetHeight * 0.4) spring(off, startMenu.offsetHeight + 60, Math.max(v, 600), 0.3, set, function () { closeStart(); set(0); });
+      else spring(off, 0, v, 0.35, set);
+    }
+    startMenu.addEventListener('pointerup', end);
+    startMenu.addEventListener('pointercancel', end);
+    // a drag that ends on a menu item must not also open it
+    startMenu.addEventListener('click', function (e) { if (live) { e.stopPropagation(); e.preventDefault(); live = false; } }, true);
+  })();
   startBtn.addEventListener('click', function (e) {
     e.stopPropagation();
     startMenu.hidden = !startMenu.hidden;
