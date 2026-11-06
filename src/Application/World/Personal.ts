@@ -48,7 +48,6 @@ export default class Personal {
         this.addCan(environment, decor);
         if (OPEN_TO_INTERNSHIPS) this.addNeonSign(environment);
         this.addLamp(environment);
-        if (decor) this.addSapling(decor);
         this.initTimeOfDay();
     }
 
@@ -348,7 +347,7 @@ export default class Personal {
         panel.add(on);
         // a soft orange spill on the desk in front of the sign
         const glow = new THREE.MeshBasicMaterial({
-            map: this.shadowTexture(),
+            map: this.glowTexture(),
             color: 0xff6a1a,
             transparent: true,
             opacity: 0,
@@ -458,6 +457,20 @@ export default class Personal {
         } catch (err) {}
     }
 
+    /** A soft white spot (for light: tinted by the material colour, added on top). */
+    glowTexture() {
+        const c = document.createElement('canvas');
+        c.width = c.height = 128;
+        const g = c.getContext('2d')!;
+        const grd = g.createRadialGradient(64, 64, 4, 64, 64, 62);
+        grd.addColorStop(0, 'rgba(255,255,255,1)');
+        grd.addColorStop(0.45, 'rgba(255,255,255,0.45)');
+        grd.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = grd;
+        g.fillRect(0, 0, 128, 128);
+        return new THREE.CanvasTexture(c);
+    }
+
     shadowTexture() {
         const c = document.createElement('canvas');
         c.width = 256;
@@ -479,8 +492,8 @@ export default class Personal {
     lamp?: { bulb: THREE.MeshBasicMaterial; inner: THREE.MeshBasicMaterial; pool: THREE.MeshBasicMaterial; halo: THREE.MeshBasicMaterial };
 
     addLamp(environment: THREE.Object3D) {
-        // a classic two-arm desk lamp between the paper stack and the computer, facing forward
-        const spot = new THREE.Vector3(-1030, 2000, -660);
+        // a classic two-arm desk lamp in front of the paper stack, leaning over the loose sheet of paper
+        const spot = new THREE.Vector3(-1330, 2000, 660);
         const h = this.hit(environment, spot, new THREE.Vector3(0, -1, 0));
         const deskY = h ? h.point.y : -449;
         const lamp = new THREE.Group();
@@ -503,8 +516,8 @@ export default class Personal {
             lamp.add(ball);
         };
         const foot = new THREE.Vector3(0, 46, -30);
-        const elbow = new THREE.Vector3(0, 900, -210);
-        const wrist = new THREE.Vector3(0, 1080, 330);
+        const elbow = new THREE.Vector3(0, 640, -170);
+        const wrist = new THREE.Vector3(0, 740, 420);
         rod(foot, elbow, 19, bodyDark);
         rod(elbow, wrist, 17, bodyDark);
 
@@ -527,15 +540,15 @@ export default class Personal {
         bulbMesh.position.y = -300;
         head.add(bulbMesh);
         // a soft halo around the opening and a warm pool of light on the desk
-        const halo = new THREE.MeshBasicMaterial({ map: this.shadowTexture(), color: 0xffc27a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+        const halo = new THREE.MeshBasicMaterial({ map: this.glowTexture(), color: 0xffc27a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
         const haloMesh = new THREE.Mesh(new THREE.PlaneGeometry(700, 700), halo);
         haloMesh.position.y = -340;
         haloMesh.rotation.x = Math.PI / 2;
         head.add(haloMesh);
-        const pool = new THREE.MeshBasicMaterial({ map: this.shadowTexture(), color: 0xffb766, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+        const pool = new THREE.MeshBasicMaterial({ map: this.glowTexture(), color: 0xffb766, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
         const poolMesh = new THREE.Mesh(new THREE.PlaneGeometry(1300, 1100), pool);
         poolMesh.rotation.x = -Math.PI / 2;
-        poolMesh.position.set(0, 2, 980);
+        poolMesh.position.set(0, 9, 920); // just above the loose sheet of paper
         lamp.add(poolMesh);
         const shadow = new THREE.Mesh(
             new THREE.PlaneGeometry(500, 360),
@@ -546,7 +559,7 @@ export default class Personal {
         lamp.add(shadow);
 
         lamp.position.set(spot.x, deskY, spot.z);
-        lamp.rotation.y = 0.05;
+        lamp.rotation.y = THREE.MathUtils.degToRad(-65); // the head points left, over the paper
         this.group.add(lamp);
         this.lamp = { bulb, inner, pool, halo };
 
@@ -561,121 +574,6 @@ export default class Personal {
             if (world && world.audioManager) world.audioManager.playAudio('mouseUp', { volume: 0.9, position: new THREE.Vector3(spot.x, deskY + 100, spot.z) });
             this.count('3d/lamp-' + next, 'Lamp: ' + next);
         });
-    }
-
-    // ---------- Visitor sapling ----------
-    static MILESTONES = [25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000];
-
-    addSapling(decor: THREE.Object3D) {
-        decor.updateMatrixWorld(true);
-        const spot = new THREE.Vector3(-1350, 2000, 190);
-        const h = this.hit(decor, spot, new THREE.Vector3(0, -1, 0));
-        const topY = h ? h.point.y : -126; // top of the paper stack
-        const plant = new THREE.Group();
-        plant.position.set(spot.x, topY, spot.z);
-        this.group.add(plant);
-
-        // terracotta pot with a rolled rim and soil
-        const metal = this.texture('textures/personal/can-metal.webp');
-        const clay = this.basic({ map: metal, color: new THREE.Color(0.86, 0.45, 0.27), side: THREE.DoubleSide });
-        const pot = new THREE.Mesh(
-            new THREE.LatheGeometry([new THREE.Vector2(70, 0), new THREE.Vector2(84, 6), new THREE.Vector2(100, 120), new THREE.Vector2(112, 124), new THREE.Vector2(114, 160), new THREE.Vector2(100, 164), new THREE.Vector2(98, 150)], 32),
-            clay
-        );
-        plant.add(pot);
-        const soil = new THREE.Mesh(new THREE.CircleGeometry(99, 32), this.basic({ color: 0x3b2a1e }));
-        soil.rotation.x = -Math.PI / 2;
-        soil.position.y = 146;
-        plant.add(soil);
-        const shadow = new THREE.Mesh(
-            new THREE.PlaneGeometry(320, 240),
-            new THREE.MeshBasicMaterial({ map: this.shadowTexture(), transparent: true, depthWrite: false })
-        );
-        shadow.rotation.x = -Math.PI / 2;
-        shadow.position.set(30, 1.5, -10);
-        plant.add(shadow);
-
-        const leafTex = this.leafTexture();
-        const leafLight = this.basic({ map: leafTex, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide });
-        const leafDark = this.basic({ map: leafTex, color: new THREE.Color(0.72, 0.78, 0.72), transparent: true, alphaTest: 0.4, side: THREE.DoubleSide });
-        const stemMat = this.basic({ color: 0x4d7a32 });
-        const flowerMat = this.basic({ color: 0xff6a1a });
-
-        const grow = (count: number | null) => {
-            const passed = count === null ? 1 : Personal.MILESTONES.filter((m) => count >= m).length;
-            const leaves = Math.min(14, 3 + passed);
-            const scale = Math.min(2, 1 + 0.13 * passed); // the whole plant fills out as it grows
-            const height = (50 + leaves * 24) * Math.sqrt(scale);
-            const stem = new THREE.Mesh(new THREE.CylinderGeometry(7, 10, height, 8), stemMat);
-            stem.position.y = 146 + height / 2;
-            plant.add(stem);
-            for (let i = 0; i < leaves; i++) {
-                const t = (i + 1) / leaves; // 0 at the soil, 1 at the top
-                const size = (60 + 66 * Math.sin(Math.PI * Math.min(1, t * 1.1))) * scale; // younger leaves at the top are smaller
-                const g = new THREE.PlaneGeometry(size * 0.62, size);
-                g.translate(0, size / 2, 0);
-                const leaf = new THREE.Mesh(g, i % 2 ? leafDark : leafLight);
-                const pivot = new THREE.Group();
-                pivot.position.y = 146 + 20 + height * (0.15 + 0.85 * t) * 0.95;
-                pivot.rotation.y = i * 2.399; // golden angle
-                leaf.rotation.x = THREE.MathUtils.degToRad(70 - 35 * t); // lower leaves spread out, top ones point up
-                pivot.add(leaf);
-                plant.add(pivot);
-            }
-            if (count !== null && count >= 1000) {
-                const flower = new THREE.Mesh(new THREE.SphereGeometry(30 * scale, 14, 12), flowerMat);
-                flower.position.y = 146 + height + 20 * scale;
-                plant.add(flower);
-            }
-            const next = count === null ? null : Personal.MILESTONES.find((m) => count < m) || null;
-            this.clickable([pot, ...plant.children.filter((c) => c !== shadow)], () => {
-                const text =
-                    count === null
-                        ? "That's my visitor plant. It grows a new leaf as more people visit this site."
-                        : `That's my visitor plant. It grows a new leaf as more people visit: ${count.toLocaleString('en-IN')} so far` +
-                          (next ? `, and the next leaf comes at ${next.toLocaleString('en-IN')}. Tell a friend?` : '. It has grown all it can!');
-                const screen = document.querySelector('iframe[src="os/"]') as HTMLIFrameElement | null;
-                if (screen && screen.contentWindow) {
-                    screen.contentWindow.postMessage({ type: 'aos-activity' }, '*');
-                    screen.contentWindow.postMessage({ type: 'aos-say', text }, '*');
-                }
-                this.count('3d/plant', 'Plant click (3D)');
-            });
-        };
-
-        // the same public GoatCounter count as the hit counter on the Showcase home page
-        const path = encodeURIComponent((window.location.host || 'aayushagrawal.in').replace(/^www\./, '') + '/');
-        fetch(`https://clienterr.goatcounter.com/counter/${path}.json`)
-            .then((r) => r.json())
-            .then((j) => grow(j && j.count !== undefined ? parseInt(String(j.count).replace(/\D/g, ''), 10) || 0 : null))
-            .catch(() => grow(null));
-    }
-
-    leafTexture() {
-        const c = document.createElement('canvas');
-        c.width = 128;
-        c.height = 256;
-        const g = c.getContext('2d')!;
-        // leaf outline: wide in the middle, pointed tip at the top
-        g.beginPath();
-        g.moveTo(64, 250);
-        g.bezierCurveTo(-10, 180, 10, 60, 64, 4);
-        g.bezierCurveTo(118, 60, 138, 180, 64, 250);
-        const grd = g.createLinearGradient(0, 0, 128, 0);
-        grd.addColorStop(0, '#5f9e3a');
-        grd.addColorStop(0.5, '#7cbf4c');
-        grd.addColorStop(1, '#4e8a30');
-        g.fillStyle = grd;
-        g.fill();
-        g.strokeStyle = '#a6dd7a';
-        g.lineWidth = 3;
-        g.beginPath();
-        g.moveTo(64, 248);
-        g.quadraticCurveTo(60, 130, 64, 12);
-        g.stroke();
-        const t = new THREE.CanvasTexture(c);
-        t.encoding = THREE.sRGBEncoding;
-        return t;
     }
 
     // ---------- Time of day ----------
@@ -749,8 +647,8 @@ export default class Personal {
         const k = this.lampLevel;
         l.bulb.color.setRGB(0.6 + 0.4 * k, 0.6 + 0.37 * k, 0.6 + 0.26 * k);
         l.inner.color.setRGB(0.16 + 0.84 * k, 0.16 + 0.66 * k, 0.16 + 0.38 * k);
-        l.pool.opacity = 0.55 * k;
-        l.halo.opacity = 0.5 * k;
+        l.pool.opacity = 0.6 * k;
+        l.halo.opacity = 0.3 * k;
     }
 
     stepTime(dt: number) {

@@ -7,7 +7,7 @@ import { track } from '../../utils/track';
  * that answers common questions.
  * Answers are written ahead of time (no AI, no network). Open it with
  * window.postMessage({ type: 'aos-assistant' }, '*') or from the Start menu, or make White
- * say something with { type: 'aos-say', text } (the 3D room uses this for the desk plant).
+ * say something with { type: 'aos-say', text }.
  */
 
 type Action = { label: string; app: string; route?: string };
