@@ -36,7 +36,7 @@ const CREDITS = [
         title: 'Open-Source Fonts',
         rows: [
             ['Fraunces', 'Tinos'],
-            ['VT323', '98.css by Jordan Scales'],
+            ['VT323', 'DotGothic16'],
         ],
     },
 ]

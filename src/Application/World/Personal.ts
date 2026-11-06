@@ -5,6 +5,7 @@ import Application from '../Application';
  * Aayush's personal touches on the desk:
  *  - a walnut nameplate with his name
  *  - a sticky note on the monitor bezel
+ *  - a framed poster on the desk with a QR code to the web resume (click it too)
  *  - a "Bangalore night" tint between 7 pm and 6 am IST (override with ?night=1 / ?night=0)
  *
  * Objects are placed by ray-casting against the baked models so they sit exactly on
@@ -37,6 +38,7 @@ export default class Personal {
 
         this.addNameplate(environment);
         this.addStickyNote(computer);
+        this.addPoster(environment);
         this.applyNightMode();
     }
 
@@ -139,6 +141,86 @@ export default class Personal {
         }
         note.rotateZ(THREE.MathUtils.degToRad(-7));
         this.group.add(note);
+    }
+
+    poster?: THREE.Mesh;
+
+    addPoster(environment: THREE.Object3D) {
+        const PW = 900; // poster size (the texture is 640x880)
+        const PH = 1238;
+        const B = 60; // frame border
+        const T = 34; // frame depth
+        const lean = THREE.MathUtils.degToRad(11);
+
+        const spot = new THREE.Vector3(-1880, 2000, -1000);
+        const h = this.hit(environment, spot, new THREE.Vector3(0, -1, 0));
+        const deskY = h ? h.point.y : -452;
+
+        const frame = new THREE.Group();
+        const wood = this.texture('textures/personal/walnut.webp');
+        wood.wrapS = wood.wrapT = THREE.RepeatWrapping;
+        const woodFront = this.basic({ map: wood, color: this.shade(0xffffff, 0.75) });
+        const woodTop = this.basic({ map: wood, color: this.shade(0xffffff, 0.95) });
+        const woodSide = this.basic({ map: wood, color: this.shade(0xffffff, 0.55) });
+        const woodDark = this.basic({ map: wood, color: this.shade(0xffffff, 0.4) });
+        const bar = (w: number, hh: number, x: number, y: number) => {
+            const m = new THREE.Mesh(new THREE.BoxGeometry(w, hh, T), [woodSide, woodDark, woodTop, woodDark, woodFront, woodDark]);
+            m.position.set(x, y, 0);
+            frame.add(m);
+        };
+        const FW = PW + B * 2;
+        const FH = PH + B * 2;
+        bar(FW, B, 0, FH / 2 - B / 2); // top
+        bar(FW, B, 0, -FH / 2 + B / 2); // bottom
+        bar(B, PH, -FW / 2 + B / 2, 0); // left
+        bar(B, PH, FW / 2 - B / 2, 0); // right
+
+        // the print itself, set a little behind the frame's front face
+        const print = new THREE.Mesh(new THREE.PlaneGeometry(PW, PH), this.basic({ map: this.texture('textures/personal/poster.webp') }));
+        print.position.z = T / 2 - 10;
+        frame.add(print);
+        // a backing board so the frame isn't see-through from the side
+        const back = new THREE.Mesh(new THREE.BoxGeometry(FW, FH, 6), this.basic({ color: 0x2a1c12 }));
+        back.position.z = -T / 2 + 3;
+        frame.add(back);
+
+        // lean it back on the desk, bottom edge resting on the surface
+        frame.rotation.x = -lean;
+        frame.position.set(
+            spot.x,
+            deskY + (FH / 2) * Math.cos(lean) + (T / 2) * Math.sin(lean),
+            spot.z - (FH / 2) * Math.sin(lean)
+        );
+        frame.rotation.y = 0.26; // turned slightly toward the camera
+
+        const shadow = new THREE.Mesh(
+            new THREE.PlaneGeometry(FW * 1.25, 360),
+            new THREE.MeshBasicMaterial({ map: this.shadowTexture(), transparent: true, depthWrite: false })
+        );
+        shadow.rotation.x = -Math.PI / 2;
+        shadow.position.set(spot.x + 20, deskY + 1.5, spot.z - 120);
+        this.group.add(shadow);
+        this.group.add(frame);
+        this.poster = print;
+
+        // clicking the poster opens the web resume
+        const ray = new THREE.Raycaster();
+        let down = { x: 0, y: 0 };
+        window.addEventListener('mousedown', (e) => (down = { x: e.clientX, y: e.clientY }));
+        window.addEventListener('mouseup', (e) => {
+            if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) return; // a drag, not a click
+            const cam = (this.application as any).camera && (this.application as any).camera.instance;
+            if (!cam) return;
+            ray.setFromCamera(new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1), cam);
+            const hits = ray.intersectObjects([print, ...frame.children], false);
+            if (hits.length && hits[0].object === print) {
+                try {
+                    const gc = (window as any).goatcounter;
+                    if (gc && gc.count) gc.count({ path: '3d/poster', title: 'Poster click (3D)', event: true });
+                } catch (err) {}
+                window.open('/cv/', '_blank', 'noopener');
+            }
+        });
     }
 
     shadowTexture() {

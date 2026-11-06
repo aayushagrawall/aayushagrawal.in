@@ -23,8 +23,10 @@ code {
    Millennium(+Bold)                    -> Tinos (Apache 2.0)
    gastromond                           -> Fraunces Black, soft (SIL OFL)
    Terminal                             -> VT323 (SIL OFL) */
-@font-face { font-family: MSSerif; src: url(./assets/fonts/pixel-sans.woff2) format('woff2'); font-display: swap; }
-@font-face { font-family: lores-15-bold-alt-oakland; src: url(./assets/fonts/pixel-sans-bold.woff2) format('woff2'); font-display: swap; }
+/* UI pixel font: DotGothic16 (SIL OFL), scaled to the width of the classic Windows UI font.
+   The family names below are the ones Henry's components already use. */
+@font-face { font-family: MSSerif; src: url(./assets/fonts/dotgothic16.woff2) format('woff2'); size-adjust: 90%; font-display: swap; }
+@font-face { font-family: lores-15-bold-alt-oakland; src: url(./assets/fonts/dotgothic16.woff2) format('woff2'); size-adjust: 90%; font-display: swap; }
 @font-face { font-family: Millennium; src: url(./assets/fonts/tinos-400.woff2) format('woff2'); font-display: swap; }
 @font-face { font-family: MillenniumBold; src: url(./assets/fonts/tinos-700.woff2) format('woff2'); font-display: swap; }
 @font-face { font-family: gastromond; src: url(./assets/fonts/fraunces-black-soft.woff2) format('woff2'); font-display: swap; }
@@ -434,4 +436,9 @@ body.aos-moving iframe {
 .ctx-item:hover {
     background: #0000a3;
     color: #fff;
+}
+
+/* DotGothic16 has no bold; a fake bold smudges the pixels, so keep it crisp */
+html {
+    font-synthesis: none;
 }

@@ -43,5 +43,5 @@ To work on the OS alone, run `npm start` inside `os-app/`. The lite OS needs no 
   - The 3D scene is based on [henryjeff/portfolio-website](https://github.com/henryjeff/portfolio-website) (MIT licence, see `LICENSE.md`). Computer model by Mickael Boitte, environment models by Sean Nicolas, as credited in that project.
   - AayushOS is adapted from [henryjeff/portfolio-inner-site](https://github.com/henryjeff/portfolio-inner-site), used with Henry's permission. See `NOTICE.md`. Thank you, Henry!
 - [98.css](https://github.com/jdan/98.css) by Jordan Scales (MIT licence, see `static/os-lite/vendor/98css/LICENSE`).
-- Fonts: Fraunces (SIL OFL), Tinos (Apache 2.0) and VT323 (SIL OFL), licences in `os-app/src/assets/fonts/` and `static/os-lite/fonts/`.
+- Fonts: Fraunces (SIL OFL), Tinos (Apache 2.0), VT323 (SIL OFL), DotGothic16 (SIL OFL) and IBM Plex (SIL OFL, on /cv), licences in `os-app/src/assets/fonts/` and `static/os-lite/fonts/`.
 - Content, icons, AayushOS Lite and the startup chime are by Aayush Agrawal.

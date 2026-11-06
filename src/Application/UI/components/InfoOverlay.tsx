@@ -20,6 +20,8 @@ const InfoOverlay: React.FC<InfoOverlayProps> = ({ visible }) => {
     const [textDone, setTextDone] = useState(false);
     const [volumeVisible, setVolumeVisible] = useState(false);
     const [freeCamVisible, setFreeCamVisible] = useState(false);
+    const [resumeVisible, setResumeVisible] = useState(false);
+    const [resumeHover, setResumeHover] = useState(false);
 
     const typeText = (
         i: number,
@@ -83,6 +85,7 @@ const InfoOverlay: React.FC<InfoOverlayProps> = ({ visible }) => {
                 setVolumeVisible(true);
                 setTimeout(() => {
                     setFreeCamVisible(true);
+                    setTimeout(() => setResumeVisible(true), 250);
                 }, 250);
             }, 250);
         }
@@ -139,6 +142,29 @@ const InfoOverlay: React.FC<InfoOverlayProps> = ({ visible }) => {
                     )}
                 </div>
             )}
+            {resumeVisible && (
+                // a shortcut for anyone who'd rather read than explore
+                <a
+                    href="/cv/"
+                    target="_blank"
+                    rel="noopener"
+                    id="prevent-click"
+                    style={Object.assign({}, styles.container, styles.resume, resumeHover && styles.resumeHover)}
+                    onMouseEnter={() => setResumeHover(true)}
+                    onMouseLeave={() => setResumeHover(false)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={() => {
+                        try {
+                            const gc = (window as any).goatcounter;
+                            if (gc && gc.count) gc.count({ path: '3d/resume-button', title: 'Resume button (3D)', event: true });
+                        } catch (e) {}
+                    }}
+                >
+                    <p id="prevent-click" style={resumeHover ? { color: 'black' } : undefined}>
+                        Resume &#8599;
+                    </p>
+                </a>
+            )}
         </div>
     );
 };
@@ -175,6 +201,14 @@ const styles: StyleSheetCSS = {
     },
     lastRowChild: {
         marginRight: 4,
+    },
+    resume: {
+        textDecoration: 'none',
+        cursor: 'pointer',
+        pointerEvents: 'auto',
+    },
+    resumeHover: {
+        background: 'white',
     },
 };
 
