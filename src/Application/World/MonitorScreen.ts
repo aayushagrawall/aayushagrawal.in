@@ -328,6 +328,13 @@ export default class MonitorScreen extends EventEmitter {
         }
     }
 
+    // The additive layers (smudges, static) lift the screen's darks. By day that reads as an
+    // old CRT; at night, over a dark desktop, it washes the text out, so they ease back.
+    glassLayers: { material: THREE.MeshBasicMaterial; opacity: number }[] = [];
+    setNight(night: boolean) {
+        this.glassLayers.forEach((l) => (l.material.opacity = l.opacity * (night ? 0.45 : 1)));
+    }
+
     /**
      * Adds a texture layer to the screen
      * @param texture the texture to add
@@ -349,6 +356,7 @@ export default class MonitorScreen extends EventEmitter {
             opacity,
             transparent: true,
         });
+        if (blendingMode === THREE.AdditiveBlending) this.glassLayers.push({ material, opacity });
 
         // Create geometry
         const geometry = new THREE.PlaneGeometry(

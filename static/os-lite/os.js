@@ -425,7 +425,7 @@
     },
 
     skills: {
-      title: 'Device Manager', short: 'Skills', icon: 'chip', w: 520, h: 560, x: 360, y: 60,
+      title: 'Device Manager', short: 'Skills', icon: 'chip', w: 580, h: 650, x: 360, y: 40,
       status: 'Double-click a device for details',
       render: function () {
         var tree = DEVICES.map(function (cat, ci) {

@@ -632,6 +632,8 @@ export default class Personal {
             this.lampLevel = this.lampTarget;
             this.paintTime();
         }
+        const world = (this.application as any).world;
+        if (world && world.monitorScreen && world.monitorScreen.setNight) world.monitorScreen.setNight(time === 'night');
         const html = document.documentElement.classList;
         html.remove('day', 'sunset', 'night');
         if (time !== 'day') html.add(time);
