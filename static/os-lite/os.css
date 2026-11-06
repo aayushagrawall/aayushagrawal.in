@@ -481,29 +481,29 @@ html.single .pt { align-self: center; }
 .ach-row b { font: 700 17px var(--serif); }
 .ach-row p { margin: 1px 0 0; font: 15px var(--serif); }
 
-/* ---------- Chai ---------- */
-.chai { position: fixed; right: 16px; bottom: 50px; z-index: 8000; display: flex; flex-direction: column; align-items: flex-end; animation: chai-in .3s steps(6); }
-@keyframes chai-in { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
-.chai-bubble { position: relative; width: 330px; background: #ffffe1; border: 1px solid #000; border-radius: 10px; padding: 12px 14px; margin: 0 30px 14px 0; box-shadow: 3px 3px 0 rgba(0,0,0,.35); font: 16px/1.4 var(--serif); }
-.chai-bubble::after { content: ""; position: absolute; right: 26px; bottom: -10px; width: 18px; height: 18px; background: #ffffe1; border-right: 1px solid #000; border-bottom: 1px solid #000; transform: rotate(45deg); }
-.chai-bubble p { margin: 0 12px 0 0; }
-.chai-x { position: absolute; top: 4px; right: 6px; min-width: 0 !important; min-height: 0 !important; padding: 0 4px !important; background: none !important; box-shadow: none !important; font-size: 18px; line-height: 1; }
-.chai-qs { display: flex; flex-direction: column; margin-top: 8px; }
-.chai-qs a { margin: 3px 0; font-size: 15px; color: #000080; }
-.chai-qs a:hover { color: var(--accent); }
-.chai-qt { font-weight: 700; margin-bottom: 6px !important; }
-.chai-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.chai-cup { cursor: pointer; }
-.chai-cup svg { width: 96px; height: 104px; display: block; }
+/* ---------- White, the desk assistant (classes keep the ultra- prefix) ---------- */
+.ultra { position: fixed; right: 16px; bottom: 50px; z-index: 8000; display: flex; flex-direction: column; align-items: flex-end; animation: ultra-in .3s steps(6); }
+@keyframes ultra-in { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.ultra-bubble { position: relative; width: 330px; background: #ffffe1; border: 1px solid #000; border-radius: 10px; padding: 12px 14px; margin: 0 30px 14px 0; box-shadow: 3px 3px 0 rgba(0,0,0,.35); font: 16px/1.4 var(--serif); }
+.ultra-bubble::after { content: ""; position: absolute; right: 26px; bottom: -10px; width: 18px; height: 18px; background: #ffffe1; border-right: 1px solid #000; border-bottom: 1px solid #000; transform: rotate(45deg); }
+.ultra-bubble p { margin: 0 12px 0 0; }
+.ultra-x { position: absolute; top: 4px; right: 6px; min-width: 0 !important; min-height: 0 !important; padding: 0 4px !important; background: none !important; box-shadow: none !important; font-size: 18px; line-height: 1; }
+.ultra-qs { display: flex; flex-direction: column; margin-top: 8px; }
+.ultra-qs a { margin: 3px 0; font-size: 15px; color: #000080; }
+.ultra-qs a:hover { color: var(--accent); }
+.ultra-qt { font-weight: 700; margin-bottom: 6px !important; }
+.ultra-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ultra-cup { cursor: pointer; }
+.ultra-cup svg { width: 96px; height: 104px; display: block; }
 .tray-speaker { cursor: pointer; }
 .tray-speaker.muted { opacity: .45; }
 .tray-speaker.muted::after { content: "×"; position: relative; left: -6px; top: 2px; color: #c00; font-weight: 700; }
 
 @media (max-width: 760px) {
   html:not(.single) .ach-toast { left: 8px; right: 8px; width: auto; }
-  html:not(.single) .chai { left: 8px; right: 8px; bottom: 48px; }
-  html:not(.single) .chai-bubble { width: auto; margin-right: 20px; align-self: stretch; }
-  html:not(.single) .chai-cup svg { width: 64px; height: 70px; }
+  html:not(.single) .ultra { left: 8px; right: 8px; bottom: 48px; }
+  html:not(.single) .ultra-bubble { width: auto; margin-right: 20px; align-self: stretch; }
+  html:not(.single) .ultra-cup svg { width: 64px; height: 70px; }
 }
 
 /* ---------- Clock pop-up ---------- */
@@ -528,3 +528,9 @@ html.single .pt { align-self: center; }
 
 /* DotGothic16 has no bold; a fake bold smudges the pixels, so keep it crisp */
 html { font-synthesis: none; }
+
+.ultra-fizz rect { animation: ultra-fizz 2.4s steps(4) infinite; }
+.ultra-fizz rect:nth-child(2) { animation-delay: .6s; }
+.ultra-fizz rect:nth-child(3) { animation-delay: 1.2s; }
+.ultra-fizz rect:nth-child(4) { animation-delay: 1.8s; }
+@keyframes ultra-fizz { 0%, 100% { opacity: 0; } 40%, 60% { opacity: 1; } }

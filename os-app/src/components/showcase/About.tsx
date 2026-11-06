@@ -55,7 +55,7 @@ const About: React.FC<AboutProps> = () => {
                     member of the Rotaract Club of BMSCE, doing community service
                     around Bengaluru. When I'm not coding, I'm reading docs,
                     taking things apart to see how they work, and collecting
-                    ideas for the next side project, usually with a cup of chai.
+                    ideas for the next side project, usually with a cold can of White.
                 </p>
                 <br />
                 <h3>Tools I use</h3>

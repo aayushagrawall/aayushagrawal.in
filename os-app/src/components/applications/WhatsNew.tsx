@@ -8,6 +8,8 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '6 November 2026',
         items: [
+            'The coffee mug on the desk is now a cold can of White, my actual fuel.',
+            'Chai the desk assistant has been replaced by White, a talking can with the same answers.',
             'The monitor has its full vintage CRT look back: glass smudges, static and scanlines.',
             'A framed poster on the desk with a QR code to my resume. You can click it too.',
             'A Resume button under my name in the 3D view, for anyone in a hurry.',
@@ -17,11 +19,11 @@ const CHANGES: { date: string; items: string[] }[] = [
             'Short links with their own preview cards: aayushagrawal.in/projects, /resume, /about, /experience, /contact.',
             'Click the taskbar clock to see the time in Bangalore and what I am probably up to.',
             'This What’s New window.',
-            'The phone version now has achievements, Chai and shareable links too.',
+            'The phone version now has achievements, the desk assistant and shareable links too.',
             'Right-click the desktop for wallpapers, Arrange Icons and Refresh.',
             'The taskbar speaker now mutes the whole site, 3D room included.',
             'Keyboard shortcuts: Alt+W switches windows, Alt+M minimises, Alt+Q closes.',
-            '15 achievements to unlock, and Chai, a desk assistant who answers questions about me.',
+            '15 achievements to unlock, and a desk assistant who answers questions about me.',
             'A boot screen with a startup chime, and links like /os/#projects that open a page directly.',
             'Screensaver, Konami code, Welcome tips and This Computer, carried over from the original OS.',
             'The 3D room loads about 40% faster.',

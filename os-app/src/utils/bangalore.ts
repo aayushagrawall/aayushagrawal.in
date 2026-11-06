@@ -13,7 +13,7 @@ export const activity = (n: IstNow) => {
     const h = n.hour;
     const weekend = n.weekday === 0 || n.weekday === 6;
     if (h < 6) return 'probably asleep';
-    if (h < 9) return 'probably having his morning chai';
+    if (h < 9) return 'probably cracking open his first can of White';
     if (h < 16) return weekend ? 'probably working on a side project' : 'probably in class at BMSCE';
     if (h < 19) return 'probably building a side project';
     if (h < 22) return 'probably coding or reading docs';

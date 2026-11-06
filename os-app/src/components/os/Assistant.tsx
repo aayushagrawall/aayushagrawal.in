@@ -3,7 +3,8 @@ import { achieve } from '../achievements/list';
 import { track } from '../../utils/track';
 
 /**
- * "Chai", Aayush's desk assistant: a cup of chai that answers common questions.
+ * "White", Aayush's desk assistant: a cold can of White, his energy drink of choice,
+ * that answers common questions.
  * Answers are written ahead of time (no AI, no network). Open it with
  * window.postMessage({ type: 'aos-assistant' }, '*') or from the Start menu.
  */
@@ -51,54 +52,60 @@ const QAS: QA[] = [
     },
 ];
 
-const SESSION_KEY = 'aayushos-chai-shown';
+const SESSION_KEY = 'aayushos-ultra-shown';
 
-const ChaiCup: React.FC<{ blink: boolean }> = ({ blink }) => (
+const UltraCan: React.FC<{ blink: boolean }> = ({ blink }) => (
     <svg width="96" height="104" viewBox="0 0 24 26" shapeRendering="crispEdges" aria-hidden>
-        {/* steam */}
-        <g className="chai-steam" fill="#ffffff" opacity="0.9">
-            <rect x="8" y="0" width="1" height="2" />
-            <rect x="9" y="2" width="1" height="2" />
-            <rect x="13" y="1" width="1" height="2" />
-            <rect x="12" y="3" width="1" height="2" />
+        {/* condensation sparkle: it's a cold one */}
+        <g className="ultra-fizz" fill="#bfe3ff">
+            <rect x="3" y="9" width="1" height="1" />
+            <rect x="20" y="13" width="1" height="1" />
+            <rect x="3" y="16" width="1" height="1" />
+            <rect x="20" y="6" width="1" height="1" />
         </g>
-        {/* handle */}
-        <rect x="19" y="10" width="3" height="1" fill="#000" />
-        <rect x="21" y="11" width="1" height="5" fill="#000" />
-        <rect x="19" y="16" width="3" height="1" fill="#000" />
-        {/* cup */}
-        <rect x="3" y="6" width="17" height="1" fill="#000" />
-        <rect x="3" y="7" width="1" height="12" fill="#000" />
-        <rect x="19" y="7" width="1" height="12" fill="#000" />
-        <rect x="4" y="19" width="15" height="1" fill="#000" />
-        <rect x="5" y="20" width="13" height="1" fill="#000" />
-        <rect x="4" y="7" width="15" height="2" fill="#96400a" />
-        <rect x="4" y="9" width="15" height="10" fill="#e8b478" />
-        <rect x="4" y="9" width="2" height="10" fill="#f5cf9e" />
-        <rect x="5" y="19" width="13" height="1" fill="#cd8c50" />
+        <rect x="6" y="24" width="12" height="1" fill="#000" opacity="0.25" />
+        {/* the can */}
+        <rect x="12" y="1" width="4" height="1" fill="#000" />
+        <rect x="7" y="2" width="10" height="1" fill="#000" />
+        <rect x="6" y="3" width="1" height="1" fill="#000" />
+        <rect x="17" y="3" width="1" height="1" fill="#000" />
+        <rect x="5" y="4" width="1" height="18" fill="#000" />
+        <rect x="18" y="4" width="1" height="18" fill="#000" />
+        <rect x="6" y="22" width="1" height="1" fill="#000" />
+        <rect x="17" y="22" width="1" height="1" fill="#000" />
+        <rect x="7" y="23" width="10" height="1" fill="#000" />
+        <rect x="7" y="3" width="10" height="1" fill="#c9cfd6" />
+        <rect x="6" y="4" width="12" height="2" fill="#aeb5be" />
+        <rect x="7" y="4" width="3" height="1" fill="#e8ecf0" />
+        <rect x="6" y="6" width="12" height="15" fill="#f4f5f7" />
+        <rect x="6" y="6" width="1" height="15" fill="#ffffff" />
+        <rect x="16" y="6" width="2" height="15" fill="#d6dade" />
+        <rect x="15" y="6" width="1" height="15" fill="#a9c1d6" />
+        <rect x="6" y="21" width="12" height="1" fill="#aeb5be" />
+        <rect x="7" y="22" width="10" height="1" fill="#8d949d" />
+        <rect x="12" y="15" width="1" height="1" fill="#7f9db8" />
+        <rect x="11" y="16" width="2" height="1" fill="#7f9db8" />
+        <rect x="11" y="17" width="1" height="1" fill="#7f9db8" />
+        <rect x="10" y="18" width="1" height="1" fill="#7f9db8" />
         {/* face */}
         {blink ? (
             <>
-                <rect x="8" y="12" width="2" height="1" fill="#000" />
-                <rect x="13" y="12" width="2" height="1" fill="#000" />
+                <rect x="8" y="11" width="2" height="1" fill="#000" />
+                <rect x="13" y="11" width="2" height="1" fill="#000" />
             </>
         ) : (
             <>
-                <rect x="8" y="11" width="2" height="2" fill="#000" />
-                <rect x="13" y="11" width="2" height="2" fill="#000" />
-                <rect x="8" y="11" width="1" height="1" fill="#fff" />
-                <rect x="13" y="11" width="1" height="1" fill="#fff" />
+                <rect x="8" y="10" width="2" height="2" fill="#000" />
+                <rect x="13" y="10" width="2" height="2" fill="#000" />
+                <rect x="8" y="10" width="1" height="1" fill="#fff" />
+                <rect x="13" y="10" width="1" height="1" fill="#fff" />
             </>
         )}
-        <rect x="7" y="14" width="1" height="1" fill="#ff8a7a" />
-        <rect x="15" y="14" width="1" height="1" fill="#ff8a7a" />
-        <rect x="10" y="15" width="3" height="1" fill="#000" />
-        <rect x="9" y="14" width="1" height="1" fill="#000" />
-        <rect x="13" y="14" width="1" height="1" fill="#000" />
-        {/* saucer */}
-        <rect x="1" y="22" width="22" height="1" fill="#000" />
-        <rect x="2" y="21" width="20" height="1" fill="#ff6a1a" />
-        <rect x="3" y="23" width="18" height="1" fill="#000" />
+        <rect x="7" y="13" width="1" height="1" fill="#ff9aa8" />
+        <rect x="16" y="13" width="1" height="1" fill="#ff9aa8" />
+        <rect x="9" y="13" width="1" height="1" fill="#000" />
+        <rect x="13" y="13" width="1" height="1" fill="#000" />
+        <rect x="10" y="14" width="3" height="1" fill="#000" />
     </svg>
 );
 
@@ -161,7 +168,7 @@ const Assistant: React.FC = () => {
 
     const ask = (qa: QA) => {
         setCurrent(qa);
-        track('chai/' + qa.q.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, ''), 'Asked Chai: ' + qa.q);
+        track('ultra/' + qa.q.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, ''), 'Asked White: ' + qa.q);
         asked.current.add(qa.q);
         if (asked.current.size >= 3) achieve('chatty');
     };
@@ -178,11 +185,11 @@ const Assistant: React.FC = () => {
                 {!current ? (
                     <>
                         <p style={styles.text}>
-                            Hi! I'm <b>Chai</b>, Aayush's desk assistant. What would you like to know?
+                            Hi! I'm <b>White</b>, Aayush's desk assistant (and his energy drink). What would you like to know?
                         </p>
                         <div style={styles.qs}>
                             {QAS.map((qa) => (
-                                <p key={qa.q} className="chai-q" style={styles.q} onMouseDown={() => ask(qa)}>
+                                <p key={qa.q} className="ultra-q" style={styles.q} onMouseDown={() => ask(qa)}>
                                     {qa.q}
                                 </p>
                             ))}
@@ -206,8 +213,8 @@ const Assistant: React.FC = () => {
                 )}
                 <div style={styles.tail} />
             </div>
-            <div style={styles.cup} onMouseDown={() => setCurrent(null)} title="Chai">
-                <ChaiCup blink={blink} />
+            <div style={styles.cup} onMouseDown={() => setCurrent(null)} title="White">
+                <UltraCan blink={blink} />
             </div>
         </div>
     );
@@ -221,7 +228,7 @@ const styles: StyleSheetCSS = {
         zIndex: 120000,
         flexDirection: 'column',
         alignItems: 'flex-end',
-        animation: 'aos-chai-in 0.3s steps(6)',
+        animation: 'aos-ultra-in 0.3s steps(6)',
     },
     bubble: {
         position: 'relative',

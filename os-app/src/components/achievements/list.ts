@@ -15,7 +15,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     { id: 'artist', title: 'Artist', hint: 'Save a drawing from Paint.', done: 'Saved a Paint masterpiece.' },
     { id: 'dumpster', title: 'Dumpster Diver', hint: "Peek inside something that's been thrown away.", done: 'Opened a file in the Recycle Bin.' },
     { id: 'afk', title: 'AFK', hint: 'Step away from the computer for a while.', done: 'Watched the screensaver.' },
-    { id: 'chatty', title: 'Small Talk', hint: 'Ask Chai three questions.', done: 'Asked Chai three questions.' },
+    { id: 'chatty', title: 'Small Talk', hint: 'Ask White three questions.', done: 'Asked White three questions.' },
     { id: 'shutdown', title: 'Persistent', hint: 'Try to turn the computer off. A few times.', done: 'Shut down AayushOS five times.' },
     { id: 'night', title: 'Night Owl', hint: 'Visit when Bangalore is asleep.', done: 'Visited between midnight and 5 am IST.' },
     { id: 'all', title: 'Completionist', hint: 'Unlock every other achievement.', done: 'Unlocked everything. Respect.' },

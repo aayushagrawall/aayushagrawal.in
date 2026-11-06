@@ -1,8 +1,8 @@
 import React from 'react';
 
 import close from './close.png';
-import chaiSmall from './chaiSmall.png';
-import chaiIcon from './chaiIcon.png';
+import canSmall from './canSmall.png';
+import canIcon from './canIcon.png';
 import trophySmall from './trophySmall.png';
 import trophyIcon from './trophyIcon.png';
 import computerBig from './computerBig.png';
@@ -39,8 +39,8 @@ import windowsStartIcon from './windowsStartIcon.png';
 const icons = {
     trophyIcon,
     trophySmall,
-    chaiIcon,
-    chaiSmall,
+    canIcon,
+    canSmall,
     close: close,
     computerBig: computerBig,
     computerSmall: computerSmall,

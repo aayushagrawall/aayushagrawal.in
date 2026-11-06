@@ -409,16 +409,19 @@ body.aos-moving iframe {
     to { transform: translateY(0); }
 }
 
-@keyframes aos-chai-in {
+@keyframes aos-ultra-in {
     from { transform: translateY(40px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
-@keyframes aos-steam {
-    0%, 100% { transform: translateY(0); opacity: 0.9; }
-    50% { transform: translateY(-1px); opacity: 0.4; }
+@keyframes aos-fizz {
+    0%, 100% { opacity: 0; }
+    40%, 60% { opacity: 1; }
 }
-.chai-steam { animation: aos-steam 1.6s steps(4) infinite; }
-.chai-q:hover { color: #ff6a1a !important; }
+.ultra-fizz rect { animation: aos-fizz 2.4s steps(4) infinite; }
+.ultra-fizz rect:nth-child(2) { animation-delay: 0.6s; }
+.ultra-fizz rect:nth-child(3) { animation-delay: 1.2s; }
+.ultra-fizz rect:nth-child(4) { animation-delay: 1.8s; }
+.ultra-q:hover { color: #ff6a1a !important; }
 
 @keyframes boot-fill {
     from { width: 0; }

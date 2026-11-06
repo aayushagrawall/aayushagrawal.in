@@ -30,7 +30,7 @@ const Bulb = () => (
 
 // Windows 98-style "Welcome" tips dialog
 const Welcome: React.FC<WelcomeProps> = (props) => {
-    // lets Chai know to wait until the tips are closed
+    // lets White know to wait until the tips are closed
     React.useEffect(() => {
         (window as any).__aosWelcomeOpen = true;
         window.dispatchEvent(new Event('aos-welcome-change'));

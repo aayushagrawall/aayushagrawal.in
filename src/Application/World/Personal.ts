@@ -6,6 +6,7 @@ import Application from '../Application';
  *  - a walnut nameplate with his name
  *  - a sticky note on the monitor bezel
  *  - a framed poster on the desk with a QR code to the web resume (click it too)
+ *  - a cold can of White, his energy drink, in place of the coffee mug
  *  - a "Bangalore night" tint between 7 pm and 6 am IST (override with ?night=1 / ?night=0)
  *
  * Objects are placed by ray-casting against the baked models so they sit exactly on
@@ -22,7 +23,8 @@ export default class Personal {
     constructor(
         computer: THREE.Object3D,
         environment: THREE.Object3D,
-        bakedMaterials: THREE.MeshBasicMaterial[]
+        bakedMaterials: THREE.MeshBasicMaterial[],
+        decor?: THREE.Object3D
     ) {
         this.application = new Application();
         this.scene = this.application.scene;
@@ -39,6 +41,7 @@ export default class Personal {
         this.addNameplate(environment);
         this.addStickyNote(computer);
         this.addPoster(environment);
+        this.addCan(environment, decor);
         this.applyNightMode();
     }
 
@@ -221,6 +224,76 @@ export default class Personal {
                 window.open('/cv/', '_blank', 'noopener');
             }
         });
+    }
+
+    addCan(environment: THREE.Object3D, decor?: THREE.Object3D) {
+        // the baked mug goes; the can stands where it was
+        const mug = decor && decor.getObjectByName('coffee');
+        if (mug) mug.visible = false;
+
+        const spot = new THREE.Vector3(1700, 2000, 905);
+        const h = this.hit(environment, spot, new THREE.Vector3(0, -1, 0));
+        const deskY = h ? h.point.y : -449;
+
+        const R = 168; // a tall 500 ml can, to the scene's scale
+        const BASE = 40; // tapered foot
+        const BODY = 730; // painted body
+        const seg = 64;
+        const can = new THREE.Group();
+
+        const metalTex = this.texture('textures/personal/can-metal.webp');
+        const metal = this.basic({ map: metalTex, side: THREE.DoubleSide });
+        const label = this.basic({ map: this.texture('textures/personal/can-label.webp') });
+
+        // foot: from the base ring out to the full radius
+        const foot = new THREE.LatheGeometry(
+            [new THREE.Vector2(R * 0.8, 0), new THREE.Vector2(R * 0.9, 6), new THREE.Vector2(R * 0.98, 22), new THREE.Vector2(R, BASE)],
+            seg
+        );
+        can.add(new THREE.Mesh(foot, metal));
+
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(R, R, BODY, seg, 1, true), label);
+        body.position.y = BASE + BODY / 2;
+        can.add(body);
+
+        // shoulder, neck and the rolled rim, then down inside to the lid
+        const top = BASE + BODY;
+        const shoulder = new THREE.LatheGeometry(
+            [
+                new THREE.Vector2(R, top),
+                new THREE.Vector2(R * 0.985, top + 14),
+                new THREE.Vector2(R * 0.93, top + 38),
+                new THREE.Vector2(R * 0.87, top + 58),
+                new THREE.Vector2(R * 0.86, top + 70),
+                new THREE.Vector2(R * 0.875, top + 77),
+                new THREE.Vector2(R * 0.87, top + 83),
+                new THREE.Vector2(R * 0.845, top + 84),
+                new THREE.Vector2(R * 0.83, top + 78),
+                new THREE.Vector2(R * 0.83, top + 70),
+            ],
+            seg
+        );
+        can.add(new THREE.Mesh(shoulder, metal));
+
+        const lid = new THREE.Mesh(
+            new THREE.CircleGeometry(R * 0.83, seg),
+            this.basic({ map: this.texture('textures/personal/can-lid.webp'), transparent: true })
+        );
+        lid.rotation.x = -Math.PI / 2;
+        lid.rotation.z = THREE.MathUtils.degToRad(-25); // tab faces the same way as the label
+        lid.position.y = top + 70;
+        can.add(lid);
+
+        const shadow = new THREE.Mesh(
+            new THREE.PlaneGeometry(R * 3.4, R * 2.6),
+            new THREE.MeshBasicMaterial({ map: this.shadowTexture(), transparent: true, depthWrite: false })
+        );
+        shadow.rotation.x = -Math.PI / 2;
+        shadow.position.set(R * 0.35, 1.5, -R * 0.15); // light comes from the front-left
+        can.add(shadow);
+
+        can.position.set(spot.x, deskY, spot.z);
+        this.group.add(can);
     }
 
     shadowTexture() {

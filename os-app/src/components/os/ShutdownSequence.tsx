@@ -132,7 +132,7 @@ const ShutdownSequence: React.FC<ShutdownSequenceProps> = ({
 
     const SHUTDOWN_10 = `
     Alright, alright${_M}. You win${_S}.${_S}.${_S}.${_S} fair and square. ${_M}
-    Grab a cup of chai, and thanks for spending this much time on my portfolio.
+    Grab a cold can of White, and thanks for spending this much time on my portfolio.
     ${_L}
     Shutting${_M} Down${_M}.${_M}.${_M}.
     `;

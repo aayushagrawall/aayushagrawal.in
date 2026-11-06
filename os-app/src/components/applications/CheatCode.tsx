@@ -28,7 +28,7 @@ const CheatCode: React.FC<CheatCodeProps> = (props) => {
                         <rect x="15" y="8" width="3" height="3" fill="#000080" />
                     </svg>
                     <p style={styles.text}>
-                        +30 lives. Unlimited chai. You clearly know your classics, so you'd probably get along with me.
+                        +30 lives. Unlimited White. You clearly know your classics, so you'd probably get along with me.
                         Say hi from the Contact page!
                     </p>
                 </div>
