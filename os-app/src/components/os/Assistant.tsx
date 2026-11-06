@@ -106,6 +106,13 @@ const Assistant: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [current, setCurrent] = useState<QA | null>(null);
     const [blink, setBlink] = useState(false);
+    // step aside while the Welcome tips are open
+    const [welcomeOpen, setWelcomeOpen] = useState(!!(window as any).__aosWelcomeOpen);
+    useEffect(() => {
+        const sync = () => setWelcomeOpen(!!(window as any).__aosWelcomeOpen);
+        window.addEventListener('aos-welcome-change', sync);
+        return () => window.removeEventListener('aos-welcome-change', sync);
+    }, []);
     const asked = useRef(new Set<string>());
 
     useEffect(() => {
@@ -123,14 +130,19 @@ const Assistant: React.FC = () => {
         try {
             shown = sessionStorage.getItem(SESSION_KEY) === '1';
         } catch (e) {}
-        const t = !shown
-            ? setTimeout(() => {
-                  setOpen(true);
-                  try {
-                      sessionStorage.setItem(SESSION_KEY, '1');
-                  } catch (e) {}
-              }, 25000)
-            : undefined;
+        let t: ReturnType<typeof setTimeout> | undefined;
+        const greet = () => {
+            // don't talk over the Welcome tips; try again once they're closed
+            if ((window as any).__aosWelcomeOpen) {
+                t = setTimeout(greet, 5000);
+                return;
+            }
+            setOpen(true);
+            try {
+                sessionStorage.setItem(SESSION_KEY, '1');
+            } catch (e) {}
+        };
+        if (!shown) t = setTimeout(greet, 25000);
         return () => {
             window.removeEventListener('message', onMsg);
             window.removeEventListener('keydown', onKey);
@@ -156,7 +168,7 @@ const Assistant: React.FC = () => {
 
     const act = (a: Action) => window.postMessage({ type: 'aos-open', app: a.app, route: a.route }, '*');
 
-    if (!open) return null;
+    if (!open || welcomeOpen) return null;
     return (
         <div style={styles.wrap} onMouseDown={(e) => e.stopPropagation()}>
             <div style={styles.bubble}>
