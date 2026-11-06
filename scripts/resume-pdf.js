@@ -5,8 +5,7 @@
  *     npm run resume
  *
  * It renders the page in Chromium (real, selectable text that job portals can
- * read), adds the phone number (kept off the public web page), picks the largest
- * size that fits one A4 page, and writes the PDF to:
+ * read), picks the largest size that fits one A4 page, and writes the PDF to:
  *   - os-app/public/files/            (AayushOS, /os/files/...)
  *   - static/os-lite/files/           (AayushOS Lite)
  *   - ../aayushagrawal.codes/assets/docs/  (if that repo is checked out next to this one)
@@ -16,7 +15,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const PHONE = '8936869120';
 const NAME = 'Aayush-Agrawal-Resume.pdf';
 const ROOT = path.resolve(__dirname, '..');
 const SOURCE = path.join(ROOT, 'static/cv/index.html');
@@ -43,13 +41,9 @@ const countPages = (buf) => (buf.toString('latin1').match(/\/Type\s*\/Page[^s]/g
     // only local files: no analytics or other network requests in the PDF render
     await page.route(/^https?:/, (r) => r.abort());
     await page.goto('file://' + SOURCE, { waitUntil: 'load' });
-    await page.evaluate((phone) => {
-        const email = document.querySelector('.contact a[href^="mailto"]');
-        const span = document.createElement('span');
-        span.textContent = phone;
-        email.after(span);
+    await page.evaluate(() => {
         document.title = 'Aayush Agrawal - Resume';
-    }, PHONE);
+    });
     await page.addStyleTag({
         content: `
         @page { size: A4; margin: 15mm 16mm; }
@@ -57,7 +51,7 @@ const countPages = (buf) => (buf.toString('latin1').match(/\/Type\s*\/Page[^s]/g
         .bar, .foot { display: none !important; }
         main { box-shadow: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; }
         a { color: var(--accent) !important; }
-        .contact span { color: var(--muted); }`,
+`,
     });
     await page.emulateMedia({ media: 'screen' });
     await page.evaluate(() => document.fonts.ready);
