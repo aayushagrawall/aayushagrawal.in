@@ -272,7 +272,7 @@ export default class MonitorScreen extends EventEmitter {
             smudge: {
                 texture: textures.monitorSmudgeTexture,
                 blending: THREE.AdditiveBlending,
-                opacity: 0.05,
+                opacity: 0.12, // glass smudges (Henry's original strength)
                 offset: 24,
             },
             innerShadow: {
@@ -284,13 +284,13 @@ export default class MonitorScreen extends EventEmitter {
             video: {
                 texture: this.videoTextures['video-1'],
                 blending: THREE.AdditiveBlending,
-                opacity: 0.16,
+                opacity: 0.5, // static and scanlines
                 offset: 10,
             },
             video2: {
                 texture: this.videoTextures['video-2'],
                 blending: THREE.AdditiveBlending,
-                opacity: 0.04,
+                opacity: 0.1,
                 offset: 15,
             },
         };

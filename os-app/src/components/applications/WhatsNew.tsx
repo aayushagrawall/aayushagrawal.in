@@ -8,6 +8,7 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '6 November 2026',
         items: [
+            'The monitor has its full vintage CRT look back: glass smudges, static and scanlines.',
             'A framed poster on the desk with a QR code to my resume. You can click it too.',
             'A Resume button under my name in the 3D view, for anyone in a hurry.',
             'New pixel font: DotGothic16, an open-licence font that is easier to read.',
