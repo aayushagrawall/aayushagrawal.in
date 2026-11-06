@@ -1,0 +1,94 @@
+import React from 'react';
+import Window from '../os/Window';
+
+export interface WhatsNewProps extends WindowAppProps {}
+
+// The changelog. Newest first; add a new entry at the top when the site changes.
+const CHANGES: { date: string; items: string[] }[] = [
+    {
+        date: '6 November 2026',
+        items: [
+            'Short links with their own preview cards: aayushagrawal.in/projects, /resume, /about, /experience, /contact.',
+            'Click the taskbar clock to see the time in Bangalore and what I am probably up to.',
+            'This What’s New window.',
+            'The phone version now has achievements, Chai and shareable links too.',
+            'Right-click the desktop for wallpapers, Arrange Icons and Refresh.',
+            'The taskbar speaker now mutes the whole site, 3D room included.',
+            'Keyboard shortcuts: Alt+W switches windows, Alt+M minimises, Alt+Q closes.',
+            '15 achievements to unlock, and Chai, a desk assistant who answers questions about me.',
+            'A boot screen with a startup chime, and links like /os/#projects that open a page directly.',
+            'Screensaver, Konami code, Welcome tips and This Computer, carried over from the original OS.',
+            'The 3D room loads about 40% faster.',
+            'New AayushOS, adapted from Henry Heffernan’s portfolio OS with his permission.',
+            'Restyled 3D room: orange chair and mug, navy binders, a nameplate and a sticky note.',
+            'Paint, a blue-screen 404 page and a retro visitor counter.',
+        ],
+    },
+    {
+        date: '5 November 2026',
+        items: [
+            'aayushagrawal.in launched: a 3D desk with a retro computer you can use.',
+            'Terminal (try "sudo hire aayush"), Tetris, Recycle Bin and a phone-friendly version.',
+            'Desktop icons for my projects, resume, GitHub, LinkedIn and Instagram.',
+        ],
+    },
+];
+
+const WhatsNew: React.FC<WhatsNewProps> = (props) => {
+    return (
+        <Window
+            top={40}
+            left={300}
+            width={640}
+            height={720}
+            windowBarIcon="docSmall"
+            windowTitle="What's New - Notepad"
+            closeWindow={props.onClose}
+            onInteract={props.onInteract}
+            minimizeWindow={props.onMinimize}
+            bottomLeftText="Changelog for aayushagrawal.in"
+        >
+            <div style={styles.page}>
+                <div style={styles.menu}>
+                    {['File', 'Edit', 'Search', 'Help'].map((m) => (
+                        <p key={m} style={styles.menuItem}>
+                            <u>{m[0]}</u>
+                            {m.slice(1)}
+                        </p>
+                    ))}
+                </div>
+                <div style={styles.paper}>
+                    <p style={styles.head}>WHAT'S NEW IN AAYUSHOS</p>
+                    <p style={styles.line}>==========================</p>
+                    {CHANGES.map((c) => (
+                        <div key={c.date} style={styles.block}>
+                            <p style={styles.date}>[{c.date}]</p>
+                            {c.items.map((it, i) => (
+                                <p key={i} style={styles.item}>
+                                    <span style={styles.dash}>-</span>
+                                    <span>{it}</span>
+                                </p>
+                            ))}
+                        </div>
+                    ))}
+                    <p style={styles.line}>-- end of file --</p>
+                </div>
+            </div>
+        </Window>
+    );
+};
+
+const styles: StyleSheetCSS = {
+    page: { position: 'absolute', inset: 0, flexDirection: 'column', background: '#c0c0c0' },
+    menu: { gap: 14, padding: '3px 8px', borderBottom: '1px solid #808080' },
+    menuItem: { margin: 0, fontFamily: 'MSSerif', fontSize: 14 },
+    paper: { flexDirection: 'column', flex: 1, overflowY: 'auto', background: '#fff', margin: 2, padding: '12px 16px', boxShadow: 'var(--border-field)' },
+    head: { margin: 0, fontFamily: 'Terminal, monospace', fontSize: 26 },
+    line: { margin: '0 0 10px', fontFamily: 'Terminal, monospace', fontSize: 22, color: '#666' },
+    block: { flexDirection: 'column', marginBottom: 14 },
+    date: { margin: '0 0 4px', fontFamily: 'Terminal, monospace', fontSize: 24, color: '#0000a3' },
+    item: { margin: '2px 0', fontFamily: 'Terminal, monospace', fontSize: 21, lineHeight: 1.15, display: 'flex', gap: 8 },
+    dash: { flexShrink: 0 },
+};
+
+export default WhatsNew;

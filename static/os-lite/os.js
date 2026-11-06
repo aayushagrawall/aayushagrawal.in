@@ -681,6 +681,55 @@
   function tick() { clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
   tick(); setInterval(tick, 10000);
 
+  // Clock pop-up: Bangalore time, a calendar and what Aayush is probably up to
+  (function () {
+    var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var pop = null, timer = 0;
+    function ist() { var d = new Date(); return new Date(d.getTime() + d.getTimezoneOffset() * 60000 + 330 * 60000); }
+    function doing(t) {
+      var h = t.getHours(), we = t.getDay() === 0 || t.getDay() === 6;
+      if (h < 6) return 'probably asleep';
+      if (h < 9) return 'probably having his morning chai';
+      if (h < 16) return we ? 'probably working on a side project' : 'probably in class at BMSCE';
+      if (h < 19) return 'probably building a side project';
+      if (h < 22) return 'probably coding or reading docs';
+      return 'probably still coding (it is late!)';
+    }
+    function draw() {
+      var t = ist(), now = new Date();
+      var first = new Date(t.getFullYear(), t.getMonth(), 1).getDay(), days = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate();
+      var cells = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(function (d) { return '<i class="dow">' + d + '</i>'; });
+      for (var k = 0; k < first; k++) cells.push('<i></i>');
+      for (var dd = 1; dd <= days; dd++) cells.push('<i' + (dd === t.getDate() ? ' class="today"' : '') + '>' + dd + '</i>');
+      var zone = ''; try { zone = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+      var diff = 330 + now.getTimezoneOffset(), a = Math.abs(diff);
+      var dtxt = diff === 0 ? '' : ' Bangalore is ' + Math.floor(a / 60) + 'h' + (a % 60 ? ' ' + (a % 60) + 'm' : '') + (diff > 0 ? ' ahead of you.' : ' behind you.');
+      var short = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      pop.querySelector('.window-body').innerHTML =
+        '<p class="ck-time">' + t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' }) + '</p>' +
+        '<p class="ck-date">' + DAYS[t.getDay()] + ', ' + t.getDate() + ' ' + MONTHS[t.getMonth()] + ' ' + t.getFullYear() + ' · IST</p>' +
+        '<div class="ck-cal sunken-panel"><div class="ck-month">' + MONTHS[t.getMonth()] + ' ' + t.getFullYear() + '</div><div class="ck-grid">' + cells.join('') + '</div></div>' +
+        '<div class="ck-status"><p>It\'s ' + short + ' in Bangalore, so Aayush is <b>' + doing(t) + '</b>.</p><p class="ck-small">' +
+        (/Calcutta|Kolkata/.test(zone) ? 'You\'re in the same time zone as Aayush!' : 'Your time: ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + (zone ? ' (' + esc(zone.split('/').pop().replace(/_/g, ' ')) + ')' : '') + '.' + dtxt) + '</p></div>';
+    }
+    function close() { if (pop) { pop.remove(); pop = null; clearInterval(timer); } }
+    clock.style.cursor = 'pointer';
+    clock.title = 'Bangalore time';
+    clock.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (pop) { close(); return; }
+      pop = el('<div class="window ck-pop"><div class="title-bar"><div class="title-bar-text"><span>Date/Time · Bangalore, India</span></div><div class="title-bar-controls"><button aria-label="Close"></button></div></div><div class="window-body"></div></div>');
+      pop.querySelector('[aria-label=Close]').addEventListener('click', close);
+      pop.addEventListener('mousedown', function (ev) { ev.stopPropagation(); });
+      pop.addEventListener('touchstart', function (ev) { ev.stopPropagation(); }, { passive: true });
+      document.body.appendChild(pop); draw(); timer = setInterval(draw, 1000);
+    });
+    document.addEventListener('mousedown', close);
+    document.addEventListener('touchstart', function (e) { if (pop && !pop.contains(e.target) && e.target !== clock) close(); }, { passive: true });
+    addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+
   // ---------- Message box ----------
   function msgBox(title, text, kind) {
     var icon = kind === 'warn'

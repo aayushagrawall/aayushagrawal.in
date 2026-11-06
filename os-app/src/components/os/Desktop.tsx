@@ -19,6 +19,7 @@ import { achieve } from '../achievements/list';
 import Assistant from './Assistant';
 import BootScreen from './BootScreen';
 import DisplayProperties from '../applications/DisplayProperties';
+import WhatsNew from '../applications/WhatsNew';
 import ContextMenu from './ContextMenu';
 import { track } from '../../utils/track';
 import { getWallpaper, Wallpaper } from '../../utils/wallpaper';
@@ -68,6 +69,7 @@ const APPLICATIONS: { [key in string]: AppDef } = {
     achievements: { key: 'achievements', name: 'Achievements', shortcutIcon: 'trophyIcon', component: AchievementsApp },
     chai: { key: 'chai', name: 'Ask Chai', shortcutIcon: 'chaiIcon', message: 'aos-assistant' },
     welcome: { key: 'welcome', name: 'Welcome', shortcutIcon: 'computerSmall', component: Welcome, hidden: true },
+    whatsnew: { key: 'whatsnew', name: "What's New", shortcutIcon: 'docIcon', component: WhatsNew, hidden: true },
     display: { key: 'display', name: 'Display Properties', shortcutIcon: 'computerSmall', component: DisplayProperties, hidden: true },
     cheat: { key: 'cheat', name: 'Cheat Code', shortcutIcon: 'windowGameIcon', component: CheatCode, hidden: true },
 };
@@ -90,6 +92,8 @@ const DEEP_LINKS: { [hash: string]: { app: string; route?: string } } = {
     computer: { app: 'mycomputer' },
     recycle: { app: 'recycle' },
     credits: { app: 'credits' },
+    whatsnew: { app: 'whatsnew' },
+    news: { app: 'whatsnew' },
 };
 
 const openDeepLink = (open: (key: string, route?: string) => void) => {
@@ -153,7 +157,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
     const openApp = (key: string, route?: string): void => {
         const app = APPLICATIONS[key];
         if (!app) return;
-        if (!app.hidden || key === 'display') track('open/' + key, 'Opened ' + app.name);
+        if (!app.hidden || key === 'display' || key === 'whatsnew') track('open/' + key, 'Opened ' + app.name);
         if (app.href) {
             window.open(app.href, '_blank', 'noopener');
             return;

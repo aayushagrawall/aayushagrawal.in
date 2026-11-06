@@ -505,3 +505,19 @@ html.single .pt { align-self: center; }
   html:not(.single) .chai-bubble { width: auto; margin-right: 20px; align-self: stretch; }
   html:not(.single) .chai-cup svg { width: 64px; height: 70px; }
 }
+
+/* ---------- Clock pop-up ---------- */
+.ck-pop { position: fixed; right: 4px; bottom: 46px; width: 310px; z-index: 9200; }
+.ck-pop .window-body { margin: 8px; }
+.ck-time { margin: 0; font: 700 30px var(--serif); }
+.ck-date { margin: 2px 0 10px; font-size: 14px; }
+.ck-cal { background: #fff; padding: 6px; }
+.ck-month { background: #000080; color: #fff; text-align: center; font-size: 14px; padding: 2px; margin-bottom: 4px; }
+.ck-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
+.ck-grid i { font-style: normal; font-size: 14px; line-height: 22px; }
+.ck-grid i.dow { color: #000080; }
+.ck-grid i.today { background: var(--accent); color: #fff; }
+.ck-status { margin-top: 10px; background: #ffffe1; padding: 8px 10px; box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a; }
+.ck-status p { margin: 0; font: 16px/1.35 var(--serif); }
+.ck-status .ck-small { margin-top: 6px; font-size: 14px; color: #444; }
+@media (max-width: 760px) { html:not(.single) .ck-pop { left: 8px; right: 8px; width: auto; } }
