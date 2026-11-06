@@ -93,9 +93,9 @@ const Welcome: React.FC<WelcomeProps> = (props) => {
                         <button
                             className="site-button"
                             style={styles.button}
-                            onMouseDown={() => window.postMessage({ type: 'aos-open', app: 'showcase', route: '/about' }, '*')}
+                            onMouseDown={() => window.postMessage({ type: 'aos-open', app: 'whatsnew' }, '*')}
                         >
-                            About Me
+                            What's New
                         </button>
                         <button className="site-button" style={styles.button} onMouseDown={() => setI((i + 1) % TIPS.length)}>
                             Next Tip

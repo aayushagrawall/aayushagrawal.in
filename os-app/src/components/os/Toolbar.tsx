@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Colors from '../../constants/colors';
 import { Icon } from '../general';
 import { isMuted, setMuted, onMuteChange } from '../../utils/sound';
+import ClockPopup from './ClockPopup';
 // import { } from '../general';
 // import Home from '../site/Home';
 // import Window from './Window';
@@ -31,6 +32,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
     const [startWindowOpen, setStartWindowOpen] = useState(false);
     const [muted, setMutedState] = useState(isMuted());
+    const [clockOpen, setClockOpen] = useState(false);
     useEffect(() => onMuteChange(setMutedState), []);
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
@@ -206,6 +208,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
                             <div
                                 className="start-menu-option"
                                 style={styles.startMenuItem}
+                                onMouseDown={(e) => launch(e, 'whatsnew')}
+                            >
+                                <Icon style={styles.startMenuItemIcon} icon="docIcon" />
+                                <p style={styles.startMenuText}>What's <u>N</u>ew</p>
+                            </div>
+                            <div
+                                className="start-menu-option"
+                                style={styles.startMenuItem}
                                 onMouseDown={(e) => launch(e, 'credits')}
                             >
                                 <Icon style={styles.startMenuItemIcon} icon="credits" />
@@ -299,7 +309,17 @@ const Toolbar: React.FC<ToolbarProps> = ({
                     >
                         <Icon style={styles.volumeIcon} icon={muted ? 'volumeOff' : 'volumeOn'} />
                     </div>
-                    <p style={styles.timeText}>{time}</p>
+                    <p
+                        style={Object.assign({}, styles.timeText, { cursor: 'pointer' })}
+                        title="Bangalore time"
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                            setClockOpen(!clockOpen);
+                        }}
+                    >
+                        {time}
+                    </p>
+                    {clockOpen && <ClockPopup onClose={() => setClockOpen(false)} />}
                 </div>
             </div>
         </div>
