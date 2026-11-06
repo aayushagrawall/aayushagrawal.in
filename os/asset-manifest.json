@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/os/static/css/main.6398c9d7.css",
-    "main.js": "/os/static/js/main.3403854e.js",
+    "main.js": "/os/static/js/main.928fee12.js",
     "static/js/27.0403f947.chunk.js": "/os/static/js/27.0403f947.chunk.js",
     "static/media/tinos-400.woff2": "/os/static/media/tinos-400.cd13784a194d9cac678b.woff2",
     "static/media/tinos-700.woff2": "/os/static/media/tinos-700.13f7ac0fe2b424a9c402.woff2",
@@ -13,6 +13,6 @@
   },
   "entrypoints": [
     "static/css/main.6398c9d7.css",
-    "static/js/main.3403854e.js"
+    "static/js/main.928fee12.js"
   ]
 }
