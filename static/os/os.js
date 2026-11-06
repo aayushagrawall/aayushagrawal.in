@@ -141,6 +141,26 @@
     }
   };
 
+  // Hit counter: reads the public GoatCounter count for the home page (needs
+  // "Allow adding visitor counts on your website" enabled in GoatCounter settings).
+  var hitCount = null;
+  function loadCounter(root) {
+    function paint(n) {
+      var box = root.querySelector('#sc-counter'); if (!box) return;
+      var digits = String(n).replace(/\D/g, '');
+      if (!digits) return;
+      while (digits.length < 6) digits = '0' + digits;
+      root.querySelector('#sc-digits').innerHTML = digits.split('').map(function (d) { return '<i>' + d + '</i>'; }).join('');
+      box.hidden = false;
+    }
+    if (hitCount !== null) return paint(hitCount);
+    var path = encodeURIComponent((location.host || 'aayushagrawal.in') + '/');
+    fetch('https://clienterr.goatcounter.com/counter/' + path + '.json')
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (j) { hitCount = j.count; paint(hitCount); })
+      .catch(function () {});
+  }
+
   function Showcase(win) {
     var root = win.querySelector('.sc');
     function render(page) {
@@ -151,7 +171,9 @@
             '<h1>Aayush<br>Agrawal</h1>' +
             '<h2>Developer &amp; AI/ML Student</h2>' +
             '<nav class="sc-hnav">' + NAV.slice(1).map(function (n) { return '<a href="#" data-page="' + n[0] + '">' + n[1].toUpperCase() + '</a>'; }).join('') + '</nav>' +
+            '<div class="sc-counter" id="sc-counter" hidden>You are visitor <span class="sc-digits" id="sc-digits"></span></div>' +
           '</div>';
+        loadCounter(root);
       } else {
         root.className = 'sc sc-inner';
         root.innerHTML =

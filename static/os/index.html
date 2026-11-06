@@ -10,7 +10,7 @@
   <link rel="canonical" href="https://aayushagrawal.in/os/" />
   <meta name="robots" content="index, follow" />
   <link rel="stylesheet" href="vendor/98css/98.css" />
-  <link rel="stylesheet" href="os.css?v=23" />
+  <link rel="stylesheet" href="os.css?v=30" />
   <script>
     // Forward input to the 3D scene around the monitor (camera + keyboard/mouse sounds).
     (function () {
@@ -22,6 +22,16 @@
       addEventListener('keydown', function (e) { send({ type: 'keydown', key: e.key }); });
       addEventListener('keyup', function (e) { send({ type: 'keyup', key: e.key }); });
     })();
+  </script>
+  <!-- GoatCounter: only count /os/ when opened directly, not inside the 3D monitor -->
+  <script>
+    if (window.parent === window) {
+      window.goatcounter = { path: function (p) { return location.host + p } };
+      var gc = document.createElement('script');
+      gc.async = true; gc.src = 'https://gc.zgo.at/count.js';
+      gc.setAttribute('data-goatcounter', 'https://clienterr.goatcounter.com/count');
+      document.head.appendChild(gc);
+    }
   </script>
 </head>
 <body>
@@ -66,6 +76,6 @@
     </div>
   </footer>
 
-  <script src="os.js?v=24"></script>
+  <script src="os.js?v=30"></script>
 </body>
 </html>
