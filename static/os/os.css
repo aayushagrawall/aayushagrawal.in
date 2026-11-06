@@ -345,3 +345,35 @@ button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px;
 .sc-digits { display: inline-flex; gap: 2px; padding: 3px; background: #000; box-shadow: inset -1px -1px #fff, inset 1px 1px grey; }
 .sc-digits i { font: bold 24px/1 "Courier New", monospace; font-style: normal; color: #39ff14; background: #111; padding: 4px 5px; text-shadow: 0 0 4px rgba(57,255,20,.7); }
 @media (max-width: 760px) { .sc-counter { margin-top: 30px; font-size: 16px; } .sc-digits i { font-size: 18px; padding: 3px 4px; } }
+
+/* ---------- Paint ---------- */
+.pt { display: flex; flex-direction: column; background: var(--face); }
+.pt-wrap { display: flex; gap: 6px; padding: 4px; }
+.pt-tools { display: grid; grid-template-columns: repeat(2, 30px); grid-auto-rows: 30px; gap: 2px; align-content: start; }
+.pt-tool, .pt-size { min-width: 0 !important; min-height: 0 !important; width: 30px; height: 30px; padding: 0 !important; display: grid; place-items: center; }
+.pt-tool svg { width: 20px; height: 20px; }
+.pt-tool.on, .pt-size.on { box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px grey; background: repeating-conic-gradient(#c0c0c0 0 25%, #fff 0 50%) 0 0 / 2px 2px; }
+.pt-sizes { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, 30px); gap: 2px; margin-top: 8px; }
+.pt-size span { display: block; background: #000; border-radius: 50%; }
+.pt-canvas-wrap { position: relative; background: #808080; padding: 0; line-height: 0; overflow: auto; max-width: 100%; }
+.pt-canvas-wrap canvas { display: block; }
+#pt-overlay { position: absolute; left: 0; top: 0; cursor: crosshair; }
+.pt-bottom { display: flex; align-items: center; gap: 10px; padding: 4px 6px 6px; }
+.pt-current { position: relative; width: 40px; height: 40px; flex: none; box-shadow: inset -1px -1px #fff, inset 1px 1px grey; background: var(--face); }
+.pt-current span { position: absolute; width: 20px; height: 20px; border: 1px solid #000; }
+#pt-fg { left: 5px; top: 5px; z-index: 1; } #pt-bg { left: 15px; top: 15px; }
+.pt-palette { display: grid; grid-template-columns: repeat(14, 22px); grid-auto-rows: 18px; gap: 1px; }
+.pt-swatch { min-width: 0 !important; min-height: 0 !important; width: 22px; height: 18px; padding: 0 !important; box-shadow: inset -1px -1px #fff, inset 1px 1px grey !important; }
+.pt-actions { margin-left: auto; display: flex; gap: 6px; }
+.pt-actions button { min-width: 72px; padding: 0 10px; }
+.pt .status-bar { margin: 0 4px 4px; }
+.pt-xy { flex: 0 0 90px; }
+.confetti { position: fixed; inset: 0; z-index: 9500; pointer-events: none; }
+@media (max-width: 760px) {
+  .pt-wrap { flex-direction: column; }
+  .pt-tools { grid-template-columns: repeat(8, 30px); }
+  .pt-sizes { grid-column: auto; grid-template-columns: repeat(4, 30px); margin: 0; }
+  .pt-canvas-wrap { max-height: 50vh; }
+  .pt-bottom { flex-wrap: wrap; }
+  .pt-palette { grid-template-columns: repeat(14, 18px); } .pt-swatch { width: 18px; }
+}
