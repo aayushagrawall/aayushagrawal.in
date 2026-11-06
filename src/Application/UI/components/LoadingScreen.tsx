@@ -8,6 +8,29 @@ type LoadingProps = {};
  * the visitor asked for reduced motion, or the browser is drawing WebGL in software,
  * or the device reports very little memory / very few CPU cores.
  */
+/** The visitor's own hardware, for the BIOS screen. Shown only on their screen, never sent anywhere. */
+const deviceInfo = () => {
+    const nav = navigator as any;
+    let gpu = '';
+    try {
+        const gl = document.createElement('canvas').getContext('webgl') as WebGLRenderingContext | null;
+        const ext = gl && gl.getExtension('WEBGL_debug_renderer_info');
+        gpu = ext && gl ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : '';
+        // "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)" -> "NVIDIA GeForce RTX 3060"
+        const angle = gpu.match(/^ANGLE \((?:[^,]*), ([^,]*)/);
+        if (angle) gpu = angle[1];
+        gpu = gpu.replace(/\s*(Direct3D|OpenGL|Vulkan|Metal).*$/i, '').replace(/\s*\(0x[0-9a-f]+\)/i, '').trim();
+        if (gpu.length > 40) gpu = gpu.slice(0, 39) + '…';
+    } catch (e) {}
+    return {
+        cores: nav.hardwareConcurrency || 0,
+        memMB: nav.deviceMemory ? Math.round(nav.deviceMemory * 1024) : 0,
+        gpu,
+        screen: `${window.screen.width}x${window.screen.height}`,
+        dpr: Math.round((window.devicePixelRatio || 1) * 100) / 100,
+    };
+};
+
 const slowReason = (): string => {
     try {
         if (typeof window.matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -42,6 +65,22 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
     const [resources] = useState<string[]>([]);
     const [mobileWarning, setMobileWarning] = useState(window.innerWidth < 768);
     const [slow] = useState(slowReason);
+    const [device] = useState(deviceInfo);
+    // the RAM check counts up like an old BIOS memory test
+    const [ramShown, setRamShown] = useState(0);
+    useEffect(() => {
+        if (!showBiosInfo) return;
+        const target = device.memMB || 640;
+        const step = Math.max(64, Math.round(target / 24));
+        const t = setInterval(() => {
+            setRamShown((r) => {
+                const n = Math.min(target, r + step);
+                if (n >= target) clearInterval(t);
+                return n;
+            });
+        }, 40);
+        return () => clearInterval(t);
+    }, [showBiosInfo]);
     const skip = () => {
         try {
             const gc = (window as any).goatcounter;
@@ -194,8 +233,17 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                         <div style={styles.spacer} />
                         {showBiosInfo && (
                             <>
-                                <p>ASP Showcase(tm) XX 113</p>
-                                <p>Checking RAM : {14000} OK</p>
+                                <p>
+                                    CPU : {device.cores ? `${device.cores} cores detected` : 'Detected'}
+                                </p>
+                                <p>
+                                    Checking RAM : {ramShown} {device.memMB ? 'MB' : 'KB'}
+                                    {ramShown >= (device.memMB || 640) ? ' OK' : ''}
+                                </p>
+                                {device.gpu && <p>Graphics : {device.gpu}</p>}
+                                <p>
+                                    Display : {device.screen} @ {device.dpr}x
+                                </p>
                                 <div style={styles.spacer} />
                                 <div style={styles.spacer} />
                                 {showLoadingResources ? (

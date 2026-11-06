@@ -639,6 +639,64 @@
     }
   });
 
+  // ---------- Vintage CRT look ----------
+  // The same layers the 3D monitor draws (inner shadow, static videos, glass smudges),
+  // added over the page like light. Shared setting with AayushOS: 'aayushos-crt'.
+  var Crt = (function () {
+    var KEY = 'aayushos-crt', layers = [];
+    function on() { try { return localStorage.getItem(KEY) !== '0'; } catch (e) { return true; } }
+    function show() {
+      if (layers.length || SINGLE) return;
+      var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var T = '/textures/monitor/';
+      layers = [
+        el('<img class="crt-layer crt-shadow" alt="" aria-hidden="true" src="' + T + 'layers/compressed/shadow-compressed.webp">'),
+        el('<video class="crt-layer crt-add" aria-hidden="true" style="opacity:.5" src="' + T + 'video/base-static.mp4" muted loop playsinline' + (still ? '' : ' autoplay') + '></video>'),
+        el('<video class="crt-layer crt-add" aria-hidden="true" style="opacity:.1" src="' + T + 'video/static-texture-layer.mp4" muted loop playsinline' + (still ? '' : ' autoplay') + '></video>'),
+        el('<img class="crt-layer crt-add" alt="" aria-hidden="true" style="opacity:.12" src="' + T + 'layers/compressed/smudges.jpg">')
+      ];
+      layers.forEach(function (l) { document.body.appendChild(l); if (l.tagName === 'VIDEO') { l.muted = true; if (!still) { var pr = l.play(); if (pr && pr.catch) pr.catch(function () {}); } } });
+    }
+    function hide() { layers.forEach(function (l) { l.remove(); }); layers = []; }
+    function set(v) { try { localStorage.setItem(KEY, v ? '1' : '0'); } catch (e) {} v ? show() : hide(); }
+    addEventListener('storage', function (e) { if (e.key === KEY) on() ? show() : hide(); });
+    if (on()) show();
+    return { on: on, set: set };
+  })();
+
+  // ---------- Mouse and keyboard clicks ----------
+  // The 3D room's recordings. Inside AayushOS (single-app iframes) the parent plays them instead.
+  (function () {
+    if (SINGLE) return;
+    var FILES = { down: '/audio/mouse/mouse_down.mp3', up: '/audio/mouse/mouse_up.mp3' };
+    for (var k = 1; k <= 6; k++) FILES['key' + k] = '/audio/keyboard/key_' + k + '.mp3';
+    var buffers = {}, ctx = null, lastKey = '';
+    var OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!OAC || !window.fetch) return;
+    var decoder = new OAC(1, 1, 44100);
+    Object.keys(FILES).forEach(function (name) {
+      fetch(FILES[name]).then(function (r) { return r.ok ? r.arrayBuffer() : Promise.reject(); })
+        .then(function (ab) { return new Promise(function (res, rej) { decoder.decodeAudioData(ab, res, rej); }); })
+        .then(function (b) { buffers[name] = b; }).catch(function () {});
+    });
+    function play(name, vol) {
+      if (isMuted() || !buffers[name]) return;
+      if (!ctx) { var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; ctx = new AC(); }
+      if (ctx.state === 'suspended') ctx.resume();
+      var src = ctx.createBufferSource(); src.buffer = buffers[name];
+      src.playbackRate.value = 0.96 + Math.random() * 0.08;
+      var g = ctx.createGain(); g.gain.value = vol;
+      src.connect(g); g.connect(ctx.destination); src.start(0);
+    }
+    addEventListener('pointerdown', function () { play('down', 0.5); }, true);
+    addEventListener('pointerup', function () { play('up', 0.5); }, true);
+    addEventListener('keydown', function (e) {
+      if (e.repeat || e.key === lastKey) return;
+      lastKey = e.key; play('key' + (1 + Math.floor(Math.random() * 6)), 0.45);
+    }, true);
+    addEventListener('keyup', function () { lastKey = ''; }, true);
+  })();
+
   // ---------- Start menu ----------
   var startBtn = document.getElementById('start-btn');
   var startMenu = document.getElementById('start-menu');
@@ -646,10 +704,19 @@
   var START = [
     ['showcase', null, 'My Showcase'], ['showcase', 'about', 'About'], ['showcase', 'experience', 'Experience'],
     ['showcase', 'projects', 'Projects'], ['showcase', 'contact', 'Contact'], '-',
-    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['achievements', null], ['ultra', null], ['welcome', null], ['credits', null], '-', 'views', 'shutdown'
+    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['achievements', null], ['ultra', null], ['welcome', null], ['credits', null], '-', 'crt', 'views', 'shutdown'
   ];
   START.forEach(function (item) {
     if (item === '-') { startList.appendChild(el('<hr>')); return; }
+    if (item === 'crt') {
+      // the vintage CRT look (same setting as AayushOS)
+      var c = el('<li>' + I.computer + '<span></span></li>');
+      var paint = function () { c.querySelector('span').textContent = 'CRT effect: ' + (Crt.on() ? 'On' : 'Off'); };
+      c.addEventListener('click', function () { Crt.set(!Crt.on()); paint(); });
+      paint();
+      startList.appendChild(c);
+      return;
+    }
     if (item === 'views') {
       // back to aayushagrawal.in: phones get the view picker there, computers get the 3D desk
       var v = el('<li>' + I.computer + '<span>' + (TOUCH ? 'Switch view...' : '3D desk version') + '</span></li>');
