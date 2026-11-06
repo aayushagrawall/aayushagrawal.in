@@ -56,6 +56,13 @@
 
   var TOUCH = window.matchMedia && matchMedia('(pointer: coarse)').matches;
   var SMALL = window.matchMedia && matchMedia('(max-width: 760px)').matches;
+  // Single-app mode: /os-lite/?app=terminal runs one app full-frame inside a window
+  // of the main AayushOS (the React desktop). Other apps open in the parent desktop.
+  var SINGLE = (function () {
+    try { return new URLSearchParams(location.search).get('app') || ''; } catch (e) { return ''; }
+  })();
+  if (SINGLE) SMALL = false;
+  function toParent(msg) { try { window.parent.postMessage(msg, '*'); } catch (e) {} }
 
   // ---------- Helpers ----------
   function el(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
@@ -357,6 +364,10 @@
   function openApp(id, page) {
     var app = APPS[id];
     if (!app) return;
+    if (SINGLE && id !== SINGLE) {
+      toParent({ type: 'aos-open', app: id, route: page && page !== 'home' ? '/' + page : page ? '/' : undefined });
+      return;
+    }
     if (app.external) { window.open(app.external, '_blank', 'noopener'); return; }
     if (app.alias) { openApp(app.alias[0], app.alias[1]); return; }
     closeStart();
@@ -417,6 +428,7 @@
 
   function closeApp(id) {
     if (!open[id]) return;
+    if (SINGLE) { toParent({ type: 'aos-close', app: SINGLE }); return; }
     open[id].win.remove();
     open[id].task.remove();
     delete open[id];
@@ -635,6 +647,7 @@
 
   // ---------- Screensaver ----------
   (function () {
+    if (SINGLE) return;
     var IDLE_MS = 60000, idleT = null, on = false, raf = 0;
     var saver = el('<div class="saver" hidden><canvas></canvas><div class="saver-logo"><span class="saver-mark">A</span><span>AayushOS <b>98</b></span></div></div>');
     document.body.appendChild(saver);
@@ -1168,6 +1181,16 @@
   }
 
   // ---------- Boot ----------
+  if (SINGLE) {
+    document.documentElement.classList.add('single');
+    document.getElementById('boot').classList.add('done');
+    openApp(SINGLE);
+    var w0 = open[SINGLE] && open[SINGLE].win;
+    if (w0) { w0.classList.add('active'); w0.style.left = ''; w0.style.top = ''; }
+    // clicking inside brings the parent window to the front
+    addEventListener('mousedown', function () { toParent({ type: 'aos-focus', app: SINGLE }); }, true);
+    return;
+  }
   setTimeout(function () {
     document.getElementById('boot').classList.add('done');
     openApp('showcase');

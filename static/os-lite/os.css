@@ -226,49 +226,55 @@ button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px;
 .tt-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 8px; }
 .tt-pad button { min-width: 0 !important; height: 40px; padding: 0 !important; font-size: 20px; }
 @media (max-width: 760px) {
-  .icons { top: 10px; left: 8px; grid-template-rows: repeat(auto-fill, 84px); grid-auto-columns: 96px; }
-  button.icon, button.icon:active, button.icon:focus { width: 96px; }
-  .icon span { font-size: 13px; }
-  .win.max { height: 100% !important; }
-  .win .title-bar-text { font-size: 15px; }
-  .task-buttons button { flex-basis: 120px; font-size: 13px; }
-  .sc-home .sc-hero { padding: 24px 16px; }
-  .sc-hero h1 { font-size: 64px; letter-spacing: -1px; }
-  .sc-hero h2 { font-size: 22px; letter-spacing: 1px; margin-top: 14px; }
-  .sc-hnav { gap: 14px 22px; margin-top: 44px; }
-  .sc-hnav a { font-size: 20px; }
-  .sc-inner { flex-direction: column; }
-  .sc-side { flex: none; width: 100%; padding: 22px 20px 0; }
-  .sc-side h1 { font-size: 40px; }
-  .sc-side h3 { font-size: 20px; margin-top: 8px; }
-  .sc-vnav { flex-direction: row; flex-wrap: wrap; gap: 10px 18px; margin-top: 18px; }
-  .sc-vnav a { font-size: 18px; }
-  .sc-vnav a.cur::before { display: none; }
-  .sc-vnav a.cur { color: #000; }
-  .sc-subnav { display: none; }
-  .sc-main { padding: 22px 20px 40px; }
-  .sc-title { font-size: 56px; }
-  .sc-sub { font-size: 22px; margin-top: 8px; }
-  .sc-body { font-size: 17px; margin-top: 20px; }
-  .sc-h { font-size: 22px; margin: 28px 0 10px !important; }
-  .sc-callout { padding: 14px; } .sc-callout p, .sc-callout a { font-size: 18px; }
-  .sc-facts { font-size: 16px; } .sc-facts td { padding-right: 14px; }
-  .sc-job h2 { font-size: 20px; } .sc-job h3 { font-size: 16px; }
-  .sc-row { flex-wrap: wrap; } .sc-row span { font-size: 15px; }
-  .sc-project h2 { font-size: 30px; }
-  .sc-socials { flex-direction: column; } .sc a.sc-social { flex: none; }
-  .sc-form label { font-size: 17px; } .sc-form input, .sc-form textarea { font-size: 16px; }
-  .page { padding: 18px; font-size: 16px; }
-  .tetris { flex-direction: column; align-items: center; }
-  .tetris-board canvas { width: 220px; height: 440px; }
-  .tetris-side { width: 220px; }
-  .tetris-side .tt-help { display: none; }
-  .start-menu { width: 280px; }
-  .boot-title { font-size: 32px; }
+  html:not(.single) .icons { top: 10px; left: 8px; grid-template-rows: repeat(auto-fill, 84px); grid-auto-columns: 96px; }
+  html:not(.single) button.icon, html:not(.single) button.icon:active, html:not(.single) button.icon:focus { width: 96px; }
+  html:not(.single) .icon span { font-size: 13px; }
+  html:not(.single) .win.max { height: 100% !important; }
+  html:not(.single) .win .title-bar-text { font-size: 15px; }
+  html:not(.single) .task-buttons button { flex-basis: 120px; font-size: 13px; }
+  html:not(.single) .sc-home .sc-hero { padding: 24px 16px; }
+  html:not(.single) .sc-hero h1 { font-size: 64px; letter-spacing: -1px; }
+  html:not(.single) .sc-hero h2 { font-size: 22px; letter-spacing: 1px; margin-top: 14px; }
+  html:not(.single) .sc-hnav { gap: 14px 22px; margin-top: 44px; }
+  html:not(.single) .sc-hnav a { font-size: 20px; }
+  html:not(.single) .sc-inner { flex-direction: column; }
+  html:not(.single) .sc-side { flex: none; width: 100%; padding: 22px 20px 0; }
+  html:not(.single) .sc-side h1 { font-size: 40px; }
+  html:not(.single) .sc-side h3 { font-size: 20px; margin-top: 8px; }
+  html:not(.single) .sc-vnav { flex-direction: row; flex-wrap: wrap; gap: 10px 18px; margin-top: 18px; }
+  html:not(.single) .sc-vnav a { font-size: 18px; }
+  html:not(.single) .sc-vnav a.cur::before { display: none; }
+  html:not(.single) .sc-vnav a.cur { color: #000; }
+  html:not(.single) .sc-subnav { display: none; }
+  html:not(.single) .sc-main { padding: 22px 20px 40px; }
+  html:not(.single) .sc-title { font-size: 56px; }
+  html:not(.single) .sc-sub { font-size: 22px; margin-top: 8px; }
+  html:not(.single) .sc-body { font-size: 17px; margin-top: 20px; }
+  html:not(.single) .sc-h { font-size: 22px; margin: 28px 0 10px !important; }
+  html:not(.single) .sc-callout { padding: 14px; }
+  html:not(.single) .sc-callout p, html:not(.single) .sc-callout a { font-size: 18px; }
+  html:not(.single) .sc-facts { font-size: 16px; }
+  html:not(.single) .sc-facts td { padding-right: 14px; }
+  html:not(.single) .sc-job h2 { font-size: 20px; }
+  html:not(.single) .sc-job h3 { font-size: 16px; }
+  html:not(.single) .sc-row { flex-wrap: wrap; }
+  html:not(.single) .sc-row span { font-size: 15px; }
+  html:not(.single) .sc-project h2 { font-size: 30px; }
+  html:not(.single) .sc-socials { flex-direction: column; }
+  html:not(.single) .sc a.sc-social { flex: none; }
+  html:not(.single) .sc-form label { font-size: 17px; }
+  html:not(.single) .sc-form input, html:not(.single) .sc-form textarea { font-size: 16px; }
+  html:not(.single) .page { padding: 18px; font-size: 16px; }
+  html:not(.single) .tetris { flex-direction: column; align-items: center; }
+  html:not(.single) .tetris-board canvas { width: 220px; height: 440px; }
+  html:not(.single) .tetris-side { width: 220px; }
+  html:not(.single) .tetris-side .tt-help { display: none; }
+  html:not(.single) .start-menu { width: 280px; }
+  html:not(.single) .boot-title { font-size: 32px; }
 }
 @media (max-width: 760px) {
-  .tetris-side { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .tetris-side fieldset:first-child, .tetris-side > button, .tt-pad { grid-column: 1 / -1; }
+  html:not(.single) .tetris-side { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  html:not(.single) .tetris-side fieldset:first-child, html:not(.single) .tetris-side > button, html:not(.single) .tt-pad { grid-column: 1 / -1; }
 }
 
 /* ---------- Terminal ---------- */
@@ -285,16 +291,16 @@ button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px;
 .term-in { flex: 1; background: transparent !important; border: none !important; box-shadow: none !important; outline: none;
   color: #fff; font: 18px "Courier New", Courier, monospace !important; padding: 0 0 0 2px !important; height: auto !important; caret-color: #fff; }
 @media (max-width: 760px) {
-  .win .title-bar-text { min-width: 0; overflow: hidden; }
-  .win .title-bar-text span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tetris { flex-direction: row; align-items: flex-start; justify-content: center; gap: 8px; padding: 6px; }
-  .tetris-board canvas { width: 170px; height: 340px; }
-  .tetris-side { width: 150px; display: flex; flex-direction: column; gap: 4px; }
-  .tetris-side fieldset { padding: 2px 6px 4px; }
-  .tetris-side legend { font-size: 12px; }
-  .tt-num { font-size: 18px; }
-  #tt-next { width: 90px; height: 68px; }
-  .tt-pad button { height: 44px; }
+  html:not(.single) .win .title-bar-text { min-width: 0; overflow: hidden; }
+  html:not(.single) .win .title-bar-text span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html:not(.single) .tetris { flex-direction: row; align-items: flex-start; justify-content: center; gap: 8px; padding: 6px; }
+  html:not(.single) .tetris-board canvas { width: 170px; height: 340px; }
+  html:not(.single) .tetris-side { width: 150px; display: flex; flex-direction: column; gap: 4px; }
+  html:not(.single) .tetris-side fieldset { padding: 2px 6px 4px; }
+  html:not(.single) .tetris-side legend { font-size: 12px; }
+  html:not(.single) .tt-num { font-size: 18px; }
+  html:not(.single) #tt-next { width: 90px; height: 68px; }
+  html:not(.single) .tt-pad button { height: 44px; }
 }
 
 /* ---------- Message box ---------- */
@@ -337,14 +343,19 @@ button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px;
 .saver-logo b { color: var(--accent); font-weight: 900; }
 .saver-mark { width: 60px; height: 60px; display: grid; place-items: center; background: var(--accent); color: #fff;
   box-shadow: inset -4px -4px 0 rgba(0,0,0,.35), inset 4px 4px 0 rgba(255,255,255,.35); font-size: 42px; }
-@media (max-width: 760px) { .wl { width: auto; } .wl-main { flex-direction: column; } .wl-btns { width: auto; flex-direction: row; } }
+@media (max-width: 760px) {
+  html:not(.single) .wl { width: auto; }
+  html:not(.single) .wl-main { flex-direction: column; }
+  html:not(.single) .wl-btns { width: auto; flex-direction: row; } }
 
 /* 90s hit counter */
 .sc-counter { margin-top: 56px; display: inline-flex; align-items: center; gap: 12px; font: 700 20px var(--serif); }
 .sc-counter[hidden] { display: none; }
 .sc-digits { display: inline-flex; gap: 2px; padding: 3px; background: #000; box-shadow: inset -1px -1px #fff, inset 1px 1px grey; }
 .sc-digits i { font: bold 24px/1 "Courier New", monospace; font-style: normal; color: #39ff14; background: #111; padding: 4px 5px; text-shadow: 0 0 4px rgba(57,255,20,.7); }
-@media (max-width: 760px) { .sc-counter { margin-top: 30px; font-size: 16px; } .sc-digits i { font-size: 18px; padding: 3px 4px; } }
+@media (max-width: 760px) {
+  html:not(.single) .sc-counter { margin-top: 30px; font-size: 16px; }
+  html:not(.single) .sc-digits i { font-size: 18px; padding: 3px 4px; } }
 
 /* ---------- Paint ---------- */
 .pt { display: flex; flex-direction: column; background: var(--face); }
@@ -370,12 +381,13 @@ button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px;
 .pt-xy { flex: 0 0 90px; }
 .confetti { position: fixed; inset: 0; z-index: 9500; pointer-events: none; }
 @media (max-width: 760px) {
-  .pt-wrap { flex-direction: column; }
-  .pt-tools { grid-template-columns: repeat(8, 30px); }
-  .pt-sizes { grid-column: auto; grid-template-columns: repeat(4, 30px); margin: 0; }
-  .pt-canvas-wrap { max-height: 50vh; }
-  .pt-bottom { flex-wrap: wrap; }
-  .pt-palette { grid-template-columns: repeat(14, 18px); } .pt-swatch { width: 18px; }
+  html:not(.single) .pt-wrap { flex-direction: column; }
+  html:not(.single) .pt-tools { grid-template-columns: repeat(8, 30px); }
+  html:not(.single) .pt-sizes { grid-column: auto; grid-template-columns: repeat(4, 30px); margin: 0; }
+  html:not(.single) .pt-canvas-wrap { max-height: 50vh; }
+  html:not(.single) .pt-bottom { flex-wrap: wrap; }
+  html:not(.single) .pt-palette { grid-template-columns: repeat(14, 18px); }
+  html:not(.single) .pt-swatch { width: 18px; }
 }
 
 /* =====================================================================
@@ -427,7 +439,21 @@ body.resizing, body.resizing * { cursor: nwse-resize !important; }
 .sc-sub { font: bold 33px/1.15 "Pixelated MS Sans Serif", Arial, sans-serif !important; -webkit-font-smoothing: none; }
 .sc-counter { font: bold 22px "Pixelated MS Sans Serif", Arial, sans-serif; -webkit-font-smoothing: none; }
 @media (max-width: 760px) {
-  .sc-hero h2 { font-size: 22px; }
-  .sc-side h3, .sc-sub { font-size: 22px !important; }
-  .icon span { font-size: 13px !important; }
+  html:not(.single) .sc-hero h2 { font-size: 22px; }
+  html:not(.single) .sc-side h3, html:not(.single) .sc-sub { font-size: 22px !important; }
+  html:not(.single) .icon span { font-size: 13px !important; }
 }
+
+/* ---------- single-app mode (an app hosted in a window of the main AayushOS) ---------- */
+html.single, html.single body { background: #c0c0c0; overflow: hidden; }
+html.single .boot, html.single .icons, html.single .taskbar, html.single .start-menu,
+html.single .recycle-icon, html.single .win-outline { display: none !important; }
+html.single .desktop { position: fixed; inset: 0; background: #c0c0c0; }
+html.single .win {
+  position: fixed !important; inset: 0 !important; width: 100% !important; height: 100% !important;
+  margin: 0; padding: 0; border: 0; box-shadow: none; display: flex; flex-direction: column;
+}
+html.single .win > .title-bar, html.single .win > .resize, html.single .win > .status-bar { display: none; }
+html.single .win > .window-body { flex: 1; margin: 0; min-height: 0; display: flex; flex-direction: column; justify-content: center; align-items: stretch; }
+html.single .tetris { align-self: center; }
+html.single .pt { align-self: center; }

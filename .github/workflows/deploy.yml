@@ -23,8 +23,12 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            os-app/package-lock.json
       - run: npm ci
-      - run: npm run build
+      - run: cd os-app && npm ci --legacy-peer-deps
+      - run: CI=false npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
