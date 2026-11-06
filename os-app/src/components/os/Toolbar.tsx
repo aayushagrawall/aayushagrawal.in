@@ -184,9 +184,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
                             <div
                                 className="start-menu-option"
                                 style={styles.startMenuItem}
-                                onMouseDown={(e) => launch(e, 'chai')}
+                                onMouseDown={(e) => launch(e, 'ultra')}
                             >
-                                <Icon style={styles.startMenuItemIcon} icon="chaiIcon" />
+                                <Icon style={styles.startMenuItemIcon} icon="canIcon" />
                                 <p style={styles.startMenuText}>Ask C<u>h</u>ai</p>
                             </div>
                             <div

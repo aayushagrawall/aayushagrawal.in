@@ -68,7 +68,7 @@ const APPLICATIONS: { [key in string]: AppDef } = {
     recycle: { key: 'recycle', name: 'Recycle Bin', shortcutIcon: 'recycleIcon', ...legacy('recycle', 'Recycle Bin', 'recycleSmall', 760, 470, 160, 320, 'Double-click a file to peek inside') },
     credits: { key: 'credits', name: 'Credits', shortcutIcon: 'credits', component: Credits },
     achievements: { key: 'achievements', name: 'Achievements', shortcutIcon: 'trophyIcon', component: AchievementsApp },
-    chai: { key: 'chai', name: 'Ask Chai', shortcutIcon: 'chaiIcon', message: 'aos-assistant' },
+    ultra: { key: 'ultra', name: 'Ask White', shortcutIcon: 'canIcon', message: 'aos-assistant' },
     welcome: { key: 'welcome', name: 'Welcome', shortcutIcon: 'computerSmall', component: Welcome, hidden: true },
     whatsnew: { key: 'whatsnew', name: "What's New", shortcutIcon: 'docIcon', component: WhatsNew, hidden: true },
     display: { key: 'display', name: 'Display Properties', shortcutIcon: 'computerSmall', component: DisplayProperties, hidden: true },

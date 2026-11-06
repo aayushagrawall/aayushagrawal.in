@@ -17,7 +17,7 @@ const FACTS: [string, string][] = [
     ['Processor', 'Curiosity @ 3.0 GHz'],
     ['Memory', 'Too many open tabs'],
     ['Storage', 'GitHub, mostly'],
-    ['Fuel', 'Chai, 240 ml'],
+    ['Fuel', 'White, 500 ml'],
     ['Location', 'Bangalore, India'],
 ];
 

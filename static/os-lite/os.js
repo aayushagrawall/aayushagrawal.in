@@ -36,7 +36,7 @@
   // ---------- Icons (original pixel art) ----------
   var I = {
     trophy: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><path d="M3 1h10v1h2v4h-1v1h-1v1h-1v1h-1v1H9v2h2v1h1v2H4v-2h1v-1h2v-2H6V9H5V8H4V7H3V6H2V2h1z" fill="#000"/><path d="M4 2h8v5h-1v1h-1v1H6V8H5V7H4z" fill="#f6c94d"/><path d="M4 2h2v5H5V7H4z" fill="#ffec8c"/><path d="M5 13h6v1H5z" fill="#805014"/></svg>',
-    chai: '<svg viewBox="0 0 24 26" shape-rendering="crispEdges"><path d="M8 0h1v2H8zM9 2h1v2H9zM13 1h1v2h-1zM12 3h1v2h-1z" fill="#fff"/><path d="M3 6h17v1h-1v3h3v7h-3v2h-1v1h-1v1H6v-1H5v-1H4v-1H3z" fill="#000"/><rect x="4" y="7" width="15" height="2" fill="#96400a"/><rect x="4" y="9" width="15" height="10" fill="#e8b478"/><rect x="19" y="11" width="2" height="5" fill="#3e9697"/><path d="M8 11h2v2H8zM13 11h2v2h-2zM10 15h3v1h-3zM9 14h1v1H9zM13 14h1v1h-1z" fill="#000"/><path d="M7 14h1v1H7zM15 14h1v1h-1z" fill="#ff8a7a"/><rect x="2" y="21" width="20" height="1" fill="#ff6a1a"/><path d="M1 22h22v1H1zM3 23h18v1H3z" fill="#000"/></svg>',
+    ultra: '<svg viewBox="0 0 24 26" shape-rendering="crispEdges"><g class="ultra-fizz" fill="#bfe3ff"><rect x="3" y="9" width="1" height="1"/><rect x="20" y="13" width="1" height="1"/><rect x="3" y="16" width="1" height="1"/><rect x="20" y="6" width="1" height="1"/></g><rect x="6" y="24" width="12" height="1" fill="#000" opacity=".25"/><rect x="12" y="1" width="4" height="1" fill="#000"/><rect x="7" y="2" width="10" height="1" fill="#000"/><rect x="6" y="3" width="1" height="1" fill="#000"/><rect x="17" y="3" width="1" height="1" fill="#000"/><rect x="5" y="4" width="1" height="18" fill="#000"/><rect x="18" y="4" width="1" height="18" fill="#000"/><rect x="6" y="22" width="1" height="1" fill="#000"/><rect x="17" y="22" width="1" height="1" fill="#000"/><rect x="7" y="23" width="10" height="1" fill="#000"/><rect x="7" y="3" width="10" height="1" fill="#c9cfd6"/><rect x="6" y="4" width="12" height="2" fill="#aeb5be"/><rect x="7" y="4" width="3" height="1" fill="#e8ecf0"/><rect x="6" y="6" width="12" height="15" fill="#f4f5f7"/><rect x="6" y="6" width="1" height="15" fill="#ffffff"/><rect x="16" y="6" width="2" height="15" fill="#d6dade"/><rect x="15" y="6" width="1" height="15" fill="#a9c1d6"/><rect x="6" y="21" width="12" height="1" fill="#aeb5be"/><rect x="7" y="22" width="10" height="1" fill="#8d949d"/><rect x="12" y="15" width="1" height="1" fill="#7f9db8"/><rect x="11" y="16" width="2" height="1" fill="#7f9db8"/><rect x="11" y="17" width="1" height="1" fill="#7f9db8"/><rect x="10" y="18" width="1" height="1" fill="#7f9db8"/><rect x="8" y="10" width="2" height="2" fill="#000"/><rect x="13" y="10" width="2" height="2" fill="#000"/><rect x="8" y="10" width="1" height="1" fill="#fff"/><rect x="13" y="10" width="1" height="1" fill="#fff"/><rect x="7" y="13" width="1" height="1" fill="#ff9aa8"/><rect x="16" y="13" width="1" height="1" fill="#ff9aa8"/><rect x="9" y="13" width="1" height="1" fill="#000"/><rect x="13" y="13" width="1" height="1" fill="#000"/><rect x="10" y="14" width="3" height="1" fill="#000"/></svg>',
     showcase: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="2" y="3" width="28" height="26" fill="#fff" stroke="#000"/><rect x="2" y="3" width="28" height="5" fill="#000080"/><rect x="25" y="4" width="3" height="3" fill="#c0c0c0"/><path d="M9 26l5-15h4l5 15h-3l-1-3h-6l-1 3zm5-6h4l-2-6z" fill="#000"/></svg>',
     folder: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M2 8h11l2 3h15v17H2z" fill="#f6c94d" stroke="#000"/><rect x="2" y="13" width="28" height="15" fill="#ffdd6e" stroke="#000"/></svg>',
     instagram: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><defs><linearGradient id="igg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".35" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset=".85" stop-color="#962fbf"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs><rect x="3" y="3" width="26" height="26" rx="7" fill="url(#igg)" stroke="#000"/><rect x="8" y="8" width="16" height="16" rx="5" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="16" cy="16" r="4" fill="none" stroke="#fff" stroke-width="2.5"/><rect x="21" y="9" width="2.5" height="2.5" fill="#fff"/></svg>',
@@ -78,7 +78,7 @@
     ['artist', 'Artist', 'Save a drawing from Paint.', 'Saved a Paint masterpiece.'],
     ['dumpster', 'Dumpster Diver', "Peek inside something that's been thrown away.", 'Opened a file in the Recycle Bin.'],
     ['afk', 'AFK', 'Step away from the computer for a while.', 'Watched the screensaver.'],
-    ['chatty', 'Small Talk', 'Ask Chai three questions.', 'Asked Chai three questions.'],
+    ['chatty', 'Small Talk', 'Ask White three questions.', 'Asked White three questions.'],
     ['shutdown', 'Persistent', 'Try to turn the computer off. A few times.', 'Shut down AayushOS five times.'],
     ['night', 'Night Owl', 'Visit when Bangalore is asleep.', 'Visited between midnight and 5 am IST.'],
     ['all', 'Completionist', 'Unlock every other achievement.', 'Unlocked everything. Respect.']
@@ -328,7 +328,7 @@
           '<div class="facts" style="text-align:left;max-width:340px;margin:14px auto">' +
           '<dt>Processor</dt><dd>Curiosity @ 3.0 GHz</dd>' +
           '<dt>Memory</dt><dd>Too many open tabs</dd>' +
-          '<dt>Fuel</dt><dd>Chai</dd>' +
+          '<dt>Fuel</dt><dd>White</dd>' +
           '<dt>Uptime</dt><dd id="uptime">0s</dd>' +
           '</div>' +
           '<div class="btn-row" style="justify-content:center"><button data-open="credits">Credits</button></div>' +
@@ -429,7 +429,7 @@
         refreshAch = draw; draw();
       }
     },
-    chai: { title: 'Ask Chai', icon: 'chai', render: function () { return ''; } },
+    ultra: { title: 'Ask White', icon: 'ultra', render: function () { return ''; } },
 
     projects: { title: 'Projects', icon: 'folder', alias: ['showcase', 'projects'] },
 
@@ -439,7 +439,7 @@
     site: { title: 'My Website', icon: 'globe', external: ME.site }
   };
 
-  var DESKTOP = ['showcase', 'projects', 'resume', 'terminal', 'tetris', 'paint', 'mycomputer', 'achievements', 'chai', 'github', 'linkedin', 'instagram', 'site'];
+  var DESKTOP = ['showcase', 'projects', 'resume', 'terminal', 'tetris', 'paint', 'mycomputer', 'achievements', 'ultra', 'github', 'linkedin', 'instagram', 'site'];
 
   // ---------- Window manager ----------
   var windowsEl = document.getElementById('windows');
@@ -467,7 +467,7 @@
       track('open/' + id, 'Opened ' + (app.short || app.title));
       if (id === 'resume') achieve('resume');
       if (LITE_APPS.indexOf(id) >= 0 && addTo('aayushos-seen-apps', id, LITE_APPS)) achieve('explorer');
-      if (id === 'chai') { Chai.show(); return; }
+      if (id === 'ultra') { Ultra.show(); return; }
     }
     if (app.external) { window.open(app.external, '_blank', 'noopener'); return; }
     if (app.alias) { openApp(app.alias[0], app.alias[1]); return; }
@@ -626,7 +626,7 @@
   var START = [
     ['showcase', null, 'My Showcase'], ['showcase', 'about', 'About'], ['showcase', 'experience', 'Experience'],
     ['showcase', 'projects', 'Projects'], ['showcase', 'contact', 'Contact'], '-',
-    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['achievements', null], ['chai', null], ['welcome', null], ['credits', null], '-', 'views', 'shutdown'
+    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['achievements', null], ['ultra', null], ['welcome', null], ['credits', null], '-', 'views', 'shutdown'
   ];
   START.forEach(function (item) {
     if (item === '-') { startList.appendChild(el('<hr>')); return; }
@@ -698,7 +698,7 @@
     function doing(t) {
       var h = t.getHours(), we = t.getDay() === 0 || t.getDay() === 6;
       if (h < 6) return 'probably asleep';
-      if (h < 9) return 'probably having his morning chai';
+      if (h < 9) return 'probably cracking open his first can of White';
       if (h < 16) return we ? 'probably working on a side project' : 'probably in class at BMSCE';
       if (h < 19) return 'probably building a side project';
       if (h < 22) return 'probably coding or reading docs';
@@ -995,7 +995,7 @@
         bits.forEach(function (b) { b.vy += .55; b.vx *= .99; b.x += b.vx; b.y += b.vy; b.r += .2; g.fillStyle = b.c; g.save(); g.translate(b.x, b.y); g.rotate(b.r); g.fillRect(-b.s / 2, -b.s / 2, b.s, b.s); g.restore(); });
         if (t - t0 < 4200) requestAnimationFrame(tick); else c.remove();
       })(t0);
-      setTimeout(function () { msgBox('Cheat Code Accepted', '<b>↑ ↑ ↓ ↓ ← → ← → B A</b><br><br>+30 lives. Unlimited chai. You clearly know your classics, so you\'d probably get along with me. Say hi from the Contact page!'); }, 400);
+      setTimeout(function () { msgBox('Cheat Code Accepted', '<b>↑ ↑ ↓ ↓ ← → ← → B A</b><br><br>+30 lives. Unlimited White. You clearly know your classics, so you\'d probably get along with me. Say hi from the Contact page!'); }, 400);
     }
   })();
 
@@ -1096,7 +1096,7 @@
       neofetch: function () {
         var art = ['   ▄▄▄▄▄▄   ', '  █▀    ▀█  ', '  █▄▄▄▄▄▄█  ', '  █      █  ', '  ▀      ▀  '];
         var info = ['<b>guest</b>@<b>aayushos</b>', '----------------', '<b>OS</b>: AayushOS 98 (Bangalore Edition)', '<b>Host</b>: aayushagrawal.in',
-          '<b>Owner</b>: Aayush Agrawal', '<b>Kernel</b>: Curiosity 3.0', '<b>Shell</b>: cmd.js', '<b>Fuel</b>: Chai'];
+          '<b>Owner</b>: Aayush Agrawal', '<b>Kernel</b>: Curiosity 3.0', '<b>Shell</b>: cmd.js', '<b>Fuel</b>: White'];
         var r = [];
         for (var i = 0; i < info.length; i++) r.push('<span class="accent">' + (art[i] || '            ').replace(/ /g, '&nbsp;') + '</span>  ' + info[i]);
         return r;
@@ -1140,8 +1140,9 @@
         }
         return ['guest is not in the sudoers file. This incident will be reported.'];
       },
-      chai: function () { return ['☕ Brewing chai... done. Productivity +10.']; },
-      coffee: function () { return ['Error 418: I\'m a chai person.']; },
+      white: function () { return ['*pssht* One cold can of White, opened. Productivity +10.']; },
+      chai: function () { return ['Out of chai. There is a cold can of White in the fridge though: try <b>white</b>.']; },
+      coffee: function () { return ['Error 418: this desk runs on White, not coffee.']; },
       hello: function () { return ['Hi there! Type <b>help</b> to see what I can do.']; },
       hi: function () { return CMDS.hello(); }
     };
@@ -1348,8 +1349,8 @@
     requestAnimationFrame(loop);
   }
 
-  // ---------- Chai, the desk assistant ----------
-  var Chai = (function () {
+  // ---------- White, the desk assistant (a talking can of his energy drink) ----------
+  var Ultra = (function () {
     var QAS = [
       ['Who is Aayush?', "He's an AI & Machine Learning undergrad at BMS College of Engineering in Bangalore, graduating in 2028. He builds small, useful software: Python tools, Discord bots and websites.", [['About me', 'showcase', 'about']]],
       ["What's his tech stack?", 'Python, JavaScript, Java and C, plus HTML & CSS, Node.js, Discord.js, MySQL, MongoDB, machine learning and Git.', []],
@@ -1363,28 +1364,28 @@
     function close() { if (box) { box.remove(); box = null; } }
     function draw(qa) {
       var inner = qa
-        ? '<p class="chai-qt">' + esc(qa[0]) + '</p><p>' + esc(qa[1]) + '</p><div class="chai-acts">' +
+        ? '<p class="ultra-qt">' + esc(qa[0]) + '</p><p>' + esc(qa[1]) + '</p><div class="ultra-acts">' +
           qa[2].map(function (a, i) { return '<button data-act="' + i + '">' + esc(a[0]) + '</button>'; }).join('') + '<button data-back>Ask something else</button></div>'
-        : '<p>Hi! I\'m <b>Chai</b>, Aayush\'s desk assistant. What would you like to know?</p><div class="chai-qs">' +
+        : '<p>Hi! I\'m <b>White</b>, Aayush\'s desk assistant (and his energy drink). What would you like to know?</p><div class="ultra-qs">' +
           QAS.map(function (q, i) { return '<a href="#" data-q="' + i + '">' + esc(q[0]) + '</a>'; }).join('') + '</div>';
-      box.querySelector('.chai-bubble-in').innerHTML = inner;
+      box.querySelector('.ultra-bubble-in').innerHTML = inner;
       box._qa = qa;
     }
     function show() {
       if (!box) {
-        box = el('<div class="chai"><div class="chai-bubble"><button class="chai-x" aria-label="Close">×</button><div class="chai-bubble-in"></div></div><div class="chai-cup">' + I.chai + '</div></div>');
+        box = el('<div class="ultra"><div class="ultra-bubble"><button class="ultra-x" aria-label="Close">×</button><div class="ultra-bubble-in"></div></div><div class="ultra-cup">' + I.ultra + '</div></div>');
         box.addEventListener('click', function (e) {
-          if (e.target.closest('.chai-x')) { close(); return; }
+          if (e.target.closest('.ultra-x')) { close(); return; }
           var q = e.target.closest('[data-q]');
           if (q) {
             e.preventDefault();
             var qa = QAS[+q.dataset.q];
             asked[qa[0]] = 1;
-            track('chai/' + qa[0].toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, ''), 'Asked Chai: ' + qa[0]);
+            track('ultra/' + qa[0].toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, ''), 'Asked White: ' + qa[0]);
             if (Object.keys(asked).length >= 3) achieve('chatty');
             draw(qa); return;
           }
-          if (e.target.closest('[data-back]') || e.target.closest('.chai-cup')) { draw(null); return; }
+          if (e.target.closest('[data-back]') || e.target.closest('.ultra-cup')) { draw(null); return; }
           var act = e.target.closest('[data-act]');
           if (act && box._qa) { var a = box._qa[2][+act.dataset.act]; openApp(a[1], a[2]); if (SMALL) close(); }
         });
@@ -1436,8 +1437,8 @@
     var linked = openLink();
     var ist = (new Date().getUTCHours() + new Date().getUTCMinutes() / 60 + 5.5) % 24;
     if (ist < 5) setTimeout(function () { achieve('night'); }, 6000);
-    var chaiSeen = false; try { chaiSeen = sessionStorage.getItem('aayushos-chai-shown') === '1'; } catch (e) {}
-    if (!chaiSeen) setTimeout(function () { Chai.show(); try { sessionStorage.setItem('aayushos-chai-shown', '1'); } catch (e) {} }, 25000);
+    var ultraSeen = false; try { ultraSeen = sessionStorage.getItem('aayushos-ultra-shown') === '1'; } catch (e) {}
+    if (!ultraSeen) setTimeout(function () { Ultra.show(); try { sessionStorage.setItem('aayushos-ultra-shown', '1'); } catch (e) {} }, 25000);
     if (linked) return;
     var off = false; try { off = localStorage.getItem('aayushos-welcome-off') === '1'; } catch (e) {}
     // In the 3D monitor, open on the clean Showcase hero; the tips dialog is in the Start menu.

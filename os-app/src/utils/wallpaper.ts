@@ -28,12 +28,12 @@ export const WALLPAPERS: Wallpaper[] = [
         },
     },
     {
-        id: 'chai',
-        name: 'Chai',
+        id: 'cans',
+        name: 'Cold Cans',
         css: {
-            backgroundColor: '#8a4a1a',
+            backgroundColor: '#2c3a48',
             backgroundImage: px(
-                '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" shape-rendering="crispEdges"><rect width="32" height="32" fill="#8a4a1a"/><rect x="10" y="12" width="10" height="9" fill="#a85e24"/><rect x="20" y="14" width="2" height="5" fill="#a85e24"/><rect x="12" y="8" width="1" height="3" fill="#a85e24"/><rect x="16" y="7" width="1" height="3" fill="#a85e24"/></svg>'
+                '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" shape-rendering="crispEdges"><rect width="32" height="32" fill="#2c3a48"/><rect x="12" y="8" width="8" height="1" fill="#4c6074"/><rect x="11" y="9" width="10" height="15" fill="#3a4b5d"/><rect x="11" y="9" width="10" height="2" fill="#4c6074"/><rect x="18" y="11" width="1" height="13" fill="#47607a"/></svg>'
             ),
         },
     },
@@ -62,7 +62,7 @@ export const getWallpaper = (): Wallpaper => {
     let id = defaultWallpaper();
     try {
         const saved = localStorage.getItem(KEY);
-        if (saved && saved !== 'auto') id = saved;
+        if (saved && saved !== 'auto') id = saved === 'chai' ? 'cans' : saved;
     } catch (e) {}
     return WALLPAPERS.find((w) => w.id === id) || WALLPAPERS[0];
 };
