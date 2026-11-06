@@ -70,6 +70,9 @@ export default class Camera extends EventEmitter {
             event.preventDefault();
             // @ts-ignore
             if (event.target.id === 'prevent-click') return;
+            // a click on something clickable on the desk (poster, can) keeps the camera put
+            // @ts-ignore
+            if (event.aosClickable) return;
             // print target and current keyframe
             if (
                 this.currentKeyframe === CameraKey.IDLE ||

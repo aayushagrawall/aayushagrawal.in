@@ -94,6 +94,11 @@ const sources: Resource[] = [
         type: 'audio',
         path: 'audio/cc/type.mp3',
     },
+    {
+        name: 'canOpen',
+        type: 'audio',
+        path: 'audio/desk/can_open.mp3',
+    },
 ];
 
 export default sources;

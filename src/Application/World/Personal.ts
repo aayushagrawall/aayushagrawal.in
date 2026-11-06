@@ -6,8 +6,9 @@ import Application from '../Application';
  *  - a walnut nameplate with his name
  *  - a sticky note on the monitor bezel
  *  - a framed poster on the desk with a QR code to the web resume (click it too)
- *  - a cold can of White, his energy drink, in place of the coffee mug
- *  - a "Bangalore night" tint between 7 pm and 6 am IST (override with ?night=1 / ?night=0)
+ *  - a cold can of White, his energy drink, in place of the coffee mug (click it: pssht)
+ *  - a warm sunset tint from 5 to 7 pm IST and a "Bangalore night" tint from 7 pm to 6 am
+ *    (override with ?time=day / sunset / night, or the older ?night=1 / ?night=0)
  *
  * Objects are placed by ray-casting against the baked models so they sit exactly on
  * the desk and the bezel. Materials are unlit (like the baked scene) with lighting
@@ -207,22 +208,9 @@ export default class Personal {
         this.poster = print;
 
         // clicking the poster opens the web resume
-        const ray = new THREE.Raycaster();
-        let down = { x: 0, y: 0 };
-        window.addEventListener('mousedown', (e) => (down = { x: e.clientX, y: e.clientY }));
-        window.addEventListener('mouseup', (e) => {
-            if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) return; // a drag, not a click
-            const cam = (this.application as any).camera && (this.application as any).camera.instance;
-            if (!cam) return;
-            ray.setFromCamera(new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1), cam);
-            const hits = ray.intersectObjects([print, ...frame.children], false);
-            if (hits.length && hits[0].object === print) {
-                try {
-                    const gc = (window as any).goatcounter;
-                    if (gc && gc.count) gc.count({ path: '3d/poster', title: 'Poster click (3D)', event: true });
-                } catch (err) {}
-                window.open('/cv/', '_blank', 'noopener');
-            }
+        this.clickable([print], () => {
+            this.count('3d/poster', 'Poster click (3D)');
+            window.open('/cv/', '_blank', 'noopener');
         });
     }
 
@@ -294,6 +282,87 @@ export default class Personal {
 
         can.position.set(spot.x, deskY, spot.z);
         this.group.add(can);
+
+        // click the can: pssht, and White pops up on the monitor
+        this.clickable([body, lid], () => {
+            const world = (this.application as any).world;
+            if (world && world.audioManager) {
+                world.audioManager.playAudio('canOpen', {
+                    volume: 0.9,
+                    position: new THREE.Vector3(spot.x, deskY + 600, spot.z),
+                });
+            }
+            const screen = document.querySelector('iframe[src="os/"]') as HTMLIFrameElement | null;
+            if (screen && screen.contentWindow) {
+                screen.contentWindow.postMessage({ type: 'aos-activity' }, '*'); // wakes the screensaver
+                screen.contentWindow.postMessage({ type: 'aos-assistant' }, '*');
+                screen.contentWindow.postMessage({ type: 'aos-achieve', id: 'refuel' }, '*');
+            }
+            this.count('3d/can', 'Can click (3D)');
+        });
+    }
+
+    clickables: { meshes: THREE.Object3D[]; onClick: () => void }[] = [];
+    clickWired = false;
+
+    /** Makes meshes clickable (a click, not a drag) and shows a pointer over them. */
+    clickable(meshes: THREE.Object3D[], onClick: () => void) {
+        this.clickables.push({ meshes, onClick });
+        if (this.clickWired) return;
+        this.clickWired = true;
+        const ray = new THREE.Raycaster();
+        const pick = (e: MouseEvent) => {
+            const cam = (this.application as any).camera && (this.application as any).camera.instance;
+            if (!cam) return null;
+            ray.setFromCamera(new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1), cam);
+            // the nearest hit among everything clickable, and anything in the way (the monitor glass is a CSS layer, not hit here)
+            const all = this.clickables.flatMap((c) => c.meshes);
+            const hits = ray.intersectObjects(all, false);
+            if (!hits.length) return null;
+            return this.clickables.find((c) => c.meshes.includes(hits[0].object)) || null;
+        };
+        let down = { x: 0, y: 0 };
+        let armed = false;
+        // capture phase, so it runs before the camera's click-to-zoom handler
+        window.addEventListener(
+            'mousedown',
+            (e) => {
+                down = { x: e.clientX, y: e.clientY };
+                // @ts-ignore events relayed from inside the monitor
+                if (e.inComputer) return;
+                const cam = (this.application as any).camera;
+                // from far away a click still zooms in to the desk; up close it uses the object
+                armed = !!pick(e) && cam && cam.currentKeyframe !== 'idle';
+                // @ts-ignore read by Camera
+                if (armed) e.aosClickable = true;
+            },
+            true
+        );
+        window.addEventListener('mouseup', (e) => {
+            // @ts-ignore events relayed from inside the monitor
+            if (e.inComputer) return;
+            if (!armed || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) return; // a drag, not a click
+            armed = false;
+            const c = pick(e);
+            if (c) c.onClick();
+        });
+        let hovering = false;
+        window.addEventListener('mousemove', (e) => {
+            // @ts-ignore events relayed from inside the monitor
+            if (e.inComputer) return;
+            const over = !!pick(e);
+            if (over !== hovering) {
+                hovering = over;
+                document.body.style.cursor = over ? 'pointer' : '';
+            }
+        });
+    }
+
+    count(path: string, title: string) {
+        try {
+            const gc = (window as any).goatcounter;
+            if (gc && gc.count) gc.count({ path, title, event: true });
+        } catch (err) {}
     }
 
     shadowTexture() {
@@ -314,20 +383,27 @@ export default class Personal {
         return t;
     }
 
-    isNight() {
-        const q = new URLSearchParams(window.location.search).get('night');
-        if (q === '1') return true;
-        if (q === '0') return false;
+    /** 'day', 'sunset' (5 to 7 pm IST) or 'night' (7 pm to 6 am IST). */
+    timeOfDay(): 'day' | 'sunset' | 'night' {
+        const q = new URLSearchParams(window.location.search);
+        const t = q.get('time');
+        if (t === 'day' || t === 'sunset' || t === 'night') return t;
+        if (q.get('night') === '1') return 'night';
+        if (q.get('night') === '0') return 'day';
         // Bangalore time (UTC+5:30)
         const now = new Date();
         const ist = (now.getUTCHours() + now.getUTCMinutes() / 60 + 5.5) % 24;
-        return ist >= 19 || ist < 6;
+        if (ist >= 19 || ist < 6) return 'night';
+        if (ist >= 17) return 'sunset';
+        return 'day';
     }
 
     applyNightMode() {
-        if (!this.isNight()) return;
-        const tint = new THREE.Color(0.13, 0.15, 0.3);
+        const time = this.timeOfDay();
+        if (time === 'day') return;
+        // night: a cool blue dark; sunset: warm golden light coming in low
+        const tint = time === 'night' ? new THREE.Color(0.13, 0.15, 0.3) : new THREE.Color(1.0, 0.8, 0.62);
         this.tintables.forEach((m) => m.color.multiply(tint));
-        document.documentElement.classList.add('night');
+        document.documentElement.classList.add(time);
     }
 }

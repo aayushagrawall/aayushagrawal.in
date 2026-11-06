@@ -2,6 +2,7 @@ import AudioManager from './AudioManager';
 import * as THREE from 'three';
 import UIEventBus from '../UI/EventBus';
 import { Vector3 } from 'three';
+import { getWeather } from '../Utils/weather';
 
 export class AudioSource {
     manager: AudioManager;
@@ -121,5 +122,35 @@ export class AmbienceAudio extends AudioSource {
 
         this.manager.setAudioFilterFrequency(this.poolKey, freq - 3000);
         this.manager.setAudioVolume(this.poolKey, volumeClamped);
+    }
+}
+
+/**
+ * Rain on the window when it's raining in Bangalore right now (live weather from
+ * Open-Meteo). Force it with ?rain=1 or turn it off with ?rain=0. The loop is only
+ * downloaded when it's needed.
+ */
+export class RainAudio extends AudioSource {
+    poolKey: string;
+
+    constructor(manager: AudioManager) {
+        super(manager);
+        UIEventBus.on('loadingScreenDone', () => {
+            const q = new URLSearchParams(window.location.search).get('rain');
+            if (q === '0') return;
+            const start = () => {
+                new THREE.AudioLoader().load('audio/atmosphere/rain.mp3', (buffer) => {
+                    this.manager.loadedAudio['rain'] = buffer as any;
+                    this.poolKey = this.manager.playAudio('rain', {
+                        volume: 0.35,
+                        loop: true,
+                        randDetuneScale: 0,
+                        filter: { type: 'lowpass', frequency: 2400 },
+                    });
+                });
+            };
+            if (q === '1') return start();
+            getWeather().then((w) => w && w.rain && start());
+        });
     }
 }

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import Application from '../Application';
-import { AmbienceAudio, ComputerAudio } from './AudioSources';
+import { AmbienceAudio, ComputerAudio, RainAudio } from './AudioSources';
 import UIEventBus from '../UI/EventBus';
 
 const POS_DEBUG = false;
@@ -14,6 +14,7 @@ export default class Audio {
     audioSources: {
         computer: ComputerAudio;
         ambience: AmbienceAudio;
+        rain: RainAudio;
     };
     scene: THREE.Scene;
 
@@ -28,6 +29,7 @@ export default class Audio {
         this.audioSources = {
             computer: new ComputerAudio(this),
             ambience: new AmbienceAudio(this),
+            rain: new RainAudio(this),
         };
 
         UIEventBus.on('loadingScreenDone', () => {

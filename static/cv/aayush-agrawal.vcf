@@ -1,0 +1,14 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Agrawal;Aayush;;;
+FN:Aayush Agrawal
+ORG:BMS College of Engineering
+TITLE:AI & Machine Learning student
+EMAIL;TYPE=INTERNET,PREF:agrawal.aayush38@gmail.com
+TEL;TYPE=CELL:+91 89368 69120
+ADR;TYPE=WORK:;;;Bengaluru;Karnataka;;India
+URL:https://aayushagrawal.in
+X-SOCIALPROFILE;TYPE=linkedin:https://www.linkedin.com/in/aayush-agrawall/
+X-SOCIALPROFILE;TYPE=github:https://github.com/aayushagrawall
+NOTE:Portfolio: https://aayushagrawal.in  Resume: https://aayushagrawal.in/cv/  LinkedIn: https://www.linkedin.com/in/aayush-agrawall/  GitHub: https://github.com/aayushagrawall
+END:VCARD

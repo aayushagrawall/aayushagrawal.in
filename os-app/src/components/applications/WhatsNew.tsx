@@ -8,6 +8,13 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '6 November 2026',
         items: [
+            'Click the can on the desk in 3D for a fresh can of White, and a new achievement: Refuel.',
+            'The taskbar clock shows live Bangalore weather, and when it rains there you can hear it in the 3D room.',
+            'From 5 to 7 pm in Bangalore the 3D room glows with sunset light.',
+            'Finish every achievement and you can download a certificate with your name on it.',
+            'The visitor counter only ever shows the real visitor count, never a placeholder.',
+            'Save my contact card straight to your phone from aayushagrawal.in/cv.',
+            'A skip-to-desktop option on the start screen, suggested automatically when the 3D might be slow.',
             'The coffee mug on the desk is now a cold can of White, my actual fuel.',
             'Chai the desk assistant has been replaced by White, a talking can with the same answers.',
             'The monitor has its full vintage CRT look back: glass smudges, static and scanlines.',
@@ -23,7 +30,7 @@ const CHANGES: { date: string; items: string[] }[] = [
             'Right-click the desktop for wallpapers, Arrange Icons and Refresh.',
             'The taskbar speaker now mutes the whole site, 3D room included.',
             'Keyboard shortcuts: Alt+W switches windows, Alt+M minimises, Alt+Q closes.',
-            '15 achievements to unlock, and a desk assistant who answers questions about me.',
+            'Achievements to unlock, and a desk assistant who answers questions about me.',
             'A boot screen with a startup chime, and links like /os/#projects that open a page directly.',
             'Screensaver, Konami code, Welcome tips and This Computer, carried over from the original OS.',
             'The 3D room loads about 40% faster.',

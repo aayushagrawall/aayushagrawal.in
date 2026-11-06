@@ -3,7 +3,9 @@ import { Link } from '../general';
 
 export interface HomeProps {}
 
-// 90s hit counter backed by GoatCounter's public count for the home page.
+// 90s hit counter backed by GoatCounter's public count for the home page. It needs
+// "Allow adding visitor counts on your website" ticked in GoatCounter's settings;
+// until then (or if the request fails) the counter stays hidden rather than faking a number.
 const useVisitorCount = () => {
     const [count, setCount] = useState<number | null>(null);
     useEffect(() => {
@@ -11,10 +13,11 @@ const useVisitorCount = () => {
         const path = encodeURIComponent(host.replace(/^www\./, '') + '/');
         fetch(`https://clienterr.goatcounter.com/counter/${path}.json`)
             .then((r) => r.json())
-            .then((j) =>
-                setCount((parseInt(String(j.count).replace(/\D/g, ''), 10) || 0) + 1)
-            )
-            .catch(() => setCount(1));
+            .then((j) => {
+                if (!j || j.count === undefined) return; // counts not public: hide the counter
+                setCount((parseInt(String(j.count).replace(/\D/g, ''), 10) || 0) + 1);
+            })
+            .catch(() => {});
     }, []);
     return count;
 };
