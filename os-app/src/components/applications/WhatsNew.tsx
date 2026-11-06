@@ -9,8 +9,7 @@ const CHANGES: { date: string; items: string[] }[] = [
         date: '6 November 2026',
         items: [
             'My skills as a Windows-style Device Manager: open Skills on the desktop and double-click a device.',
-            'A desk lamp in the 3D room. It switches on by itself at sunset, and you can click it to swap day and night.',
-            'A little plant on the paper stack that grows a new leaf as more people visit. Click it to see how close the next leaf is.',
+            'A desk lamp next to the papers in the 3D room. It switches on by itself at sunset, and you can click it to swap day and night.',
             'Search engines and screen readers now get a plain text version of About, Experience, Projects and Contact.',
             'An "Open to internships" neon sign on the desk that flickers on when you sit down.',
             'The start-up screen now shows your own computer: CPU cores, memory, graphics card and display.',
