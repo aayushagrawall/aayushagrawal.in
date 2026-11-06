@@ -1,4 +1,5 @@
 import React from 'react';
+import { NIGHT } from './night';
 // Desktop wallpapers for Display Properties. Kept dark enough for white icon labels.
 export type Wallpaper = { id: string; name: string; css: React.CSSProperties };
 
@@ -54,12 +55,23 @@ export const WALLPAPERS: Wallpaper[] = [
 ];
 
 const KEY = 'aayushos-wallpaper';
+// The default follows the clock: Bangalore Night after 7 pm IST, teal by day.
+// Once someone picks a wallpaper in Display Properties, their choice wins.
+export const defaultWallpaper = () => (NIGHT ? 'night' : 'teal');
 export const getWallpaper = (): Wallpaper => {
-    let id = 'teal';
+    let id = defaultWallpaper();
     try {
-        id = localStorage.getItem(KEY) || 'teal';
+        const saved = localStorage.getItem(KEY);
+        if (saved && saved !== 'auto') id = saved;
     } catch (e) {}
     return WALLPAPERS.find((w) => w.id === id) || WALLPAPERS[0];
+};
+export const savedWallpaperId = () => {
+    try {
+        return localStorage.getItem(KEY) || 'auto';
+    } catch (e) {
+        return 'auto';
+    }
 };
 export const saveWallpaper = (id: string) => {
     try {

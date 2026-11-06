@@ -23,6 +23,7 @@ import WhatsNew from '../applications/WhatsNew';
 import ContextMenu from './ContextMenu';
 import { track } from '../../utils/track';
 import { getWallpaper, Wallpaper } from '../../utils/wallpaper';
+import { NIGHT, IN_MONITOR } from '../../utils/night';
 
 export interface DesktopProps {}
 
@@ -405,6 +406,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         <>
             <Extras onKonami={() => openApp('cheat')} />
             <AchievementCenter />
+            {NIGHT && IN_MONITOR && <div style={styles.nightDim} aria-hidden />}
             {!shutdown && <Assistant />}
             {!booted && <BootScreen onDone={finishBoot} />}
         </>
@@ -512,6 +514,14 @@ const styles: StyleSheetCSS = {
         position: 'absolute',
         top: 16,
         left: 6,
+    },
+    // at night the room is dark, so the screen glows a little softer to match
+    nightDim: {
+        position: 'fixed',
+        inset: 0,
+        zIndex: 400000,
+        pointerEvents: 'none',
+        background: 'rgba(8, 14, 48, 0.16)',
     },
     minimized: {
         pointerEvents: 'none',

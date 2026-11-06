@@ -25,6 +25,9 @@ const ResumeApp: React.FC<WindowAppProps> = (props) => {
                     <a className="site-button" href={Resume} target="_blank" rel="noreferrer">
                         Open in new tab
                     </a>
+                    <a className="site-button" href="/cv/" target="_blank" rel="noreferrer" onClick={() => track('resume/web', 'Opened web resume')}>
+                        Web version
+                    </a>
                 </div>
                 <iframe title="Resume" src={`${Resume}#view=FitH`} style={styles.frame} className="legacy-frame" />
             </div>
