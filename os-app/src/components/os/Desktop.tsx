@@ -18,6 +18,10 @@ import AchievementCenter from '../achievements/AchievementCenter';
 import { achieve } from '../achievements/list';
 import Assistant from './Assistant';
 import BootScreen from './BootScreen';
+import DisplayProperties from '../applications/DisplayProperties';
+import ContextMenu from './ContextMenu';
+import { track } from '../../utils/track';
+import { getWallpaper, Wallpaper } from '../../utils/wallpaper';
 
 export interface DesktopProps {}
 
@@ -64,6 +68,7 @@ const APPLICATIONS: { [key in string]: AppDef } = {
     achievements: { key: 'achievements', name: 'Achievements', shortcutIcon: 'trophyIcon', component: AchievementsApp },
     chai: { key: 'chai', name: 'Ask Chai', shortcutIcon: 'chaiIcon', message: 'aos-assistant' },
     welcome: { key: 'welcome', name: 'Welcome', shortcutIcon: 'computerSmall', component: Welcome, hidden: true },
+    display: { key: 'display', name: 'Display Properties', shortcutIcon: 'computerSmall', component: DisplayProperties, hidden: true },
     cheat: { key: 'cheat', name: 'Cheat Code', shortcutIcon: 'windowGameIcon', component: CheatCode, hidden: true },
 };
 
@@ -90,7 +95,10 @@ const DEEP_LINKS: { [hash: string]: { app: string; route?: string } } = {
 const openDeepLink = (open: (key: string, route?: string) => void) => {
     const hash = decodeURIComponent(window.location.hash.replace(/^#\/?/, '')).toLowerCase();
     const link = DEEP_LINKS[hash];
-    if (link) open(link.app, link.route);
+    if (link) {
+        open(link.app, link.route);
+        track('link/' + hash, 'Arrived via #' + hash);
+    }
     return !!link;
 };
 
@@ -101,6 +109,18 @@ const Desktop: React.FC<DesktopProps> = (props) => {
     const [windows, setWindows] = useState<DesktopWindows>({});
 
     const [shortcuts, setShortcuts] = useState<DesktopShortcutProps[]>([]);
+    const [wallpaper, setWallpaper] = useState<Wallpaper>(getWallpaper());
+    const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+    const [byName, setByName] = useState(false);
+    const [hideIcons, setHideIcons] = useState(false);
+    const [kbIndex, setKbIndex] = useState<number | null>(null);
+    const desktopFocused = useRef(true);
+
+    useEffect(() => {
+        const onWp = () => setWallpaper(getWallpaper());
+        window.addEventListener('aos-wallpaper', onWp);
+        return () => window.removeEventListener('aos-wallpaper', onWp);
+    }, []);
 
     const [shutdown, setShutdown] = useState(false);
     const [booted, setBooted] = useState(() => {
@@ -133,6 +153,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
     const openApp = (key: string, route?: string): void => {
         const app = APPLICATIONS[key];
         if (!app) return;
+        if (!app.hidden || key === 'display') track('open/' + key, 'Opened ' + app.name);
         if (app.href) {
             window.open(app.href, '_blank', 'noopener');
             return;
@@ -285,6 +306,84 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         []
     );
 
+    const orderedShortcuts = byName ? [...shortcuts].sort((a, b) => a.shortcutName.localeCompare(b.shortcutName)) : shortcuts;
+
+    // keep latest values for the keyboard handler
+    const kbState = useRef({ windows, kbIndex, ordered: orderedShortcuts });
+    kbState.current = { windows, kbIndex, ordered: orderedShortcuts };
+
+    /**
+     * Keyboard shortcuts (browsers keep Alt+Tab and Alt+F4 for themselves):
+     *   Alt+W  switch to the next window      Alt+M  minimise the active window
+     *   Alt+Q  close the active window        Esc    close menus
+     *   Arrow keys + Enter pick and open desktop icons (after clicking the desktop)
+     */
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            const { windows: wins, kbIndex: idx, ordered } = kbState.current;
+            const keys = Object.keys(wins);
+            const byZ = [...keys].sort((a, b) => wins[a].zIndex - wins[b].zIndex);
+            const top = [...byZ].reverse().find((k) => !wins[k].minimized);
+            if (e.altKey && e.code === 'KeyW' && keys.length) {
+                e.preventDefault();
+                const next = byZ[0]; // the window furthest back comes to the front, so repeats cycle through all
+                setWindows((prev) => ({ ...prev, [next]: { ...prev[next], minimized: false, zIndex: highestZ(prev) + 1 } }));
+                desktopFocused.current = false;
+                return;
+            }
+            if (e.altKey && e.code === 'KeyM' && top) {
+                e.preventDefault();
+                minimizeWindow(top);
+                return;
+            }
+            if (e.altKey && e.code === 'KeyQ' && top) {
+                e.preventDefault();
+                removeWindow(top);
+                return;
+            }
+            if (e.key === 'Escape') {
+                setMenu(null);
+                setKbIndex(null);
+                return;
+            }
+            if (!desktopFocused.current || !ordered.length) return;
+            const tag = (document.activeElement && document.activeElement.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+            const per = Math.max(1, Math.floor((window.innerHeight - 70) / 96));
+            const n = ordered.length;
+            const move: { [k: string]: number } = { ArrowDown: 1, ArrowUp: -1, ArrowRight: per, ArrowLeft: -per };
+            if (e.key in move) {
+                e.preventDefault();
+                setKbIndex(idx === null ? 0 : Math.min(n - 1, Math.max(0, idx + move[e.key])));
+            } else if (e.key === 'Enter' && idx !== null) {
+                e.preventDefault();
+                ordered[idx].onOpen();
+            }
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const onDesktopMouseDown = (e: React.MouseEvent) => {
+        const t = e.target as HTMLElement;
+        const onBackground = t === e.currentTarget || t.dataset.desktop === 'icons';
+        desktopFocused.current = true;
+        if (onBackground) setKbIndex(null);
+    };
+
+    const onDesktopContextMenu = (e: React.MouseEvent) => {
+        const t = e.target as HTMLElement;
+        if (t !== e.currentTarget && t.dataset.desktop !== 'icons') return;
+        e.preventDefault();
+        setMenu({ x: e.clientX, y: e.clientY });
+    };
+
+    const refreshIcons = () => {
+        setHideIcons(true);
+        setTimeout(() => setHideIcons(false), 180);
+    };
+
     const perColumn = Math.max(1, Math.floor((window.innerHeight - 70) / 96));
 
     const overlays = (
@@ -298,7 +397,11 @@ const Desktop: React.FC<DesktopProps> = (props) => {
 
     return !shutdown ? (
         <>
-        <div style={styles.desktop}>
+        <div
+            style={Object.assign({}, styles.desktop, wallpaper.css)}
+            onMouseDown={onDesktopMouseDown}
+            onContextMenu={onDesktopContextMenu}
+        >
             {/* For each window in windows, loop over and render  */}
             {Object.keys(windows).map((key) => {
                 const element = windows[key].component;
@@ -306,6 +409,9 @@ const Desktop: React.FC<DesktopProps> = (props) => {
                 return (
                     <div
                         key={`win-${key}`}
+                        onMouseDownCapture={() => {
+                            desktopFocused.current = false;
+                        }}
                         style={Object.assign(
                             {},
                             { zIndex: windows[key].zIndex },
@@ -320,8 +426,8 @@ const Desktop: React.FC<DesktopProps> = (props) => {
                     </div>
                 );
             })}
-            <div style={styles.shortcuts}>
-                {shortcuts.map((shortcut, i) => {
+            <div style={Object.assign({}, styles.shortcuts, hideIcons && { visibility: 'hidden' })} data-desktop="icons">
+                {orderedShortcuts.map((shortcut, i) => {
                     return (
                         <div
                             style={Object.assign({}, styles.shortcutContainer, {
@@ -334,11 +440,29 @@ const Desktop: React.FC<DesktopProps> = (props) => {
                                 icon={shortcut.icon}
                                 shortcutName={shortcut.shortcutName}
                                 onOpen={shortcut.onOpen}
+                                keyboardSelected={kbIndex === i}
                             />
                         </div>
                     );
                 })}
             </div>
+            {menu && (
+                <ContextMenu
+                    x={menu.x}
+                    y={menu.y}
+                    onClose={() => setMenu(null)}
+                    items={[
+                        { label: byName ? 'Arrange Icons: Default' : 'Arrange Icons by Name', onSelect: () => setByName(!byName) },
+                        { label: 'Refresh', onSelect: refreshIcons },
+                        '-',
+                        { label: 'Paste', disabled: true },
+                        { label: 'New Folder', disabled: true },
+                        '-',
+                        { label: 'Achievements', onSelect: () => openApp('achievements') },
+                        { label: 'Properties', onSelect: () => openApp('display') },
+                    ]}
+                />
+            )}
             <Toolbar
                 windows={windows}
                 toggleMinimize={toggleMinimize}

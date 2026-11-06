@@ -1,5 +1,6 @@
 import React from 'react';
 import Window from '../os/Window';
+import { track } from '../../utils/track';
 const Resume = `${process.env.PUBLIC_URL}/files/Aayush-Agrawal-Resume.pdf`;
 
 const ResumeApp: React.FC<WindowAppProps> = (props) => {
@@ -18,7 +19,7 @@ const ResumeApp: React.FC<WindowAppProps> = (props) => {
         >
             <div style={styles.wrap}>
                 <div style={styles.bar}>
-                    <a className="site-button" href={Resume} download="Aayush-Agrawal-Resume.pdf">
+                    <a className="site-button" href={Resume} download="Aayush-Agrawal-Resume.pdf" onClick={() => track('resume/download', 'Downloaded resume')}>
                         Download
                     </a>
                     <a className="site-button" href={Resume} target="_blank" rel="noreferrer">

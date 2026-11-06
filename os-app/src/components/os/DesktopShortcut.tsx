@@ -8,6 +8,7 @@ export interface DesktopShortcutProps {
     shortcutName: string;
     invertText?: boolean;
     onOpen: () => void;
+    keyboardSelected?: boolean;
 }
 
 const DesktopShortcut: React.FC<DesktopShortcutProps> = ({
@@ -15,6 +16,7 @@ const DesktopShortcut: React.FC<DesktopShortcutProps> = ({
     shortcutName,
     invertText,
     onOpen,
+    keyboardSelected,
 }) => {
     const [isSelected, setIsSelected] = useState(false);
     const [shortcutId, setShortcutId] = useState('');
@@ -88,6 +90,8 @@ const DesktopShortcut: React.FC<DesktopShortcutProps> = ({
         };
     }, [isSelected, handleClickOutside]);
 
+    const sel = isSelected || !!keyboardSelected;
+
     return (
         <div
             id={`${shortcutId}`}
@@ -102,8 +106,8 @@ const DesktopShortcut: React.FC<DesktopShortcutProps> = ({
                     style={Object.assign(
                         {},
                         styles.iconOverlay,
-                        isSelected && styles.checkerboard,
-                        isSelected && {
+                        sel && styles.checkerboard,
+                        sel && {
                             WebkitMask: `url(${requiredIcon})`,
                         }
                     )}
@@ -112,21 +116,21 @@ const DesktopShortcut: React.FC<DesktopShortcutProps> = ({
             </div>
             <div
                 className={
-                    isSelected
+                    sel
                         ? 'selected-shortcut-border'
                         : lastSelected
                         ? 'shortcut-border'
                         : ''
                 }
                 id={`${shortcutId}`}
-                style={isSelected ? { backgroundColor: colors.blue } : {}}
+                style={sel ? { backgroundColor: colors.blue } : {}}
             >
                 <p
                     id={`${shortcutId}`}
                     style={Object.assign(
                         {},
                         styles.shortcutText,
-                        invertText && !isSelected && { color: 'black' }
+                        invertText && !sel && { color: 'black' }
                     )}
                 >
                     {shortcutName}

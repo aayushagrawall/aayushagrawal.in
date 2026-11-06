@@ -11,6 +11,8 @@ const TIPS = [
     <>Leave the computer alone for a minute and the screensaver kicks in.</>,
     <>Something you shouldn't open is sitting in the <b>Recycle Bin</b>.</>,
     <>Windows move like the real thing: drag a title bar and an outline follows your mouse.</>,
+    <>Keyboard fans: <b>Alt+W</b> switches windows, <b>Alt+M</b> minimises, <b>Alt+Q</b> closes, and arrow keys pick desktop icons.</>,
+    <>Right-click the desktop and choose <b>Properties</b> to change the wallpaper.</>,
     <>Prefer a modern site? <b>My Website</b> opens aayushagrawal.codes.</>,
 ];
 

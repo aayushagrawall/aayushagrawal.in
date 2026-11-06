@@ -35,6 +35,8 @@
 
   // ---------- Icons (original pixel art) ----------
   var I = {
+    trophy: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><path d="M3 1h10v1h2v4h-1v1h-1v1h-1v1h-1v1H9v2h2v1h1v2H4v-2h1v-1h2v-2H6V9H5V8H4V7H3V6H2V2h1z" fill="#000"/><path d="M4 2h8v5h-1v1h-1v1H6V8H5V7H4z" fill="#f6c94d"/><path d="M4 2h2v5H5V7H4z" fill="#ffec8c"/><path d="M5 13h6v1H5z" fill="#805014"/></svg>',
+    chai: '<svg viewBox="0 0 24 26" shape-rendering="crispEdges"><path d="M8 0h1v2H8zM9 2h1v2H9zM13 1h1v2h-1zM12 3h1v2h-1z" fill="#fff"/><path d="M3 6h17v1h-1v3h3v7h-3v2h-1v1h-1v1H6v-1H5v-1H4v-1H3z" fill="#000"/><rect x="4" y="7" width="15" height="2" fill="#96400a"/><rect x="4" y="9" width="15" height="10" fill="#e8b478"/><rect x="19" y="11" width="2" height="5" fill="#3e9697"/><path d="M8 11h2v2H8zM13 11h2v2h-2zM10 15h3v1h-3zM9 14h1v1H9zM13 14h1v1h-1z" fill="#000"/><path d="M7 14h1v1H7zM15 14h1v1h-1z" fill="#ff8a7a"/><rect x="2" y="21" width="20" height="1" fill="#ff6a1a"/><path d="M1 22h22v1H1zM3 23h18v1H3z" fill="#000"/></svg>',
     showcase: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="2" y="3" width="28" height="26" fill="#fff" stroke="#000"/><rect x="2" y="3" width="28" height="5" fill="#000080"/><rect x="25" y="4" width="3" height="3" fill="#c0c0c0"/><path d="M9 26l5-15h4l5 15h-3l-1-3h-6l-1 3zm5-6h4l-2-6z" fill="#000"/></svg>',
     folder: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M2 8h11l2 3h15v17H2z" fill="#f6c94d" stroke="#000"/><rect x="2" y="13" width="28" height="15" fill="#ffdd6e" stroke="#000"/></svg>',
     instagram: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><defs><linearGradient id="igg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".35" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset=".85" stop-color="#962fbf"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs><rect x="3" y="3" width="26" height="26" rx="7" fill="url(#igg)" stroke="#000"/><rect x="8" y="8" width="16" height="16" rx="5" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="16" cy="16" r="4" fill="none" stroke="#fff" stroke-width="2.5"/><rect x="21" y="9" width="2.5" height="2.5" fill="#fff"/></svg>',
@@ -63,8 +65,73 @@
   })();
   if (SINGLE) SMALL = false;
   function toParent(msg) { try { window.parent.postMessage(msg, '*'); } catch (e) {} }
-  // achievements live in the main AayushOS; the lite desktop just reports them
-  function achieve(id) { if (SINGLE) toParent({ type: 'aos-achieve', id: id }); }
+  // ---------- Achievements (progress is shared with the main AayushOS) ----------
+  var ACH = [
+    ['explorer', 'Explorer', 'Open every app on the desktop.', 'Opened every app on the desktop.'],
+    ['reader', 'Background Check', 'Read every page of My Showcase.', 'Read About, Experience, Projects and Contact.'],
+    ['resume', 'Due Diligence', 'Take a look at the resume.', 'Opened the resume.'],
+    ['recruiter', 'Root Access', 'Find the magic words for the Terminal.', 'Ran sudo hire aayush.'],
+    ['konami', 'Old School', 'Some codes never get old.', 'Entered the Konami code.'],
+    ['tetris', 'Block Party', 'Score 1,000 points in Tetris.', 'Scored 1,000 points in Tetris.'],
+    ['tetris4', 'Line Cook', 'Clear four lines at once in Tetris.', 'Cleared four lines at once.'],
+    ['codele', 'Codebreaker', 'Win a game of Codele (on the big-screen AayushOS).', 'Solved Codele.'],
+    ['artist', 'Artist', 'Save a drawing from Paint.', 'Saved a Paint masterpiece.'],
+    ['dumpster', 'Dumpster Diver', "Peek inside something that's been thrown away.", 'Opened a file in the Recycle Bin.'],
+    ['afk', 'AFK', 'Step away from the computer for a while.', 'Watched the screensaver.'],
+    ['chatty', 'Small Talk', 'Ask Chai three questions.', 'Asked Chai three questions.'],
+    ['shutdown', 'Persistent', 'Try to turn the computer off. A few times.', 'Shut down AayushOS five times.'],
+    ['night', 'Night Owl', 'Visit when Bangalore is asleep.', 'Visited between midnight and 5 am IST.'],
+    ['all', 'Completionist', 'Unlock every other achievement.', 'Unlocked everything. Respect.']
+  ];
+  var LITE_APPS = ['showcase', 'resume', 'terminal', 'tetris', 'paint', 'mycomputer', 'recycle', 'credits', 'achievements'];
+  var READER = ['about', 'experience', 'projects', 'contact'];
+  function loadList(k) { try { var v = JSON.parse(localStorage.getItem(k) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+  function saveList(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function addTo(k, item, all) {
+    var seen = loadList(k);
+    if (seen.indexOf(item) < 0) { seen.push(item); saveList(k, seen); }
+    return all.every(function (a) { return seen.indexOf(a) >= 0; });
+  }
+  var toastQ = [], toastOn = false;
+  function achieve(id) {
+    if (SINGLE) { toParent({ type: 'aos-achieve', id: id }); return; }
+    var a = ACH.filter(function (x) { return x[0] === id; })[0];
+    if (!a) return;
+    var got = loadList('aayushos-achievements');
+    if (got.indexOf(id) >= 0) return;
+    got.push(id); saveList('aayushos-achievements', got);
+    track('achievement/' + id, 'Achievement: ' + a[1]);
+    toastQ.push(a); nextToast();
+    if (typeof refreshAch === 'function') refreshAch();
+    // Codele only exists on the big-screen OS, so phones can finish without it
+    var need = ACH.map(function (x) { return x[0]; }).filter(function (x) { return x !== 'all' && x !== 'codele'; });
+    if (need.every(function (x) { return got.indexOf(x) >= 0; })) setTimeout(function () { achieve('all'); }, 600);
+  }
+  function nextToast() {
+    if (toastOn || !toastQ.length) return;
+    var a = toastQ.shift(); toastOn = true;
+    var t = document.createElement('div');
+    t.className = 'window ach-toast';
+    t.innerHTML = '<div class="title-bar"><div class="title-bar-text">' + I.trophy + '<span>Achievement unlocked!</span></div></div>' +
+      '<div class="window-body ach-toast-body">' + I.trophy + '<div><b>' + esc(a[1]) + '</b><p>' + esc(a[3]) + '</p></div></div>';
+    t.addEventListener('click', function () { t.remove(); openApp('achievements'); });
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); toastOn = false; nextToast(); }, 4200);
+  }
+  var refreshAch = null;
+
+  // ---------- Click tracking (GoatCounter events, once per visit each) ----------
+  function track(path, title) {
+    if (SINGLE) return; // the main AayushOS counts these
+    try {
+      var done = JSON.parse(sessionStorage.getItem('aayushos-lite-tracked') || '[]');
+      if (done.indexOf(path) >= 0) return;
+      var gc = window.goatcounter;
+      if (!gc || !gc.count) return;
+      gc.count({ path: 'os-lite/' + path, title: title || path, event: true });
+      done.push(path); sessionStorage.setItem('aayushos-lite-tracked', JSON.stringify(done));
+    } catch (e) {}
+  }
 
   // ---------- Helpers ----------
   function el(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
@@ -177,6 +244,7 @@
   function Showcase(win) {
     var root = win.querySelector('.sc');
     function render(page) {
+      if (READER.indexOf(page) >= 0 && addTo('aayushos-seen-pages', '/' + page, READER.map(function (r) { return '/' + r; }))) achieve('reader');
       if (page === 'home') {
         root.className = 'sc sc-home';
         root.innerHTML =
@@ -338,6 +406,30 @@
       }
     },
 
+    achievements: {
+      title: 'Achievements', icon: 'trophy', w: 560, h: 680, x: 330, y: 30,
+      status: 'Saved in this browser',
+      render: function () { return '<div class="ach" id="ach"></div>'; },
+      mount: function (win) {
+        var box = win.querySelector('#ach');
+        function draw() {
+          if (!document.body.contains(box)) { refreshAch = null; return; }
+          var got = loadList('aayushos-achievements');
+          var apps = loadList('aayushos-seen-apps').filter(function (a) { return LITE_APPS.indexOf(a) >= 0; }).length;
+          var pages = loadList('aayushos-seen-pages').length;
+          box.innerHTML = '<div class="ach-head">' + I.trophy + '<div><h2>Achievements</h2><p>' + got.length + ' of ' + ACH.length + ' unlocked. How many can you find?</p></div></div>' +
+            '<div class="ach-meter"><span style="width:' + (got.length / ACH.length * 100) + '%"></span></div>' +
+            '<div class="ach-list sunken-panel">' + ACH.map(function (a) {
+              var on = got.indexOf(a[0]) >= 0;
+              var extra = a[0] === 'explorer' ? ' (' + Math.min(apps, LITE_APPS.length) + '/' + LITE_APPS.length + ')' : a[0] === 'reader' ? ' (' + Math.min(pages, 4) + '/4)' : '';
+              return '<div class="ach-row' + (on ? '' : ' locked') + '">' + I.trophy + '<div><b>' + esc(a[1]) + (on ? '' : extra) + '</b><p>' + esc(on ? a[3] : a[2]) + '</p></div></div>';
+            }).join('') + '</div>';
+        }
+        refreshAch = draw; draw();
+      }
+    },
+    chai: { title: 'Ask Chai', icon: 'chai', render: function () { return ''; } },
+
     projects: { title: 'Projects', icon: 'folder', alias: ['showcase', 'projects'] },
 
     github: { title: 'GitHub', icon: 'github', external: ME.github },
@@ -346,7 +438,7 @@
     site: { title: 'My Website', icon: 'globe', external: ME.site }
   };
 
-  var DESKTOP = ['showcase', 'projects', 'resume', 'terminal', 'tetris', 'paint', 'mycomputer', 'github', 'linkedin', 'instagram', 'site'];
+  var DESKTOP = ['showcase', 'projects', 'resume', 'terminal', 'tetris', 'paint', 'mycomputer', 'achievements', 'chai', 'github', 'linkedin', 'instagram', 'site'];
 
   // ---------- Window manager ----------
   var windowsEl = document.getElementById('windows');
@@ -369,6 +461,12 @@
     if (SINGLE && id !== SINGLE) {
       toParent({ type: 'aos-open', app: id, route: page && page !== 'home' ? '/' + page : page ? '/' : undefined });
       return;
+    }
+    if (!SINGLE) {
+      track('open/' + id, 'Opened ' + (app.short || app.title));
+      if (id === 'resume') achieve('resume');
+      if (LITE_APPS.indexOf(id) >= 0 && addTo('aayushos-seen-apps', id, LITE_APPS)) achieve('explorer');
+      if (id === 'chai') { Chai.show(); return; }
     }
     if (app.external) { window.open(app.external, '_blank', 'noopener'); return; }
     if (app.alias) { openApp(app.alias[0], app.alias[1]); return; }
@@ -527,7 +625,7 @@
   var START = [
     ['showcase', null, 'My Showcase'], ['showcase', 'about', 'About'], ['showcase', 'experience', 'Experience'],
     ['showcase', 'projects', 'Projects'], ['showcase', 'contact', 'Contact'], '-',
-    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['welcome', null], ['credits', null], '-', 'shutdown'
+    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['achievements', null], ['chai', null], ['welcome', null], ['credits', null], '-', 'shutdown'
   ];
   START.forEach(function (item) {
     if (item === '-') { startList.appendChild(el('<hr>')); return; }
@@ -553,7 +651,9 @@
     if (!startMenu.hidden && !startMenu.contains(e.target) && !startBtn.contains(e.target)) closeStart();
   });
 
+  var shutdowns = 0;
   function shutdown() {
+    if (++shutdowns >= 5) achieve('shutdown');
     closeStart();
     Object.keys(open).forEach(closeApp);
     var boot = document.getElementById('boot');
@@ -571,7 +671,12 @@
   }
 
   // ---------- Tray ----------
-  document.getElementById('tray-speaker').innerHTML = I.speaker;
+  var speaker = document.getElementById('tray-speaker');
+  function isMuted() { try { return localStorage.getItem('aayushos-muted') === '1'; } catch (e) { return false; } }
+  function paintSpeaker() { speaker.innerHTML = I.speaker; speaker.classList.toggle('muted', isMuted()); speaker.title = isMuted() ? 'Sound is off. Click to turn it on' : 'Sound is on. Click to mute'; }
+  speaker.addEventListener('click', function () { try { localStorage.setItem('aayushos-muted', isMuted() ? '0' : '1'); } catch (e) {} paintSpeaker(); });
+  addEventListener('storage', function (e) { if (e.key === 'aayushos-muted') paintSpeaker(); });
+  paintSpeaker();
   var clock = document.getElementById('clock');
   function tick() { clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
   tick(); setInterval(tick, 10000);
@@ -676,7 +781,7 @@
     }
     function start() {
       if (on || !document.getElementById('boot').classList.contains('done')) return;
-      on = true; saver.hidden = false; size(); seed(); raf = requestAnimationFrame(frame);
+      on = true; saver.hidden = false; size(); seed(); raf = requestAnimationFrame(frame); achieve('afk');
     }
     function stop() { if (!on) return; on = false; saver.hidden = true; cancelAnimationFrame(raf); }
     function poke() { stop(); clearTimeout(idleT); idleT = setTimeout(start, IDLE_MS); }
@@ -822,6 +927,7 @@
       if (i === SEQ.length) { i = 0; party(); }
     });
     function party() {
+      achieve('konami');
       var c = document.createElement('canvas'); c.className = 'confetti';
       c.width = innerWidth; c.height = innerHeight; document.body.appendChild(c);
       var g = c.getContext('2d'), cols = ['#ff6a1a', '#f6c94d', '#00c8e6', '#a347d6', '#3cbf4a', '#e5393b', '#2f5fe0', '#fff'];
@@ -1185,6 +1291,69 @@
     requestAnimationFrame(loop);
   }
 
+  // ---------- Chai, the desk assistant ----------
+  var Chai = (function () {
+    var QAS = [
+      ['Who is Aayush?', "He's an AI & Machine Learning undergrad at BMS College of Engineering in Bangalore, graduating in 2028. He builds small, useful software: Python tools, Discord bots and websites.", [['About me', 'showcase', 'about']]],
+      ["What's his tech stack?", 'Python, JavaScript, Java and C, plus HTML & CSS, Node.js, Discord.js, MySQL, MongoDB, machine learning and Git.', []],
+      ['Which project should I look at first?', 'Start with clienterr.com and imgurr.me on the Projects page. If you like bots, the Discord moderation bot is there too.', [['Projects', 'showcase', 'projects']]],
+      ['Can I see his resume?', "Of course. It's one page, and you can download it too.", [['Open resume', 'resume']]],
+      ['Is he open to internships?', "Best to ask him directly! Send a message from the Contact page or email agrawal.aayush38@gmail.com and he'll get back to you.", [['Contact', 'showcase', 'contact']]],
+      ['How was this site built?', "On a big screen, the desk is a Three.js scene running a React desktop adapted from Henry Heffernan's portfolio, with his permission. This phone-friendly version, with its Terminal, Tetris and Paint, is Aayush's own.", [['Credits', 'credits']]],
+      ['Any secrets?', 'A few. Type "sudo hire aayush" in the Terminal, try the Konami code, peek in the Recycle Bin, or keep pressing Shut Down. Your progress is in Achievements.', [['Achievements', 'achievements']]]
+    ];
+    var box = null, asked = {};
+    function close() { if (box) { box.remove(); box = null; } }
+    function draw(qa) {
+      var inner = qa
+        ? '<p class="chai-qt">' + esc(qa[0]) + '</p><p>' + esc(qa[1]) + '</p><div class="chai-acts">' +
+          qa[2].map(function (a, i) { return '<button data-act="' + i + '">' + esc(a[0]) + '</button>'; }).join('') + '<button data-back>Ask something else</button></div>'
+        : '<p>Hi! I\'m <b>Chai</b>, Aayush\'s desk assistant. What would you like to know?</p><div class="chai-qs">' +
+          QAS.map(function (q, i) { return '<a href="#" data-q="' + i + '">' + esc(q[0]) + '</a>'; }).join('') + '</div>';
+      box.querySelector('.chai-bubble-in').innerHTML = inner;
+      box._qa = qa;
+    }
+    function show() {
+      if (!box) {
+        box = el('<div class="chai"><div class="chai-bubble"><button class="chai-x" aria-label="Close">×</button><div class="chai-bubble-in"></div></div><div class="chai-cup">' + I.chai + '</div></div>');
+        box.addEventListener('click', function (e) {
+          if (e.target.closest('.chai-x')) { close(); return; }
+          var q = e.target.closest('[data-q]');
+          if (q) {
+            e.preventDefault();
+            var qa = QAS[+q.dataset.q];
+            asked[qa[0]] = 1;
+            track('chai/' + qa[0].toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, ''), 'Asked Chai: ' + qa[0]);
+            if (Object.keys(asked).length >= 3) achieve('chatty');
+            draw(qa); return;
+          }
+          if (e.target.closest('[data-back]') || e.target.closest('.chai-cup')) { draw(null); return; }
+          var act = e.target.closest('[data-act]');
+          if (act && box._qa) { var a = box._qa[2][+act.dataset.act]; openApp(a[1], a[2]); if (SMALL) close(); }
+        });
+        document.body.appendChild(box);
+      }
+      draw(null);
+    }
+    addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    return { show: show, close: close };
+  })();
+
+  // ---------- Shareable links: /os-lite/#projects ----------
+  var LINKS = {
+    home: ['showcase', 'home'], about: ['showcase', 'about'], experience: ['showcase', 'experience'], projects: ['showcase', 'projects'],
+    'projects/software': ['showcase', 'projects'], 'projects/tools': ['showcase', 'projects'], contact: ['showcase', 'contact'],
+    resume: ['resume'], terminal: ['terminal'], tetris: ['tetris'], paint: ['paint'], recycle: ['recycle'], credits: ['credits'],
+    achievements: ['achievements'], computer: ['mycomputer'], codele: ['showcase', 'home']
+  };
+  function openLink() {
+    var h = decodeURIComponent(location.hash.replace(/^#\/?/, '')).toLowerCase();
+    var l = LINKS[h];
+    if (l) { openApp(l[0], l[1]); track('link/' + h, 'Arrived via #' + h); }
+    return !!l;
+  }
+  addEventListener('hashchange', openLink);
+
   // ---------- Boot ----------
   if (SINGLE) {
     document.documentElement.classList.add('single');
@@ -1207,6 +1376,12 @@
   setTimeout(function () {
     document.getElementById('boot').classList.add('done');
     openApp('showcase');
+    var linked = openLink();
+    var ist = (new Date().getUTCHours() + new Date().getUTCMinutes() / 60 + 5.5) % 24;
+    if (ist < 5) setTimeout(function () { achieve('night'); }, 6000);
+    var chaiSeen = false; try { chaiSeen = sessionStorage.getItem('aayushos-chai-shown') === '1'; } catch (e) {}
+    if (!chaiSeen) setTimeout(function () { Chai.show(); try { sessionStorage.setItem('aayushos-chai-shown', '1'); } catch (e) {} }, 25000);
+    if (linked) return;
     var off = false; try { off = localStorage.getItem('aayushos-welcome-off') === '1'; } catch (e) {}
     // In the 3D monitor, open on the clean Showcase hero; the tips dialog is in the Start menu.
     var inMonitor = window.parent !== window;

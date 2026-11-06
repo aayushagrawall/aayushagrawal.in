@@ -1,4 +1,5 @@
 import React from 'react';
+import { track } from '../../utils/track';
 import printer from '../../assets/icons/docIcon.png';
 const Resume = `${process.env.PUBLIC_URL}/files/Aayush-Agrawal-Resume.pdf`;
 
@@ -16,6 +17,7 @@ const ResumeDownload: React.FC<ResumeDownloadProps> = ({ altText }) => {
                     rel="noreferrer"
                     target="_blank"
                     href={Resume}
+                    onClick={() => track('resume/download', 'Downloaded resume')}
                     download="Aayush-Agrawal-Resume.pdf"
                 >
                     <p>Click here to download it!</p>
