@@ -6,6 +6,7 @@ import ThisComputer from '../applications/ThisComputer';
 import Welcome, { WELCOME_OFF_KEY } from '../applications/Welcome';
 import CheatCode from '../applications/CheatCode';
 import Extras from './Extras';
+import CrtOverlay from './CrtOverlay';
 import Henordle from '../applications/Henordle';
 import Toolbar from './Toolbar';
 import DesktopShortcut, { DesktopShortcutProps } from './DesktopShortcut';
@@ -406,6 +407,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         <>
             <Extras onKonami={() => openApp('cheat')} />
             <AchievementCenter />
+            <CrtOverlay />
             {NIGHT && IN_MONITOR && <div style={styles.nightDim} aria-hidden />}
             {!shutdown && <Assistant />}
             {!booted && <BootScreen onDone={finishBoot} />}

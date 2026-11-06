@@ -19,6 +19,7 @@ Live at **[aayushagrawal.in](https://aayushagrawal.in)** · Minimal version at *
 - **Clickable desk**: the poster opens `/cv/`, and the can plays a can-opening sound, brings up White on the monitor and unlocks Refuel (`clickable()` in `Personal.ts`).
 - **Certificate**: with every achievement unlocked, the Achievements window offers a PNG certificate with the visitor's name, drawn in the browser by `static/os-lite/certificate.js` (shared by both OS versions).
 - **Visitor counter**: My Showcase's home page shows the GoatCounter visitor count for the home page. It needs "Allow adding visitor counts on your website" ticked in GoatCounter's settings; until then it stays hidden.
+- **CRT look and clicks on /os/**: opened on its own, AayushOS draws the 3D monitor's layers (static videos, inner shadow, glass smudges) over the page (`CrtOverlay.tsx`, toggle in Display Properties) and plays the room's mouse and keyboard sounds (`utils/clicks.ts`). Apps in iframes report input with `aos-input` messages, which are also passed on to the 3D room.
 - **Skip the 3D**: the start screen links straight to `/os/`, and suggests it up front when the visitor prefers reduced motion or the device looks too slow for WebGL.
 - **What's New**: the changelog lives in `os-app/src/components/applications/WhatsNew.tsx`; add new entries at the top.
 - **Analytics**: app opens, questions asked to White, achievements and resume downloads are counted as GoatCounter events (`os/...` and `os-lite/...`), once per visit.

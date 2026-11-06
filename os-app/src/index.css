@@ -445,3 +445,6 @@ body.aos-moving iframe {
 html {
     font-synthesis: none;
 }
+
+/* CRT layers are added on top like light, as the 3D monitor does (additive blending) */
+.crt-add { mix-blend-mode: screen; mix-blend-mode: plus-lighter; }

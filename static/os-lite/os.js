@@ -1473,6 +1473,11 @@
     if (w0) { w0.classList.add('active'); w0.style.left = ''; w0.style.top = ''; }
     // clicking inside brings the parent window to the front
     addEventListener('mousedown', function () { toParent({ type: 'aos-focus', app: SINGLE }); }, true);
+    // mouse and keyboard clicks: AayushOS plays the sounds (or passes them to the 3D room)
+    addEventListener('mousedown', function () { toParent({ type: 'aos-input', kind: 'down' }); }, true);
+    addEventListener('mouseup', function () { toParent({ type: 'aos-input', kind: 'up' }); }, true);
+    addEventListener('keydown', function (e) { if (!e.repeat) toParent({ type: 'aos-input', kind: 'key', key: e.key }); }, true);
+    addEventListener('keyup', function (e) { toParent({ type: 'aos-input', kind: 'keyup', key: e.key }); }, true);
     // keep the parent's screensaver from starting while someone plays Tetris or types
     var lastPing = 0;
     ['keydown', 'mousemove', 'wheel', 'touchstart'].forEach(function (ev) {
