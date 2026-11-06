@@ -8,6 +8,7 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '6 November 2026',
         items: [
+            'About, Experience, Projects and Contact now have their own pages too (aayushagrawal.in/about and friends), fast and easy for Google to find.',
             'The 3D camera now glides on springs: click again mid-flight and it turns around smoothly instead of finishing the trip first.',
             'On phones, pull a window down by its title bar to close it (a quick flick is enough), and pull the Start menu down to put it away.',
             'My skills as a Windows-style Device Manager: open Skills on the desktop and double-click a device.',

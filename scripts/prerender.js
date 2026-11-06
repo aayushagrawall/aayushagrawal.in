@@ -60,6 +60,7 @@ try {
     await page.waitForTimeout(1500);
 
     const sections = [];
+    const byRoute = {};
     for (const [route, title] of PAGES) {
         await page.evaluate((r) => (location.hash = r), route);
         await page.waitForTimeout(700);
@@ -89,7 +90,10 @@ try {
             };
             return walk(src).replace(/\s+/g, ' ').replace(/> </g, '><').trim();
         }, HOST);
-        if (html) sections.push(`<section><h2>${title}</h2>${html}</section>`);
+        if (html) {
+            sections.push(`<section><h2>${title}</h2>${html}</section>`);
+            byRoute[route] = html;
+        }
         else console.warn('[prerender] nothing found for #' + route);
     }
     await browser.close();
@@ -99,6 +103,7 @@ try {
         '<h1>Aayush Agrawal</h1><p>Developer and AI &amp; ML student at BMS College of Engineering, Bengaluru.</p>' +
         '<p><a href="https://aayushagrawal.in/cv/">Resume (web)</a> · <a href="https://aayushagrawal.in/os/files/Aayush-Agrawal-Resume.pdf">Resume (PDF)</a> · ' +
         '<a href="https://github.com/aayushagrawall">GitHub</a> · <a href="https://www.linkedin.com/in/aayush-agrawall/">LinkedIn</a></p>' +
+        '<p>Pages: <a href="https://aayushagrawal.in/about/">About</a> · <a href="https://aayushagrawal.in/experience/">Experience</a> · <a href="https://aayushagrawal.in/projects/">Projects</a> · <a href="https://aayushagrawal.in/contact/">Contact</a></p>' +
         sections.join('') +
         '</section>';
     const style =
@@ -118,4 +123,177 @@ try {
         fs.writeFileSync(file, html);
         console.log(`[prerender] ${rel}: ${sections.length} pages, ${Math.round(block.length / 1024)} KB of text`);
     }
+
+    // ---------- Indexable pages: /about/, /experience/, /projects/, /contact/ ----------
+    // Real pages with their own title, description and canonical URL, built from the same
+    // Showcase content, so Google can index each one. A button opens the same page in AayushOS.
+    const SITE = 'https://aayushagrawal.in';
+    const PERSON = {
+        '@type': 'Person',
+        '@id': SITE + '/#person',
+        name: 'Aayush Agrawal',
+        url: SITE + '/',
+        jobTitle: 'Developer and AI & ML Student',
+        email: 'mailto:agrawal.aayush38@gmail.com',
+        affiliation: { '@type': 'CollegeOrUniversity', name: 'BMS College of Engineering' },
+        address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressCountry: 'IN' },
+        sameAs: ['https://github.com/aayushagrawall', 'https://www.linkedin.com/in/aayush-agrawall/', 'https://instagram.com/_aayush.agrawal', 'https://aayushagrawal.codes'],
+    };
+    const NAV = [
+        ['about', 'About'],
+        ['experience', 'Experience'],
+        ['projects', 'Projects'],
+        ['contact', 'Contact'],
+    ];
+    const PAGES_OUT = [
+        {
+            slug: 'about',
+            title: 'About Aayush Agrawal | AI & ML Student and Developer, Bengaluru',
+            desc: 'Aayush Agrawal is an AI & Machine Learning undergraduate at BMS College of Engineering, Bengaluru, who builds Python tools, Discord bots and websites.',
+            h1: 'About me',
+            body: byRoute['about'],
+            os: 'about',
+            type: 'ProfilePage',
+        },
+        {
+            slug: 'experience',
+            title: 'Experience | Aayush Agrawal, BMS College of Engineering',
+            desc: 'Education and experience of Aayush Agrawal: B.E. in AI & Machine Learning at BMS College of Engineering, BMSCE UTSAV volunteer and Rotaract Club member.',
+            h1: 'Experience',
+            body: byRoute['experience'],
+            os: 'experience',
+            type: 'WebPage',
+        },
+        {
+            slug: 'projects',
+            title: 'Projects | Aayush Agrawal: websites, Discord bots and Python tools',
+            desc: 'Projects by Aayush Agrawal, including clienterr.com, imgurr.me, a Discord moderation bot and Python tools.',
+            h1: 'Projects',
+            body: (byRoute['projects/software'] || '') + (byRoute['projects/tools'] || ''),
+            os: 'projects',
+            type: 'CollectionPage',
+        },
+        {
+            slug: 'contact',
+            title: 'Contact Aayush Agrawal',
+            desc: 'Get in touch with Aayush Agrawal by email, LinkedIn or GitHub, about internships, projects or anything else.',
+            h1: 'Contact',
+            body:
+                '<ul class="links">' +
+                '<li>Email: <a href="mailto:agrawal.aayush38@gmail.com">agrawal.aayush38@gmail.com</a></li>' +
+                '<li>LinkedIn: <a href="https://www.linkedin.com/in/aayush-agrawall/">linkedin.com/in/aayush-agrawall</a></li>' +
+                '<li>GitHub: <a href="https://github.com/aayushagrawall">github.com/aayushagrawall</a></li>' +
+                '<li>Instagram: <a href="https://instagram.com/_aayush.agrawal">@_aayush.agrawal</a></li>' +
+                '<li>Resume: <a href="/cv/">aayushagrawal.in/cv</a> (<a href="/os/files/Aayush-Agrawal-Resume.pdf">PDF</a>)</li>' +
+                '</ul>' +
+                (byRoute['contact'] || ''),
+            os: 'contact',
+            type: 'ContactPage',
+        },
+    ];
+    const escAttr = (t) => t.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    // headings inside a page body shift down one level under the page's own h1
+    const demote = (h) => h.replace(/<(\/?)h3>/g, '<$1h2>').replace(/<(\/?)h4>/g, '<$1h3>');
+    // tidy the OS markup for a plain page: spacing comes from CSS, split headings join up,
+    // and lines that only make sense inside AayushOS are reworded or linked
+    const tidy = (h) =>
+        demote(h)
+            .replace(/<br>/g, '')
+            .replace(/<h2>([^<]+)<\/h2><h3>(&amp;[^<]+)<\/h3>/g, '<h2>$1 $2</h2>')
+            .replace(/reach out using this form or email me at/g, 'email me at')
+            .replace(/on my Websites page\./g, 'on my <a href="/projects/">Projects</a> page.')
+            .replace(/<p>\s*<\/p>/g, '');
+    let written = 0;
+    for (const pg of PAGES_OUT) {
+        if (!pg.body) {
+            console.warn('[prerender] no content for /' + pg.slug + '/, keeping the old short link');
+            continue;
+        }
+        const url = `${SITE}/${pg.slug}/`;
+        const ld = {
+            '@context': 'https://schema.org',
+            '@graph': [
+                {
+                    '@type': pg.type,
+                    '@id': url,
+                    url,
+                    name: pg.title,
+                    description: pg.desc,
+                    isPartOf: { '@type': 'WebSite', '@id': SITE + '/#website', url: SITE + '/', name: 'Aayush Agrawal' },
+                    ...(pg.type === 'ProfilePage' ? { mainEntity: PERSON } : { about: { '@id': SITE + '/#person' } }),
+                },
+                {
+                    '@type': 'BreadcrumbList',
+                    itemListElement: [
+                        { '@type': 'ListItem', position: 1, name: 'Aayush Agrawal', item: SITE + '/' },
+                        { '@type': 'ListItem', position: 2, name: pg.h1, item: url },
+                    ],
+                },
+                ...(pg.type === 'ProfilePage' ? [] : [PERSON]),
+            ],
+        };
+        const nav = NAV.map(([slug, name]) => `<a href="/${slug}/"${slug === pg.slug ? ' aria-current="page"' : ''}>${name}</a>`).join('') + '<a href="/cv/">Resume</a>';
+        const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escAttr(pg.title)}</title>
+  <meta name="description" content="${escAttr(pg.desc)}" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="${url}" />
+  <link rel="icon" href="/images/favicon.ico" sizes="any" />
+  <meta property="og:type" content="${pg.type === 'ProfilePage' ? 'profile' : 'website'}" />
+  <meta property="og:site_name" content="Aayush Agrawal" />
+  <meta property="og:title" content="${escAttr(pg.title)}" />
+  <meta property="og:description" content="${escAttr(pg.desc)}" />
+  <meta property="og:url" content="${url}" />
+  <meta property="og:image" content="${SITE}/images/og/${pg.slug}.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${escAttr(pg.title)}" />
+  <meta name="twitter:description" content="${escAttr(pg.desc)}" />
+  <meta name="twitter:image" content="${SITE}/images/og/${pg.slug}.jpg" />
+  <link rel="stylesheet" href="/pages.css?v=1" />
+  <script type="application/ld+json">${JSON.stringify(ld)}</script>
+  <script>window.goatcounter = { path: function (p) { return location.host + p } };</script>
+  <script data-goatcounter="https://clienterr.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</head>
+<body>
+  <header class="top">
+    <a class="name" href="/">Aayush Agrawal</a>
+    <nav aria-label="Pages">${nav}</nav>
+  </header>
+  <main>
+    <p class="crumbs"><a href="/">aayushagrawal.in</a> / ${pg.h1}</p>
+    <h1>${pg.h1}</h1>
+    <div class="open">
+      <p>This is the plain version of this page. It also lives inside my 3D portfolio, on a retro computer you can use.</p>
+      <p class="btns"><a class="primary" href="/os/#${pg.os}">Open it in AayushOS</a><a href="/">See the 3D desk</a></p>
+    </div>
+    <article>${tidy(pg.body)}</article>
+  </main>
+  <footer class="foot">
+    <nav aria-label="More pages">${nav}<a href="/os/">AayushOS</a><a href="https://aayushagrawal.codes">aayushagrawal.codes</a></nav>
+    <p>© 2026 Aayush Agrawal · Bengaluru, India</p>
+  </footer>
+</body>
+</html>
+`;
+        fs.mkdirSync(path.join(PUBLIC, pg.slug), { recursive: true });
+        fs.writeFileSync(path.join(PUBLIC, pg.slug, 'index.html'), html);
+        written++;
+    }
+    console.log(`[prerender] wrote ${written} indexable pages`);
+
+    // ---------- Sitemap with today's date ----------
+    const today = new Date().toISOString().slice(0, 10);
+    const urls = ['/', '/about/', '/experience/', '/projects/', '/contact/', '/cv/', '/os/', '/os-lite/', '/os/files/Aayush-Agrawal-Resume.pdf'];
+    const xml =
+        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+        urls.map((u) => `  <url>\n    <loc>${SITE}${u}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`).join('\n') +
+        '\n</urlset>\n';
+    fs.writeFileSync(path.join(PUBLIC, 'sitemap.xml'), xml);
+    console.log('[prerender] sitemap.xml: ' + urls.length + ' URLs');
 })();
