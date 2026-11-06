@@ -93,36 +93,79 @@ export default class Camera extends EventEmitter {
         this.setFreeCamListeners();
     }
 
+    // Camera moves are springs, not fixed-length tweens: each frame the camera accelerates
+    // toward the target keyframe's live position, so a click mid-flight just changes the
+    // target and the camera turns around smoothly, keeping its speed (no restart, no jump).
+    velPos = new THREE.Vector3();
+    velFoc = new THREE.Vector3();
+    omega = 2 * Math.PI; // spring stiffness, from the "response" time
+    lastTick = 0;
+    onArrive?: () => void;
+    settling = false; // logically arrived (currentKeyframe set) but still easing in
+    startDist = 1;
+
     transition(
         key: CameraKey,
         duration: number = 1000,
-        easing?: any,
+        _easing?: any,
         callback?: () => void
     ) {
         if (this.currentKeyframe === key) return;
-
-        if (this.targetKeyframe) TWEEN.removeAll();
-
+        if (this.currentKeyframe && !this.settling) {
+            // leaving a resting keyframe: start from where the camera is, at rest
+            this.velPos.set(0, 0, 0);
+            this.velFoc.set(0, 0, 0);
+        }
         this.currentKeyframe = undefined;
         this.targetKeyframe = key;
+        this.onArrive = callback;
+        this.settling = false;
+        this.startDist = Math.max(1, this.position.distanceTo(this.keyframes[key].position));
 
-        const keyframe = this.keyframes[key];
+        // "response" (seconds): how quickly the camera gets there. The old tween lengths
+        // map onto it so the room keeps its pacing. Reduced motion: shorter flights.
+        let response = Math.min(1.6, Math.max(0.55, (duration / 1000) * 0.9));
+        if (typeof window.matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches) response *= 0.5;
+        this.omega = (2 * Math.PI) / response;
+    }
 
-        const posTween = new TWEEN.Tween(this.position)
-            .to(keyframe.position, duration)
-            .easing(easing || TWEEN.Easing.Quintic.InOut)
-            .onComplete(() => {
-                this.currentKeyframe = key;
-                this.targetKeyframe = undefined;
-                if (callback) callback();
-            });
-
-        const focTween = new TWEEN.Tween(this.focalPoint)
-            .to(keyframe.focalPoint, duration)
-            .easing(easing || TWEEN.Easing.Quintic.InOut);
-
-        posTween.start();
-        focTween.start();
+    stepSpring() {
+        const now = performance.now();
+        let dt = this.lastTick ? (now - this.lastTick) / 1000 : 1 / 60;
+        this.lastTick = now;
+        dt = Math.min(dt, 0.05);
+        const key = this.targetKeyframe || (this.settling ? this.currentKeyframe : undefined);
+        if (!key) return;
+        const kf = this.keyframes[key];
+        const w = this.omega;
+        // critically damped (damping ratio 1): no overshoot, smooth settle
+        const steps = Math.max(1, Math.ceil(dt / (1 / 240)));
+        const h = dt / steps;
+        const acc = new THREE.Vector3();
+        for (let i = 0; i < steps; i++) {
+            acc.copy(kf.position).sub(this.position).multiplyScalar(w * w).addScaledVector(this.velPos, -2 * w);
+            this.velPos.addScaledVector(acc, h);
+            this.position.addScaledVector(this.velPos, h);
+            acc.copy(kf.focalPoint).sub(this.focalPoint).multiplyScalar(w * w).addScaledVector(this.velFoc, -2 * w);
+            this.velFoc.addScaledVector(acc, h);
+            this.focalPoint.addScaledVector(this.velFoc, h);
+        }
+        const left = this.position.distanceTo(kf.position);
+        // close enough to count as "there" for the rest of the site (clicks, the neon sign)...
+        if (this.targetKeyframe && left < Math.max(30, this.startDist * 0.03)) {
+            this.currentKeyframe = this.targetKeyframe;
+            this.targetKeyframe = undefined;
+            this.settling = true;
+        }
+        // ...and fully settled: from here the keyframe drives the camera directly
+        if (this.settling && left < 2 && this.focalPoint.distanceTo(kf.focalPoint) < 2 && this.velPos.length() < 20 && this.velFoc.length() < 20) {
+            this.settling = false;
+            this.velPos.set(0, 0, 0);
+            this.velFoc.set(0, 0, 0);
+            const cb = this.onArrive;
+            this.onArrive = undefined;
+            if (cb) cb();
+        }
     }
 
     setInstance() {
@@ -139,11 +182,7 @@ export default class Camera extends EventEmitter {
 
     setMonitorListeners() {
         this.on('enterMonitor', () => {
-            this.transition(
-                CameraKey.MONITOR,
-                2000,
-                BezierEasing(0.13, 0.99, 0, 1)
-            );
+            this.transition(CameraKey.MONITOR, 1000);
             UIEventBus.dispatch('enterMonitor', {});
         });
         this.on('leftMonitor', () => {
@@ -232,8 +271,9 @@ export default class Camera extends EventEmitter {
             const _key = key as CameraKey;
             this.keyframes[_key].update();
         }
+        this.stepSpring();
 
-        if (this.currentKeyframe) {
+        if (this.currentKeyframe && !this.settling) {
             const keyframe = this.keyframes[this.currentKeyframe];
             this.position.copy(keyframe.position);
             this.focalPoint.copy(keyframe.focalPoint);
