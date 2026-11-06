@@ -78,7 +78,7 @@ const Experience: React.FC<ExperienceProps> = () => {
                         <h1>Schooling</h1>
                     </div>
                     <div style={styles.headerRow}>
-                        <h3>Shiv Jyoti International School, Kota · Mayo College, Ajmer</h3>
+                        <h3>Mayo College, Ajmer · Shiv Jyoti International School, Kota</h3>
                         <b>
                             <p>2012 - 2024</p>
                         </b>
@@ -86,7 +86,7 @@ const Experience: React.FC<ExperienceProps> = () => {
                 </div>
             </div>
             <div className="text-block">
-                <p>CBSE Grade 11 and 12 (Physics, Chemistry, Math) at Shiv Jyoti International School, and Grade 5 to 10 at Mayo College.</p>
+                <p>CBSE Grade 5 to 10 at Mayo College, then Grade 11 and 12 (Physics, Chemistry, Math) at Shiv Jyoti International School.</p>
             </div>
             <div style={styles.headerContainer}>
                 <div style={styles.header}>
