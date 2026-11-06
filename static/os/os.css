@@ -45,7 +45,7 @@ button, input, label, select, textarea { font-size: 16px; }
 .boot-title span { color: var(--accent); }
 .boot-sub { font: 700 18px var(--serif); color: #aaa; margin-top: 8px; letter-spacing: 1px; }
 .boot-bar { width: 320px; height: 22px; border: 2px solid #777; padding: 3px; }
-.boot-bar span { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, var(--accent) 0 14px, transparent 14px 18px); animation: boot 1.6s steps(18) forwards; }
+.boot-bar span { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, var(--accent) 0 14px, transparent 14px 18px); animation: boot 1s steps(14) forwards; }
 @keyframes boot { to { width: 100%; } }
 .boot-note { margin: 0; color: #888; font: 16px var(--serif); }
 
@@ -376,4 +376,58 @@ button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px;
   .pt-canvas-wrap { max-height: 50vh; }
   .pt-bottom { flex-wrap: wrap; }
   .pt-palette { grid-template-columns: repeat(14, 18px); } .pt-swatch { width: 18px; }
+}
+
+/* =====================================================================
+   Retro pass: pixel fonts for all UI chrome, CRT teal, Win95 outline
+   drag/resize, dithered icon selection and a status-bar resize grip.
+   ===================================================================== */
+:root { --desk: #3a8e8f; }
+.desktop { background: var(--desk); }
+
+/* pixel UI font everywhere in the chrome (content pages keep their serif fonts) */
+.icon span, .win .title-bar-text, .taskbar, .task-buttons button, .tray, .start-btn, .start-list li,
+.status-bar-field, .rb-table, .wl-foot, .wl-foot label, .addr, .addr input, .tetris-side legend,
+.pt-actions button, .msg-btns button, .wl-btns button, .rb-bar button, .btn-row button {
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif !important;
+  -webkit-font-smoothing: none; -moz-osx-font-smoothing: grayscale;
+}
+.icon span { font-size: 16px !important; line-height: 1.15; letter-spacing: .2px; text-shadow: none; }
+.win .title-bar-text { font-weight: bold; font-size: 16px; letter-spacing: .3px; }
+.start-btn b { font-weight: bold; }
+.task-buttons button, .tray, .start-list li { font-size: 16px; }
+.status-bar-field { font-size: 14px; }
+
+/* Win95 icon selection: navy label with dotted focus line, icon tinted navy */
+.icon.selected span { background: #000080; color: #fff; outline: 1px dotted #fff; outline-offset: -1px; }
+.icon.selected svg { filter: brightness(.55) sepia(1) hue-rotate(185deg) saturate(5) contrast(1.1); }
+
+/* dithered move/resize outline */
+.win-outline {
+  position: fixed; z-index: 8500; pointer-events: none; box-sizing: border-box; padding: 4px;
+  background: repeating-conic-gradient(#fff 0 25%, #000 0 50%) 0 0 / 4px 4px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  mix-blend-mode: difference;
+}
+.win-outline[hidden] { display: none; }
+body.dragging, body.dragging * { cursor: move !important; }
+body.resizing, body.resizing * { cursor: nwse-resize !important; }
+
+/* resize grip in the bottom-right corner */
+.win .resize {
+  width: 16px; height: 16px; right: 4px; bottom: 4px;
+  background: repeating-linear-gradient(135deg, transparent 0 2px, #fff 2px 3px, #808080 3px 4px, transparent 4px 5px);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+/* Showcase: pixel-font subtitles like a 90s homepage */
+.sc-hero h2 { font: bold 44px/1.1 "Pixelated MS Sans Serif", Arial, sans-serif; letter-spacing: 1px; -webkit-font-smoothing: none; margin-top: 30px; }
+.sc-side h3 { font: bold 33px/1.1 "Pixelated MS Sans Serif", Arial, sans-serif; letter-spacing: .5px; -webkit-font-smoothing: none; }
+.sc-sub { font: bold 33px/1.15 "Pixelated MS Sans Serif", Arial, sans-serif !important; -webkit-font-smoothing: none; }
+.sc-counter { font: bold 22px "Pixelated MS Sans Serif", Arial, sans-serif; -webkit-font-smoothing: none; }
+@media (max-width: 760px) {
+  .sc-hero h2 { font-size: 22px; }
+  .sc-side h3, .sc-sub { font-size: 22px !important; }
+  .icon span { font-size: 13px !important; }
 }

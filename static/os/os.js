@@ -422,16 +422,34 @@
     delete open[id];
   }
 
+  // Win95-style outline move/resize: a dithered outline follows the mouse and the
+  // window jumps into place on release. Much smoother inside the 3D monitor than
+  // repainting the whole window every frame.
+  var outline = el('<div class="win-outline" hidden></div>');
+  document.body.appendChild(outline);
+  function showOutline(r) {
+    outline.style.left = r.left + 'px'; outline.style.top = r.top + 'px';
+    outline.style.width = r.width + 'px'; outline.style.height = r.height + 'px';
+    outline.hidden = false;
+  }
+
   function drag(win, handle) {
     handle.addEventListener('mousedown', function (e) {
-      if (e.target.closest('button') || win.classList.contains('max')) return;
+      if (e.button !== 0 || e.target.closest('button') || win.classList.contains('max')) return;
       var sx = e.clientX, sy = e.clientY, ox = win.offsetLeft, oy = win.offsetTop;
+      var w = win.offsetWidth, h = win.offsetHeight, nx = ox, ny = oy, moved = false;
       function move(ev) {
-        var nx = Math.min(Math.max(ox + ev.clientX - sx, -win.offsetWidth + 80), window.innerWidth - 80);
-        var ny = Math.min(Math.max(oy + ev.clientY - sy, 0), window.innerHeight - 60);
-        win.style.left = nx + 'px'; win.style.top = ny + 'px';
+        nx = Math.min(Math.max(ox + ev.clientX - sx, -w + 80), window.innerWidth - 80);
+        ny = Math.min(Math.max(oy + ev.clientY - sy, 0), window.innerHeight - 60);
+        if (!moved && Math.abs(nx - ox) + Math.abs(ny - oy) < 3) return;
+        if (!moved) { moved = true; showOutline({ left: ox, top: oy, width: w, height: h }); document.body.classList.add('dragging'); }
+        outline.style.transform = 'translate(' + (nx - ox) + 'px,' + (ny - oy) + 'px)';
       }
-      function up() { removeEventListener('mousemove', move); removeEventListener('mouseup', up); }
+      function up() {
+        removeEventListener('mousemove', move); removeEventListener('mouseup', up);
+        if (moved) { win.style.left = nx + 'px'; win.style.top = ny + 'px'; }
+        outline.hidden = true; outline.style.transform = ''; document.body.classList.remove('dragging');
+      }
       addEventListener('mousemove', move); addEventListener('mouseup', up);
       e.preventDefault();
     });
@@ -439,9 +457,19 @@
 
   function resize(win, handle) {
     handle.addEventListener('mousedown', function (e) {
+      if (e.button !== 0) return;
       var sx = e.clientX, sy = e.clientY, ow = win.offsetWidth, oh = win.offsetHeight;
-      function move(ev) { win.style.width = Math.max(380, ow + ev.clientX - sx) + 'px'; win.style.height = Math.max(220, oh + ev.clientY - sy) + 'px'; }
-      function up() { removeEventListener('mousemove', move); removeEventListener('mouseup', up); }
+      var r = { left: win.offsetLeft, top: win.offsetTop, width: ow, height: oh }, nw = ow, nh = oh;
+      showOutline(r); document.body.classList.add('resizing');
+      function move(ev) {
+        nw = Math.max(380, ow + ev.clientX - sx); nh = Math.max(220, oh + ev.clientY - sy);
+        outline.style.width = nw + 'px'; outline.style.height = nh + 'px';
+      }
+      function up() {
+        removeEventListener('mousemove', move); removeEventListener('mouseup', up);
+        win.style.width = nw + 'px'; win.style.height = nh + 'px';
+        outline.hidden = true; document.body.classList.remove('resizing');
+      }
       addEventListener('mousemove', move); addEventListener('mouseup', up);
       e.preventDefault(); e.stopPropagation();
     });
@@ -485,7 +513,7 @@
   var START = [
     ['showcase', null, 'My Showcase'], ['showcase', 'about', 'About'], ['showcase', 'experience', 'Experience'],
     ['showcase', 'projects', 'Projects'], ['showcase', 'contact', 'Contact'], '-',
-    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['credits', null], '-', 'shutdown'
+    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['welcome', null], ['credits', null], '-', 'shutdown'
   ];
   START.forEach(function (item) {
     if (item === '-') { startList.appendChild(el('<hr>')); return; }
@@ -1144,6 +1172,8 @@
     document.getElementById('boot').classList.add('done');
     openApp('showcase');
     var off = false; try { off = localStorage.getItem('aayushos-welcome-off') === '1'; } catch (e) {}
-    if (!off && !SMALL) setTimeout(function () { openApp('welcome'); }, 700);
-  }, 1800);
+    // In the 3D monitor, open on the clean Showcase hero; the tips dialog is in the Start menu.
+    var inMonitor = window.parent !== window;
+    if (!off && !SMALL && !inMonitor) setTimeout(function () { openApp('welcome'); }, 700);
+  }, 1100);
 })();
