@@ -14,7 +14,7 @@
   --accent: #ff6a1a;
   --display: "Fraunces", "Cooper Black", Georgia, serif;
   --serif: "Tinos", "Times New Roman", Times, serif;
-  --ui: "Pixelated MS Sans Serif", Tahoma, Arial, sans-serif;
+  --ui: "DotGothic16", Tahoma, Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -401,7 +401,7 @@ button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px;
 .icon span, .win .title-bar-text, .taskbar, .task-buttons button, .tray, .start-btn, .start-list li,
 .status-bar-field, .rb-table, .wl-foot, .wl-foot label, .addr, .addr input, .tetris-side legend,
 .pt-actions button, .msg-btns button, .wl-btns button, .rb-bar button, .btn-row button {
-  font-family: "Pixelated MS Sans Serif", Arial, sans-serif !important;
+  font-family: "DotGothic16", Arial, sans-serif !important;
   -webkit-font-smoothing: none; -moz-osx-font-smoothing: grayscale;
 }
 .icon span { font-size: 16px !important; line-height: 1.15; letter-spacing: .2px; text-shadow: none; }
@@ -434,10 +434,10 @@ body.resizing, body.resizing * { cursor: nwse-resize !important; }
 }
 
 /* Showcase: pixel-font subtitles like a 90s homepage */
-.sc-hero h2 { font: bold 44px/1.1 "Pixelated MS Sans Serif", Arial, sans-serif; letter-spacing: 1px; -webkit-font-smoothing: none; margin-top: 30px; }
-.sc-side h3 { font: bold 33px/1.1 "Pixelated MS Sans Serif", Arial, sans-serif; letter-spacing: .5px; -webkit-font-smoothing: none; }
-.sc-sub { font: bold 33px/1.15 "Pixelated MS Sans Serif", Arial, sans-serif !important; -webkit-font-smoothing: none; }
-.sc-counter { font: bold 22px "Pixelated MS Sans Serif", Arial, sans-serif; -webkit-font-smoothing: none; }
+.sc-hero h2 { font: bold 44px/1.1 "DotGothic16", Arial, sans-serif; letter-spacing: 1px; -webkit-font-smoothing: none; margin-top: 30px; }
+.sc-side h3 { font: bold 33px/1.1 "DotGothic16", Arial, sans-serif; letter-spacing: .5px; -webkit-font-smoothing: none; }
+.sc-sub { font: bold 33px/1.15 "DotGothic16", Arial, sans-serif !important; -webkit-font-smoothing: none; }
+.sc-counter { font: bold 22px "DotGothic16", Arial, sans-serif; -webkit-font-smoothing: none; }
 @media (max-width: 760px) {
   html:not(.single) .sc-hero h2 { font-size: 22px; }
   html:not(.single) .sc-side h3, html:not(.single) .sc-sub { font-size: 22px !important; }
@@ -525,3 +525,6 @@ html.single .pt { align-self: center; }
 /* the Start menu can be taller than a phone screen: let it scroll */
 .start-menu { max-height: calc(100vh - 56px); max-height: calc(100dvh - 56px); }
 .start-menu .start-list { overflow-y: auto; }
+
+/* DotGothic16 has no bold; a fake bold smudges the pixels, so keep it crisp */
+html { font-synthesis: none; }
