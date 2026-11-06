@@ -3,3 +3,6 @@ node_modules
 *.psd
 
 public/
+
+# the React OS keeps its static files in os-app/public
+!os-app/public/
