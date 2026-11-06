@@ -35,7 +35,7 @@ To work on the OS alone, run `npm start` inside `os-app/`. The lite OS needs no 
 
 - AayushOS: showcase pages are in `os-app/src/components/showcase/`, desktop apps in `os-app/src/components/os/Desktop.tsx`.
 - AayushOS Lite: all content lives at the top of `static/os-lite/os.js`.
-- Resume PDF: `os-app/public/files/` and `static/os-lite/files/`.
+- Resume: edit `static/cv/index.html` (the web version at `/cv/`), then run `npm run resume`. It renders that page into the one-page PDF (adding the phone number, which stays off the public page) and writes it to `os-app/public/files/`, `static/os-lite/files/` and, if it's checked out next to this repo, `../aayushagrawal.codes/assets/docs/`. `npm run build` does this too. Needs Playwright once: `npm i -D playwright && npx playwright install chromium`.
 
 ## Credits
 

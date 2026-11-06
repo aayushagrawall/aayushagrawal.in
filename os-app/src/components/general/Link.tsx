@@ -55,7 +55,8 @@ const Link: React.FC<LinkProps> = (props) => {
             style={Object.assign({}, { display: 'flex' }, props.containerStyle)}
         >
             {isHere && <div style={styles.hereIndicator} />}
-            <h4
+            {/* styled like an h4, but it's a link, not a heading */}
+            <span
                 className="router-link"
                 style={Object.assign(
                     {},
@@ -64,7 +65,7 @@ const Link: React.FC<LinkProps> = (props) => {
                 )}
             >
                 {props.text}
-            </h4>
+            </span>
         </RouterLink>
     );
 };

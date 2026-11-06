@@ -6,14 +6,14 @@ export type Wallpaper = { id: string; name: string; css: React.CSSProperties };
 const px = (s: string) => `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
 
 export const WALLPAPERS: Wallpaper[] = [
-    { id: 'teal', name: '(None)', css: { backgroundColor: '#3e9697' } },
+    { id: 'teal', name: '(None)', css: { backgroundColor: '#207f80' } },
     {
         id: 'tiles',
         name: 'Tiles',
         css: {
-            backgroundColor: '#2f7f80',
+            backgroundColor: '#17696a',
             backgroundImage: px(
-                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" shape-rendering="crispEdges"><rect width="8" height="8" fill="#3e9697"/><rect x="8" y="8" width="8" height="8" fill="#3e9697"/></svg>'
+                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" shape-rendering="crispEdges"><rect width="8" height="8" fill="#207f80"/><rect x="8" y="8" width="8" height="8" fill="#207f80"/></svg>'
             ),
         },
     },

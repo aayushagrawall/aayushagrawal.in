@@ -37,7 +37,7 @@ const sources: Resource[] = [
     {
         name: 'monitorShadowTexture',
         type: 'texture',
-        path: 'textures/monitor/layers/compressed/shadow-compressed.png',
+        path: 'textures/monitor/layers/compressed/shadow-compressed.webp',
     },
     {
         name: 'mouseDown',
