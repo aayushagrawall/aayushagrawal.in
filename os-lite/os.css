@@ -521,3 +521,7 @@ html.single .pt { align-self: center; }
 .ck-status p { margin: 0; font: 16px/1.35 var(--serif); }
 .ck-status .ck-small { margin-top: 6px; font-size: 14px; color: #444; }
 @media (max-width: 760px) { html:not(.single) .ck-pop { left: 8px; right: 8px; width: auto; } }
+
+/* the Start menu can be taller than a phone screen: let it scroll */
+.start-menu { max-height: calc(100vh - 56px); max-height: calc(100dvh - 56px); }
+.start-menu .start-list { overflow-y: auto; }
