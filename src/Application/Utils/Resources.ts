@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+// @ts-ignore no types for the decoder module
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import Application from '../Application';
 import UIEventBus from '../UI/EventBus';
 import EventEmitter from './EventEmitter';
@@ -42,7 +44,8 @@ export default class Resources extends EventEmitter {
 
     setLoaders() {
         this.loaders = {
-            gltfLoader: new GLTFLoader(),
+            // models are meshopt-compressed (scripts: gltf-transform meshopt)
+            gltfLoader: new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),
             textureLoader: new THREE.TextureLoader(),
             cubeTextureLoader: new THREE.CubeTextureLoader(),
             audioLoader: new THREE.AudioLoader(),

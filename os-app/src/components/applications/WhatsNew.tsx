@@ -8,6 +8,10 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '6 November 2026',
         items: [
+            'An "Open to internships" neon sign on the desk that flickers on when you sit down.',
+            'The start-up screen now shows your own computer: CPU cores, memory, graphics card and display.',
+            'The 3D room downloads about 400 KB less, so it loads faster.',
+            'The phone-friendly AayushOS Lite has the CRT look and click sounds too (CRT effect is in the Start menu).',
             'Opened on its own, AayushOS now has the same vintage CRT look and mouse and keyboard clicks as the 3D monitor. Turn the effect off in Display Properties (right-click the desktop).',
             'Click the can on the desk in 3D for a fresh can of White, and a new achievement: Refuel.',
             'The taskbar clock shows live Bangalore weather, and when it rains there you can hear it in the 3D room.',

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import Application from '../Application';
+import { OPEN_TO_INTERNSHIPS } from '../config';
 
 /**
  * Aayush's personal touches on the desk:
@@ -7,6 +8,8 @@ import Application from '../Application';
  *  - a sticky note on the monitor bezel
  *  - a framed poster on the desk with a QR code to the web resume (click it too)
  *  - a cold can of White, his energy drink, in place of the coffee mug (click it: pssht)
+ *  - an "Open to internships" neon sign that flickers on when you first come up to the desk
+ *    (switch it off in src/Application/config.ts)
  *  - a warm sunset tint from 5 to 7 pm IST and a "Bangalore night" tint from 7 pm to 6 am
  *    (override with ?time=day / sunset / night, or the older ?night=1 / ?night=0)
  *
@@ -43,6 +46,7 @@ export default class Personal {
         this.addStickyNote(computer);
         this.addPoster(environment);
         this.addCan(environment, decor);
+        if (OPEN_TO_INTERNSHIPS) this.addNeonSign(environment);
         this.applyNightMode();
     }
 
@@ -300,6 +304,88 @@ export default class Personal {
             }
             this.count('3d/can', 'Can click (3D)');
         });
+    }
+
+    neon?: { lit: THREE.MeshBasicMaterial; glow: THREE.MeshBasicMaterial; state: 'off' | 'flicker' | 'on'; t0: number };
+
+    addNeonSign(environment: THREE.Object3D) {
+        // between the computer and the binders, in front of the binders
+        const spot = new THREE.Vector3(1215, 2000, 120);
+        const h = this.hit(environment, spot, new THREE.Vector3(0, -1, 0));
+        const deskY = h ? h.point.y : -449;
+        const W = 660;
+        const H = (W * 600) / 1024;
+        const lean = THREE.MathUtils.degToRad(8);
+
+        const sign = new THREE.Group();
+        // a slim dark base the acrylic panel slots into
+        const base = new THREE.Mesh(new THREE.BoxGeometry(W * 0.86, 26, 70), [
+            this.basic({ color: 0x1d1d22 }),
+            this.basic({ color: 0x1d1d22 }),
+            this.basic({ color: 0x3a3a42 }),
+            this.basic({ color: 0x111114 }),
+            this.basic({ color: 0x2a2a30 }),
+            this.basic({ color: 0x111114 }),
+        ]);
+        base.position.y = 13;
+        sign.add(base);
+
+        const panel = new THREE.Group();
+        panel.rotation.x = -lean;
+        panel.position.set(0, 20, 0);
+        sign.add(panel);
+        const plane = new THREE.PlaneGeometry(W, H);
+        plane.translate(0, H / 2, 0);
+        // the unlit tubes take the room's lighting; the lit layer is light itself, so it is
+        // never darkened by the night tint and fades in on top
+        const off = new THREE.Mesh(plane, this.basic({ map: this.texture('textures/personal/neon-off.webp'), transparent: true, depthWrite: false }));
+        panel.add(off);
+        const lit = new THREE.MeshBasicMaterial({ map: this.texture('textures/personal/neon-on.webp'), transparent: true, depthWrite: false, opacity: 0 });
+        const on = new THREE.Mesh(plane, lit);
+        on.position.z = 0.5;
+        panel.add(on);
+        // a soft orange spill on the desk in front of the sign
+        const glow = new THREE.MeshBasicMaterial({
+            map: this.shadowTexture(),
+            color: 0xff6a1a,
+            transparent: true,
+            opacity: 0,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+        });
+        const spill = new THREE.Mesh(new THREE.PlaneGeometry(W * 1.3, 380), glow);
+        spill.rotation.x = -Math.PI / 2;
+        spill.position.set(0, 1.5, 150);
+        sign.add(spill);
+
+        sign.position.set(spot.x, deskY, spot.z);
+        sign.rotation.y = -0.26; // turned toward the camera
+        this.group.add(sign);
+        this.neon = { lit, glow, state: 'off', t0: 0 };
+    }
+
+    /** Called every frame by World. */
+    update() {
+        const n = this.neon;
+        if (!n || n.state === 'on') return;
+        const cam = (this.application as any).camera;
+        const now = performance.now();
+        if (n.state === 'off') {
+            // light up the first time the visitor comes up to the desk
+            if (cam && (cam.currentKeyframe === 'desk' || cam.currentKeyframe === 'monitor')) {
+                n.state = 'flicker';
+                n.t0 = now + 300;
+            }
+            return;
+        }
+        // flicker: a few stutters, then steady
+        const t = now - n.t0;
+        const steps: [number, number][] = [[0, 0], [80, 0.9], [140, 0.1], [260, 0.7], [320, 0], [520, 1], [600, 0.35], [680, 1]];
+        let v = 0;
+        for (const [at, val] of steps) if (t >= at) v = val;
+        n.lit.opacity = v;
+        n.glow.opacity = v * 0.35;
+        if (t > 700) n.state = 'on';
     }
 
     clickables: { meshes: THREE.Object3D[]; onClick: () => void }[] = [];
