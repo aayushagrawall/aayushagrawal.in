@@ -19,10 +19,27 @@ const decide = (): boolean => {
     }
     if (q === '1') return true;
     if (q === '0') return false;
+    // the desk lamp in the 3D room can switch day/night for the visit
+    try {
+        const s = sessionStorage.getItem('aayushos-time');
+        if (s) return s === 'night';
+    } catch (e) {}
     const now = new Date();
     const ist = (now.getUTCHours() + now.getUTCMinutes() / 60 + 5.5) % 24;
     return ist >= 19 || ist < 6;
 };
 
-export const NIGHT = decide();
+let night = decide();
+/** True while the desktop is in its night look. Changes when the 3D room's lamp is clicked. */
+export const isNight = () => night;
+export const NIGHT = night; // the value at page load
+window.addEventListener('message', (e) => {
+    const d = e.data;
+    if (!d || d.type !== 'aos-time') return;
+    const next = d.time === 'night';
+    if (next === night) return;
+    night = next;
+    window.dispatchEvent(new Event('aos-night-change'));
+    window.dispatchEvent(new Event('aos-wallpaper')); // the automatic wallpaper follows
+});
 export const IN_MONITOR = window.parent !== window;
