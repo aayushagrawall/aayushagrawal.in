@@ -12,7 +12,22 @@ interface MuteToggleProps {}
 const MuteToggle: React.FC<MuteToggleProps> = ({}) => {
     const [isHovering, setIsHovering] = useState(false);
     const [isActive, setIsActive] = useState(false);
-    const [muted, setMuted] = useState(false);
+    // shared with AayushOS's taskbar speaker through localStorage
+    const [muted, setMuted] = useState(() => {
+        try {
+            return localStorage.getItem('aayushos-muted') === '1';
+        } catch (e) {
+            return false;
+        }
+    });
+
+    useEffect(() => {
+        const onStorage = (e: StorageEvent) => {
+            if (e.key === 'aayushos-muted') setMuted(e.newValue === '1');
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, []);
 
     const onMouseDownHandler = useCallback(
         (event) => {
@@ -29,6 +44,9 @@ const MuteToggle: React.FC<MuteToggleProps> = ({}) => {
 
     useEffect(() => {
         UIEventBus.dispatch('muteToggle', muted);
+        try {
+            localStorage.setItem('aayushos-muted', muted ? '1' : '0');
+        } catch (e) {}
     }, [muted]);
 
     return (

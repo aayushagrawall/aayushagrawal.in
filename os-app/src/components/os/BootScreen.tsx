@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { isMuted } from '../../utils/sound';
 
 /**
  * Shown when /os/ is opened directly (inside the 3D monitor the scene has its own
@@ -15,7 +16,7 @@ const BootScreen: React.FC<BootScreenProps> = ({ onDone }) => {
     const start = () => {
         if (phase !== 'wait') return;
         setPhase('boot');
-        try {
+        if (!isMuted()) try {
             const a = new Audio(`${process.env.PUBLIC_URL}/sounds/startup.mp3`);
             a.volume = 0.6;
             a.play().catch(() => {});

@@ -43,6 +43,14 @@ export default class Audio {
         UIEventBus.on('muteToggle', (mute: boolean) => {
             this.listener.setMasterVolume(mute ? 0 : 1);
         });
+
+        // the same switch as AayushOS's taskbar speaker (shared through localStorage)
+        try {
+            if (localStorage.getItem('aayushos-muted') === '1') this.listener.setMasterVolume(0);
+        } catch (e) {}
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'aayushos-muted') this.listener.setMasterVolume(e.newValue === '1' ? 0 : 1);
+        });
     }
 
     playAudio(

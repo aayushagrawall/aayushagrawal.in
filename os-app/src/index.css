@@ -424,3 +424,8 @@ body.aos-moving iframe {
     50% { opacity: 0; }
 }
 .boot-blink { animation: boot-blink 1.2s steps(1) infinite; }
+
+.ctx-item:hover {
+    background: #0000a3;
+    color: #fff;
+}

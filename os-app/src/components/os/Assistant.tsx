@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { achieve } from '../achievements/list';
+import { track } from '../../utils/track';
 
 /**
  * "Chai", Aayush's desk assistant: a cup of chai that answers common questions.
@@ -114,6 +115,8 @@ const Assistant: React.FC = () => {
                 setOpen(true);
             }
         };
+        const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+        window.addEventListener('keydown', onKey);
         window.addEventListener('message', onMsg);
         // say hi once per visit, after people have had a look around
         let shown = false;
@@ -130,6 +133,7 @@ const Assistant: React.FC = () => {
             : undefined;
         return () => {
             window.removeEventListener('message', onMsg);
+            window.removeEventListener('keydown', onKey);
             if (t) clearTimeout(t);
         };
     }, []);
@@ -145,6 +149,7 @@ const Assistant: React.FC = () => {
 
     const ask = (qa: QA) => {
         setCurrent(qa);
+        track('chai/' + qa.q.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, ''), 'Asked Chai: ' + qa.q);
         asked.current.add(qa.q);
         if (asked.current.size >= 3) achieve('chatty');
     };

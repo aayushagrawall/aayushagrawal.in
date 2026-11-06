@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from '../general';
+import { track } from '../../utils/track';
 import { ACHIEVEMENTS, Achievement, achieve, getUnlocked, record, seenApp, seenPage } from './list';
 
 /**
@@ -17,6 +18,7 @@ const AchievementCenter: React.FC = () => {
         const unlock = (id: string) => {
             if (!record(id)) return;
             const a = ACHIEVEMENTS.find((x) => x.id === id)!;
+            track('achievement/' + id, 'Achievement: ' + a.title);
             setQueue((q) => [...q, a]);
             window.dispatchEvent(new Event('aos-achievements-changed'));
             const others = ACHIEVEMENTS.filter((x) => x.id !== 'all').map((x) => x.id);

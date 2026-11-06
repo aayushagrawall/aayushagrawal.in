@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Colors from '../../constants/colors';
 import { Icon } from '../general';
+import { isMuted, setMuted, onMuteChange } from '../../utils/sound';
 // import { } from '../general';
 // import Home from '../site/Home';
 // import Window from './Window';
@@ -29,6 +30,18 @@ const Toolbar: React.FC<ToolbarProps> = ({
     };
 
     const [startWindowOpen, setStartWindowOpen] = useState(false);
+    const [muted, setMutedState] = useState(isMuted());
+    useEffect(() => onMuteChange(setMutedState), []);
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                lastClickInside.current = false;
+                setStartWindowOpen(false);
+            }
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
     const lastClickInside = useRef(false);
 
     const [lastActive, setLastActive] = useState('');
@@ -279,7 +292,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
                     </div>
                 </div>
                 <div style={styles.time}>
-                    <Icon style={styles.volumeIcon} icon="volumeOn" />
+                    <div
+                        title={muted ? 'Sound is off. Click to turn it on' : 'Sound is on. Click to mute'}
+                        style={{ cursor: 'pointer' }}
+                        onMouseDown={() => setMuted(!muted)}
+                    >
+                        <Icon style={styles.volumeIcon} icon={muted ? 'volumeOff' : 'volumeOn'} />
+                    </div>
                     <p style={styles.timeText}>{time}</p>
                 </div>
             </div>

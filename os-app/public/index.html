@@ -11,7 +11,7 @@
   <script>
     // This desktop needs a mouse and a big screen; phones get the touch-friendly AayushOS Lite.
     if (window.parent === window && (window.innerWidth < 900 || (window.matchMedia && matchMedia('(pointer: coarse)').matches && window.innerWidth < 1100))) {
-      location.replace('/os-lite/');
+      location.replace('/os-lite/' + location.hash);
     }
   </script>
   <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
