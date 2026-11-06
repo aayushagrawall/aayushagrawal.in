@@ -30,6 +30,15 @@ const Bulb = () => (
 
 // Windows 98-style "Welcome" tips dialog
 const Welcome: React.FC<WelcomeProps> = (props) => {
+    // lets Chai know to wait until the tips are closed
+    React.useEffect(() => {
+        (window as any).__aosWelcomeOpen = true;
+        window.dispatchEvent(new Event('aos-welcome-change'));
+        return () => {
+            (window as any).__aosWelcomeOpen = false;
+            window.dispatchEvent(new Event('aos-welcome-change'));
+        };
+    }, []);
     const [i, setI] = useState(0);
     const [show, setShow] = useState(() => {
         try {
@@ -48,7 +57,11 @@ const Welcome: React.FC<WelcomeProps> = (props) => {
     };
 
     const left = Math.max(10, Math.round((window.innerWidth - 640) / 2));
-    const top = Math.max(10, Math.round((window.innerHeight - 32 - 380) / 2));
+    // in the 3D monitor, sit low so the name on the Showcase stays visible
+    const top =
+        window.parent !== window
+            ? Math.max(10, window.innerHeight - 32 - 380 - 24)
+            : Math.max(10, Math.round((window.innerHeight - 32 - 380) / 2));
 
     return (
         <Window
