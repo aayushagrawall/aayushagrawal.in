@@ -43,6 +43,7 @@
     terminal: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="2" y="4" width="28" height="24" fill="#c0c0c0" stroke="#000"/><rect x="2" y="4" width="28" height="4" fill="#000080"/><rect x="4" y="10" width="24" height="16" fill="#000"/><path d="M6 13h2v1h1v1h1v1h-1v1h-1v1H6v-1h1v-1h1v-1H7v-1H6z" fill="#c0c0c0"/><rect x="12" y="18" width="7" height="2" fill="#c0c0c0"/></svg>',
     recycle: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M7 9h18l-2 20H9z" fill="#dfe8e8" stroke="#000"/><rect x="5" y="6" width="22" height="3" fill="#c0c0c0" stroke="#000"/><rect x="13" y="3" width="6" height="3" fill="#c0c0c0" stroke="#000"/><path d="M12 13v12M16 13v12M20 13v12" stroke="#808080"/><rect x="10" y="18" width="5" height="4" fill="#fff" stroke="#000"/><rect x="16" y="15" width="5" height="4" fill="#ffdd6e" stroke="#000"/></svg>',
     bulb: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><circle cx="16" cy="12" r="9" fill="#ff0" stroke="#000"/><rect x="12" y="20" width="8" height="5" fill="#c0c0c0" stroke="#000"/><rect x="13" y="25" width="6" height="3" fill="#808080" stroke="#000"/><path d="M13 13l3 4 3-4" fill="none" stroke="#a80"/></svg>',
+    paint: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M4 16c0-7 6-12 13-12 6 0 11 4 11 9 0 4-3 5-6 5h-3c-2 0-3 1-3 3 0 2 1 3 1 4 0 2-2 3-4 3-5 0-9-5-9-12z" fill="#e8d3a8" stroke="#000"/><circle cx="10" cy="13" r="2.2" fill="#e5393b"/><circle cx="15" cy="9" r="2.2" fill="#f6c94d"/><circle cx="21" cy="9" r="2.2" fill="#3cbf4a"/><circle cx="24" cy="14" r="2.2" fill="#2f5fe0"/><path d="M18 31l9-14 2 1-8 14z" fill="#8a5a2b" stroke="#000"/></svg>',
     doc: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><path d="M6 2h14l6 6v22H6z" fill="#fff" stroke="#000"/><path d="M20 2v6h6" fill="#ddd" stroke="#000"/><rect x="9" y="12" width="14" height="2" fill="#000080"/><rect x="9" y="16" width="14" height="2" fill="#777"/><rect x="9" y="20" width="10" height="2" fill="#777"/><rect x="9" y="24" width="12" height="2" fill="#777"/></svg>',
     computer: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="3" width="24" height="18" fill="#c0c0c0" stroke="#000"/><rect x="7" y="6" width="18" height="12" fill="#008080"/><rect x="9" y="8" width="5" height="4" fill="#fff"/><rect x="12" y="21" width="8" height="3" fill="#888"/><rect x="6" y="24" width="20" height="5" fill="#c0c0c0" stroke="#000"/></svg>',
     tetris: '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="4" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="12" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="18" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="20" y="10" width="8" height="8" fill="#ff6a1a" stroke="#000"/><rect x="4" y="2" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="4" y="10" width="8" height="8" fill="#00c8e6" stroke="#000"/><rect x="12" y="10" width="8" height="8" fill="#a347d6" stroke="#000"/></svg>',
@@ -294,6 +295,12 @@
       mount: Recycle
     },
 
+    paint: {
+      title: 'untitled - Paint', short: 'Paint', icon: 'paint', w: 0, h: 0, x: 180, y: 30, fixed: true,
+      render: function () { return '<div class="pt" id="pt"></div>'; },
+      mount: function (win) { Paint(win.querySelector('#pt'), win); }
+    },
+
     terminal: {
       title: 'C:\\WINDOWS\\cmd.exe', short: 'Terminal', icon: 'terminal', w: 860, h: 600, x: 260, y: 60,
       render: function () { return '<div class="term" id="term"></div>'; },
@@ -330,7 +337,7 @@
     site: { title: 'My Website', icon: 'globe', external: ME.site }
   };
 
-  var DESKTOP = ['showcase', 'projects', 'resume', 'terminal', 'tetris', 'mycomputer', 'github', 'linkedin', 'instagram', 'site', 'credits'];
+  var DESKTOP = ['showcase', 'projects', 'resume', 'terminal', 'tetris', 'paint', 'mycomputer', 'github', 'linkedin', 'instagram', 'site'];
 
   // ---------- Window manager ----------
   var windowsEl = document.getElementById('windows');
@@ -478,7 +485,7 @@
   var START = [
     ['showcase', null, 'My Showcase'], ['showcase', 'about', 'About'], ['showcase', 'experience', 'Experience'],
     ['showcase', 'projects', 'Projects'], ['showcase', 'contact', 'Contact'], '-',
-    ['resume', null], ['terminal', null], ['tetris', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['credits', null], '-', 'shutdown'
+    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['credits', null], '-', 'shutdown'
   ];
   START.forEach(function (item) {
     if (item === '-') { startList.appendChild(el('<hr>')); return; }
@@ -636,6 +643,156 @@
     poke();
   })();
 
+  // ---------- Paint ----------
+  function Paint(root, win) {
+    var PALETTE = ['#000000', '#808080', '#800000', '#808000', '#008000', '#008080', '#000080', '#800080', '#808040', '#004040', '#0080ff', '#004080', '#8000ff', '#804000',
+                   '#ffffff', '#c0c0c0', '#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff', '#ffff80', '#00ff80', '#80ffff', '#8080ff', '#ff0080', '#ff6a1a'];
+    var TOOLS = [
+      ['pencil', 'Pencil', '<path d="M4 20l2-6L16 4l4 4L10 18z" fill="#ffdd6e" stroke="#000"/><path d="M4 20l2-6 4 4z" fill="#000"/>'],
+      ['brush', 'Brush', '<path d="M14 3l7 7-6 3-4-4z" fill="#8a5a2b" stroke="#000"/><path d="M10 10l4 4c-1 4-5 7-10 7 1-5 3-9 6-11z" fill="#3c7bd6" stroke="#000"/>'],
+      ['eraser', 'Eraser', '<path d="M3 15l9-9 8 8-6 6H8z" fill="#ff9fb0" stroke="#000"/><path d="M3 15l5 5" stroke="#000"/>'],
+      ['fill', 'Fill', '<path d="M5 11l7-7 7 7-7 7z" fill="#fff" stroke="#000"/><path d="M5 11h14l-7 7z" fill="#3c7bd6"/><path d="M20 14c1 2 2 3 1 5-1 1-3 0-2-2z" fill="#3c7bd6" stroke="#000"/>'],
+      ['line', 'Line', '<path d="M4 20L20 4" stroke="#000" stroke-width="2"/>'],
+      ['rect', 'Rectangle', '<rect x="4" y="6" width="16" height="12" fill="none" stroke="#000" stroke-width="2"/>'],
+      ['ellipse', 'Ellipse', '<ellipse cx="12" cy="12" rx="8" ry="6" fill="none" stroke="#000" stroke-width="2"/>'],
+      ['spray', 'Airbrush', '<rect x="9" y="9" width="6" height="12" fill="#c0c0c0" stroke="#000"/><rect x="10" y="6" width="4" height="3" fill="#000"/><path d="M5 3h1M3 5h1M6 6h1M4 8h1M8 3h1" stroke="#000"/>']
+    ];
+    var W = 760, H = 520;
+    root.innerHTML =
+      '<div class="pt-wrap">' +
+        '<div class="pt-tools">' + TOOLS.map(function (t) { return '<button class="pt-tool" data-tool="' + t[0] + '" title="' + t[1] + '"><svg viewBox="0 0 24 24">' + t[2] + '</svg></button>'; }).join('') +
+          '<div class="pt-sizes" title="Size">' + [2, 5, 10, 18].map(function (s) { return '<button class="pt-size" data-size="' + s + '"><span style="width:' + Math.min(18, s + 2) + 'px;height:' + Math.min(18, s) + 'px"></span></button>'; }).join('') + '</div>' +
+        '</div>' +
+        '<div class="pt-canvas-wrap sunken-panel"><canvas id="pt-canvas" width="' + W + '" height="' + H + '"></canvas><canvas id="pt-overlay" width="' + W + '" height="' + H + '"></canvas></div>' +
+      '</div>' +
+      '<div class="pt-bottom">' +
+        '<div class="pt-current" title="Current colours"><span id="pt-fg"></span><span id="pt-bg"></span></div>' +
+        '<div class="pt-palette">' + PALETTE.map(function (c) { return '<button class="pt-swatch" data-color="' + c + '" style="background:' + c + '" title="' + c + '"></button>'; }).join('') + '</div>' +
+        '<div class="pt-actions"><button id="pt-undo">Undo</button><button id="pt-clear">New</button><button id="pt-save">Save PNG</button></div>' +
+      '</div>' +
+      '<div class="status-bar"><p class="status-bar-field" id="pt-status">Left-click draws with the foreground colour, right-click with the background colour.</p><p class="status-bar-field pt-xy" id="pt-xy"></p></div>';
+
+    var cv = root.querySelector('#pt-canvas'), cx = cv.getContext('2d', { willReadFrequently: true });
+    var ov = root.querySelector('#pt-overlay'), ox = ov.getContext('2d');
+    var tool = 'pencil', size = 2, fg = '#000000', bg = '#ffffff';
+    var undo = [], drawing = false, start = null, last = null, color = fg, sprayT = null;
+
+    function clear() { cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, W, H); }
+    function snapshot() { undo.push(cx.getImageData(0, 0, W, H)); if (undo.length > 25) undo.shift(); }
+    function setTool(t) { tool = t; root.querySelectorAll('.pt-tool').forEach(function (b) { b.classList.toggle('on', b.dataset.tool === t); }); }
+    function setSize(s) { size = s; root.querySelectorAll('.pt-size').forEach(function (b) { b.classList.toggle('on', +b.dataset.size === s); }); }
+    function paintColors() { root.querySelector('#pt-fg').style.background = fg; root.querySelector('#pt-bg').style.background = bg; }
+    function pos(e) { var r = cv.getBoundingClientRect(); return { x: Math.round((e.clientX - r.left) * W / r.width), y: Math.round((e.clientY - r.top) * H / r.height) }; }
+    function lineSize() { return tool === 'pencil' ? Math.max(1, Math.round(size / 2)) : tool === 'eraser' ? size * 2 : size; }
+    function stroke(c, a, b, w, col) { c.strokeStyle = col; c.lineWidth = w; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); }
+    function shape(c, a, b, col) {
+      c.strokeStyle = col; c.lineWidth = Math.max(1, Math.round(size / 2)); c.beginPath();
+      if (tool === 'line') { c.lineCap = 'round'; c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); }
+      else if (tool === 'rect') { c.rect(Math.min(a.x, b.x) + .5, Math.min(a.y, b.y) + .5, Math.abs(b.x - a.x), Math.abs(b.y - a.y)); }
+      else { c.ellipse((a.x + b.x) / 2, (a.y + b.y) / 2, Math.abs(b.x - a.x) / 2, Math.abs(b.y - a.y) / 2, 0, 0, Math.PI * 2); }
+      c.stroke();
+    }
+    function spray(p) {
+      cx.fillStyle = color; var r = size * 2 + 6;
+      for (var i = 0; i < 18; i++) { var a = Math.random() * Math.PI * 2, d = Math.random() * r; cx.fillRect(Math.round(p.x + Math.cos(a) * d), Math.round(p.y + Math.sin(a) * d), 1, 1); }
+    }
+    function hexToRgb(h) { var n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+    function flood(p, col) {
+      var img = cx.getImageData(0, 0, W, H), d = img.data, i0 = (p.y * W + p.x) * 4;
+      var t = [d[i0], d[i0 + 1], d[i0 + 2]], c = hexToRgb(col);
+      if (t[0] === c[0] && t[1] === c[1] && t[2] === c[2]) return;
+      function same(i) { return Math.abs(d[i] - t[0]) < 24 && Math.abs(d[i + 1] - t[1]) < 24 && Math.abs(d[i + 2] - t[2]) < 24; }
+      var stack = [[p.x, p.y]];
+      while (stack.length) {
+        var q = stack.pop(), x = q[0], y = q[1], i = (y * W + x) * 4;
+        while (x >= 0 && same(i)) { x--; i -= 4; }
+        x++; i += 4;
+        var up = false, down = false;
+        while (x < W && same(i)) {
+          d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255;
+          if (y > 0) { if (same(i - W * 4)) { if (!up) { stack.push([x, y - 1]); up = true; } } else up = false; }
+          if (y < H - 1) { if (same(i + W * 4)) { if (!down) { stack.push([x, y + 1]); down = true; } } else down = false; }
+          x++; i += 4;
+        }
+      }
+      cx.putImageData(img, 0, 0);
+    }
+
+    cv.style.touchAction = 'none'; ov.style.touchAction = 'none';
+    ov.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    ov.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      ov.setPointerCapture(e.pointerId);
+      var p = pos(e); color = e.button === 2 ? bg : fg;
+      snapshot();
+      if (tool === 'fill') { flood(p, color); return; }
+      drawing = true; start = last = p;
+      if (tool === 'pencil' || tool === 'brush' || tool === 'eraser') stroke(cx, p, { x: p.x + .01, y: p.y }, lineSize(), tool === 'eraser' ? bg : color);
+      if (tool === 'spray') { spray(p); sprayT = setInterval(function () { spray(last); }, 30); }
+    });
+    ov.addEventListener('pointermove', function (e) {
+      var p = pos(e);
+      root.querySelector('#pt-xy').textContent = (p.x >= 0 && p.y >= 0 && p.x < W && p.y < H) ? p.x + ',' + p.y : '';
+      if (!drawing) return;
+      if (tool === 'pencil' || tool === 'brush' || tool === 'eraser') stroke(cx, last, p, lineSize(), tool === 'eraser' ? bg : color);
+      else if (tool === 'line' || tool === 'rect' || tool === 'ellipse') { ox.clearRect(0, 0, W, H); shape(ox, start, p, color); }
+      last = p;
+    });
+    function end(e) {
+      if (!drawing) return;
+      drawing = false; clearInterval(sprayT);
+      if (tool === 'line' || tool === 'rect' || tool === 'ellipse') { ox.clearRect(0, 0, W, H); shape(cx, start, pos(e), color); }
+    }
+    ov.addEventListener('pointerup', end);
+    ov.addEventListener('pointercancel', end);
+
+    root.querySelectorAll('.pt-tool').forEach(function (b) { b.addEventListener('click', function () { setTool(b.dataset.tool); }); });
+    root.querySelectorAll('.pt-size').forEach(function (b) { b.addEventListener('click', function () { setSize(+b.dataset.size); }); });
+    root.querySelectorAll('.pt-swatch').forEach(function (b) {
+      b.addEventListener('click', function () { fg = b.dataset.color; paintColors(); });
+      b.addEventListener('contextmenu', function (e) { e.preventDefault(); bg = b.dataset.color; paintColors(); });
+    });
+    root.querySelector('#pt-undo').addEventListener('click', function () { if (undo.length) cx.putImageData(undo.pop(), 0, 0); });
+    root.querySelector('#pt-clear').addEventListener('click', function () { snapshot(); clear(); });
+    root.querySelector('#pt-save').addEventListener('click', function () {
+      var a = document.createElement('a'); a.download = 'aayushos-paint.png'; a.href = cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
+    });
+    document.addEventListener('keydown', function onKey(e) {
+      if (!document.body.contains(cv)) { document.removeEventListener('keydown', onKey); return; }
+      if (win.hidden || !win.classList.contains('active')) return;
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); if (undo.length) cx.putImageData(undo.pop(), 0, 0); }
+    });
+
+    clear(); setTool('pencil'); setSize(2); paintColors();
+    // a friendly starter doodle
+    cx.fillStyle = '#ff6a1a'; cx.fillRect(24, 24, 44, 44);
+    cx.fillStyle = '#fff'; cx.font = '900 34px Fraunces, Georgia, serif'; cx.fillText('A', 33, 58);
+    cx.fillStyle = '#808080'; cx.font = '18px Tinos, "Times New Roman", serif'; cx.fillText('Draw something! Save it with "Save PNG".', 82, 52);
+  }
+
+  // ---------- Konami code ----------
+  (function () {
+    var SEQ = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'], i = 0;
+    addEventListener('keydown', function (e) {
+      var k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      i = (k === SEQ[i]) ? i + 1 : (k === SEQ[0] ? 1 : 0);
+      if (i === SEQ.length) { i = 0; party(); }
+    });
+    function party() {
+      var c = document.createElement('canvas'); c.className = 'confetti';
+      c.width = innerWidth; c.height = innerHeight; document.body.appendChild(c);
+      var g = c.getContext('2d'), cols = ['#ff6a1a', '#f6c94d', '#00c8e6', '#a347d6', '#3cbf4a', '#e5393b', '#2f5fe0', '#fff'];
+      var bits = []; for (var n = 0; n < 220; n++) bits.push({ x: c.width / 2, y: c.height / 2, vx: (Math.random() - .5) * 22, vy: -Math.random() * 20 - 4, s: 4 + Math.random() * 6, c: cols[n % cols.length], r: Math.random() * 6 });
+      var t0 = performance.now();
+      (function tick(t) {
+        g.clearRect(0, 0, c.width, c.height);
+        bits.forEach(function (b) { b.vy += .55; b.vx *= .99; b.x += b.vx; b.y += b.vy; b.r += .2; g.fillStyle = b.c; g.save(); g.translate(b.x, b.y); g.rotate(b.r); g.fillRect(-b.s / 2, -b.s / 2, b.s, b.s); g.restore(); });
+        if (t - t0 < 4200) requestAnimationFrame(tick); else c.remove();
+      })(t0);
+      setTimeout(function () { msgBox('Cheat Code Accepted', '<b>↑ ↑ ↓ ↓ ← → ← → B A</b><br><br>+30 lives. Unlimited chai. You clearly know your classics, so you\'d probably get along with me. Say hi from the Contact page!'); }, 400);
+    }
+  })();
+
   // ---------- Terminal ----------
   function Terminal(root, win) {
     var PROMPT = 'C:\\AAYUSH>';
@@ -653,7 +810,7 @@
       'about.txt': function () { return CMDS.about(); },
       'resume.pdf': function () { openApp('resume'); return ['Opening Resume.pdf...']; },
       'tetris.exe': function () { openApp('tetris'); return ['Starting TETRIS.EXE...']; },
-      'secret.txt': function () { return ['Nice try. The only secret is that I debug with print statements.']; },
+      'secret.txt': function () { return ['Nice try. The only secret is that I debug with print statements.', 'Oh, and old-school gamers might try: ↑ ↑ ↓ ↓ ← → ← → B A']; },
       'projects': function () { return CMDS.projects(); }
     };
 

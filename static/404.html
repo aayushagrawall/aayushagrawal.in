@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 - Page Not Found | Aayush Agrawal</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/images/favicon.ico" sizes="any" />
+  <style>
+    :root { --blue: #0000aa; --gray: #aaaaaa; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      background: var(--blue); color: #fff;
+      font: bold 20px/1.55 "Courier New", Courier, "Lucida Console", monospace;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px; cursor: default; -webkit-font-smoothing: none;
+    }
+    main { max-width: 780px; width: 100%; }
+    .head { text-align: center; margin-bottom: 30px; }
+    .head span { background: var(--gray); color: var(--blue); padding: 2px 12px; }
+    p { margin: 0 0 22px; }
+    ul { list-style: none; margin: 0 0 30px; padding: 0; }
+    li { padding-left: 1.6em; text-indent: -1.6em; margin-bottom: 4px; }
+    li::before { content: "*  "; }
+    .cta { text-align: center; }
+    .cursor { display: inline-block; width: .6em; height: 1.05em; background: #fff; vertical-align: -3px; margin-left: 4px; animation: blink 1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    a { color: #fff; }
+    .links { margin-top: 34px; text-align: center; font-size: 16px; color: #ccc; }
+    @media (max-width: 600px) { body { font-size: 15px; } .links { font-size: 13px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="head"><span>AayushOS</span></div>
+    <p>A fatal exception 404 has occurred at 0028:C0FFEE in VXD PAGE(01) + 00000404. The page you were looking for has been terminated.</p>
+    <ul>
+      <li>Press any key to return to the desktop.</li>
+      <li>Press CTRL+ALT+DEL to restart your computer. You will lose any unsaved memes in all open tabs. (Just kidding, please don't.)</li>
+    </ul>
+    <p class="cta">Press any key to continue<span class="cursor"></span></p>
+    <p class="links"><a href="/">aayushagrawal.in</a> &nbsp;·&nbsp; <a href="/os/">AayushOS (2D)</a> &nbsp;·&nbsp; <a href="https://aayushagrawal.codes">aayushagrawal.codes</a></p>
+  </main>
+  <script>
+    (function () {
+      var go = function (e) {
+        if (e && e.target && e.target.closest && e.target.closest('a')) return;
+        location.href = '/';
+      };
+      addEventListener('keydown', function (e) { if (!e.ctrlKey && !e.metaKey && !e.altKey) go(e); });
+      addEventListener('click', go);
+      addEventListener('touchend', go);
+    })();
+  </script>
+</body>
+</html>
