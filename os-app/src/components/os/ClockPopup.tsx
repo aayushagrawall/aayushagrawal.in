@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { activity, difference, fmtTime, istNow, visitorZone } from '../../utils/bangalore';
+import { getWeather, Weather } from '../../utils/weather';
 
 export interface ClockPopupProps {
     onClose: () => void;
@@ -8,9 +9,17 @@ export interface ClockPopupProps {
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-// Taskbar clock pop-up: Bangalore time, a calendar and what Aayush is probably up to
+// Taskbar clock pop-up: Bangalore time and weather, a calendar and what Aayush is probably up to
 const ClockPopup: React.FC<ClockPopupProps> = ({ onClose }) => {
     const [now, setNow] = useState(new Date());
+    const [weather, setWeather] = useState<Weather | null>(null);
+    useEffect(() => {
+        let alive = true;
+        getWeather().then((w) => alive && setWeather(w));
+        return () => {
+            alive = false;
+        };
+    }, []);
     useEffect(() => {
         const t = setInterval(() => setNow(new Date()), 1000);
         const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -49,6 +58,14 @@ const ClockPopup: React.FC<ClockPopupProps> = ({ onClose }) => {
                 <p style={styles.date}>
                     {DAYS[ist.weekday]}, {ist.day} {MONTHS[ist.month]} {ist.year} · IST
                 </p>
+                {weather && (
+                    <p style={styles.weather}>
+                        <span style={styles.weatherIcon} aria-hidden>
+                            {weather.rain ? '☂' : weather.code <= 1 ? (weather.isDay ? '☀' : '☾') : '☁'}
+                        </span>
+                        {weather.temp}°C, {weather.text}
+                    </p>
+                )}
                 <div style={styles.cal}>
                     <div style={styles.calHead}>
                         <p style={styles.month}>
@@ -102,6 +119,8 @@ const styles: StyleSheetCSS = {
     body: { flexDirection: 'column', padding: '10px 10px 8px' },
     time: { margin: 0, fontFamily: 'MillenniumBold, serif', fontSize: 30 },
     date: { margin: '2px 0 10px', fontFamily: 'MSSerif', fontSize: 13 },
+    weather: { margin: '-4px 0 10px', fontFamily: 'MSSerif', fontSize: 13, alignItems: 'center' },
+    weatherIcon: { fontSize: 15, marginRight: 6, fontFamily: 'serif' },
     cal: { flexDirection: 'column', background: '#fff', boxShadow: 'var(--border-field)', padding: 6 },
     calHead: { justifyContent: 'center', background: '#0000a3', marginBottom: 4 },
     month: { margin: 2, color: '#fff', fontFamily: 'MSSerif', fontSize: 13 },

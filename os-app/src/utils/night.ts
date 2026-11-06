@@ -1,10 +1,16 @@
 /**
  * Same rule as the 3D room's "Bangalore night" look: 7 pm to 6 am IST, with
- * ?night=1 / ?night=0 on the page (or on the 3D page around the monitor) to force it.
+ * ?night=1 / ?night=0 (or ?time=night / day / sunset) on the page, or on the 3D page
+ * around the monitor, to force it.
  * Decided once per page load, like the room.
  */
 const decide = (): boolean => {
-    const read = (search: string) => new URLSearchParams(search).get('night');
+    const read = (search: string) => {
+        const p = new URLSearchParams(search);
+        const t = p.get('time');
+        if (t) return t === 'night' ? '1' : '0';
+        return p.get('night');
+    };
     let q = read(window.location.search);
     if (q === null && window.parent !== window) {
         try {

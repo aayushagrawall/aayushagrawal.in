@@ -3,6 +3,27 @@ import eventBus from '../EventBus';
 
 type LoadingProps = {};
 
+/**
+ * Why this device might be better off skipping the 3D room, or '' if it looks fine:
+ * the visitor asked for reduced motion, or the browser is drawing WebGL in software,
+ * or the device reports very little memory / very few CPU cores.
+ */
+const slowReason = (): string => {
+    try {
+        if (typeof window.matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches)
+            return 'Your device is set to reduce motion, and this site flies a camera around a 3D room.';
+        const nav = navigator as any;
+        if ((nav.deviceMemory && nav.deviceMemory <= 2) || (nav.hardwareConcurrency && nav.hardwareConcurrency <= 2))
+            return 'This device may struggle with the 3D room.';
+        const gl = document.createElement('canvas').getContext('webgl') as WebGLRenderingContext | null;
+        const info = gl && gl.getExtension('WEBGL_debug_renderer_info');
+        const renderer = info && gl ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+        if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(renderer))
+            return 'Your browser is drawing 3D without a graphics card, so the room may be slow.';
+    } catch (e) {}
+    return '';
+};
+
 const LoadingScreen: React.FC<LoadingProps> = () => {
     const [progress, setProgress] = useState(0);
     const [toLoad, setToLoad] = useState(0);
@@ -20,6 +41,13 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
     const [counter, setCounter] = useState(0);
     const [resources] = useState<string[]>([]);
     const [mobileWarning, setMobileWarning] = useState(window.innerWidth < 768);
+    const [slow] = useState(slowReason);
+    const skip = () => {
+        try {
+            const gc = (window as any).goatcounter;
+            if (gc && gc.count) gc.count({ path: '3d/skip', title: 'Skipped the 3D room', event: true });
+        } catch (e) {}
+    };
 
     const onResize = () => {
         if (window.innerWidth < 768) {
@@ -242,6 +270,16 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                             <br />
                         </>
                     )}
+                    {slow && !mobileWarning && (
+                        <>
+                            <br />
+                            <b>
+                                <p style={styles.warning}>HEADS UP: {slow}</p>
+                            </b>
+                            <p>You can go straight to the desktop instead. Same content, no 3D.</p>
+                            <br />
+                        </>
+                    )}
                     <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                         <p>Click start to begin{'\xa0'}</p>
                         <span className="blinking-cursor" />
@@ -252,12 +290,23 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                             justifyContent: 'center',
                             alignItems: 'center',
                             marginTop: '16px',
+                            gap: 16,
                         }}
                     >
                         <div className="bios-start-button" onClick={start}>
-                            <p>START</p>
+                            <p>{slow ? 'START 3D' : 'START'}</p>
                         </div>
+                        {slow && (
+                            <a className="bios-start-button" href="/os/" onClick={skip} style={styles.skipButton}>
+                                <p>SKIP TO DESKTOP</p>
+                            </a>
+                        )}
                     </div>
+                    {!slow && (
+                        <a href="/os/" onClick={skip} style={styles.skipLink}>
+                            or skip the 3D and go straight to the desktop
+                        </a>
+                    )}
                 </div>
             </div>
             {webGLError && (
@@ -278,6 +327,13 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                         <p>
                             Please enable it or switch to a browser which
                             supports WebGL
+                        </p>
+                        <div style={styles.spacer} />
+                        <p>
+                            Or open the same portfolio without 3D:{' '}
+                            <a href="/os/" onClick={skip} style={styles.inlineLink}>
+                                AayushOS
+                            </a>
                         </p>
                     </div>
                 </div>
@@ -330,6 +386,20 @@ const styles: StyleSheetCSS = {
     },
     warning: {
         color: 'yellow',
+    },
+    skipButton: {
+        color: '#fff',
+        textDecoration: 'none',
+    },
+    skipLink: {
+        marginTop: 18,
+        color: '#aaa',
+        fontSize: 14,
+        textAlign: 'center',
+        textDecoration: 'underline',
+    },
+    inlineLink: {
+        color: '#ff6a1a',
     },
     blinkingContainer: {
         position: 'absolute',

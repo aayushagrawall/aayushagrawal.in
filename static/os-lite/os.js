@@ -79,6 +79,7 @@
     ['dumpster', 'Dumpster Diver', "Peek inside something that's been thrown away.", 'Opened a file in the Recycle Bin.'],
     ['afk', 'AFK', 'Step away from the computer for a while.', 'Watched the screensaver.'],
     ['chatty', 'Small Talk', 'Ask White three questions.', 'Asked White three questions.'],
+    ['refuel', 'Refuel', 'Crack open a can of White.', 'Opened a cold can of White.'],
     ['shutdown', 'Persistent', 'Try to turn the computer off. A few times.', 'Shut down AayushOS five times.'],
     ['night', 'Night Owl', 'Visit when Bangalore is asleep.', 'Visited between midnight and 5 am IST.'],
     ['all', 'Completionist', 'Unlock every other achievement.', 'Unlocked everything. Respect.']
@@ -117,6 +118,11 @@
     t.addEventListener('click', function () { t.remove(); openApp('achievements'); });
     document.body.appendChild(t);
     setTimeout(function () { t.remove(); toastOn = false; nextToast(); }, 4200);
+  }
+  function loadScript(src, cb) {
+    var id = 'js-' + src.replace(/\W/g, '');
+    if (document.getElementById(id)) { if (window.aosCertificate) cb(); else document.getElementById(id).addEventListener('load', cb); return; }
+    var sc = document.createElement('script'); sc.id = id; sc.src = src; sc.onload = cb; document.head.appendChild(sc);
   }
   var refreshAch = null;
 
@@ -237,8 +243,11 @@
     // and include the current visitor (+1).
     fetch('https://clienterr.goatcounter.com/counter/' + path + '.json')
       .then(function (r) { return r.json(); })
-      .then(function (j) { hitCount = (parseInt(String(j.count).replace(/\D/g, ''), 10) || 0) + 1; paint(hitCount); })
-      .catch(function () { hitCount = 1; paint(hitCount); });
+      .then(function (j) {
+        if (!j || j.count === undefined) return; // counts not public yet: keep the counter hidden
+        hitCount = (parseInt(String(j.count).replace(/\D/g, ''), 10) || 0) + 1; paint(hitCount);
+      })
+      .catch(function () {});
   }
 
   function Showcase(win) {
@@ -412,7 +421,17 @@
       status: 'Saved in this browser',
       render: function () { return '<div class="ach" id="ach"></div>'; },
       mount: function (win) {
-        var box = win.querySelector('#ach');
+        var box = win.querySelector('#ach'), certName = '';
+        box.addEventListener('input', function (e) { if (e.target.id === 'cert-name') certName = e.target.value; });
+        box.addEventListener('click', function (e) {
+          if (!e.target.closest('#cert-go')) return;
+          var btn = e.target.closest('#cert-go'); btn.disabled = true; btn.textContent = 'Drawing...';
+          loadScript('certificate.js?v=2', function () {
+            window.aosCertificate.download({ name: certName, titles: ACH.map(function (a) { return a[1]; }) }).then(function () {
+              btn.disabled = false; btn.textContent = 'Download certificate'; track('certificate', 'Downloaded certificate');
+            });
+          });
+        });
         function draw() {
           if (!document.body.contains(box)) { refreshAch = null; return; }
           var got = loadList('aayushos-achievements');
@@ -420,6 +439,7 @@
           var pages = loadList('aayushos-seen-pages').length;
           box.innerHTML = '<div class="ach-head">' + I.trophy + '<div><h2>Achievements</h2><p>' + got.length + ' of ' + ACH.length + ' unlocked. How many can you find?</p></div></div>' +
             '<div class="ach-meter"><span style="width:' + (got.length / ACH.length * 100) + '%"></span></div>' +
+            (got.indexOf('all') >= 0 ? '<div class="ach-cert"><p><b>100%!</b> Put your name on a certificate.</p><div class="ach-cert-row"><input id="cert-name" maxlength="40" placeholder="Your name" value="' + esc(certName) + '"><button id="cert-go">Download certificate</button></div></div>' : '') +
             '<div class="ach-list sunken-panel">' + ACH.map(function (a) {
               var on = got.indexOf(a[0]) >= 0;
               var extra = a[0] === 'explorer' ? ' (' + Math.min(apps, LITE_APPS.length) + '/' + LITE_APPS.length + ')' : a[0] === 'reader' ? ' (' + Math.min(pages, 4) + '/4)' : '';
@@ -689,8 +709,38 @@
   function tick() { clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
   tick(); setInterval(tick, 10000);
 
-  // Clock pop-up: Bangalore time, a calendar and what Aayush is probably up to
+  // Live Bangalore weather from Open-Meteo (free, no key). Cached 15 min in sessionStorage,
+  // shared with AayushOS and the 3D room.
+  var Weather = (function () {
+    var KEY = 'aayushos-weather', pending = null;
+    var URL = 'https://api.open-meteo.com/v1/forecast?latitude=12.9716&longitude=77.5946&current=temperature_2m,weather_code,is_day&timezone=Asia%2FKolkata';
+    function text(c) {
+      if (c === 0) return 'clear skies'; if (c === 1) return 'mostly clear'; if (c === 2) return 'partly cloudy'; if (c === 3) return 'overcast';
+      if (c === 45 || c === 48) return 'foggy'; if (c >= 51 && c <= 57) return 'drizzle';
+      if (c === 61 || c === 80) return 'light rain'; if (c === 63 || c === 81) return 'rain'; if (c === 65 || c === 82) return 'heavy rain';
+      if (c === 66 || c === 67) return 'freezing rain'; if (c >= 71 && c <= 77) return 'snow (in Bangalore?!)'; if (c >= 95) return 'thunderstorms';
+      return 'weather';
+    }
+    function shape(w) {
+      var rain = (w.code >= 51 && w.code <= 67) || (w.code >= 80 && w.code <= 82) || w.code >= 95;
+      return { temp: Math.round(w.temp), code: w.code, isDay: w.isDay, text: text(w.code), rain: rain };
+    }
+    function get(cb) {
+      try { var c = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (c && Date.now() - c.t < 900000) return cb(shape(c)); } catch (e) {}
+      if (!pending) pending = fetch(URL).then(function (r) { return r.json(); }).then(function (j) {
+        var cur = j && j.current; if (!cur || typeof cur.temperature_2m !== 'number') return null;
+        var w = { t: Date.now(), temp: cur.temperature_2m, code: cur.weather_code, isDay: cur.is_day === 1 };
+        try { sessionStorage.setItem(KEY, JSON.stringify(w)); } catch (e) {}
+        return w;
+      }).catch(function () { return null; });
+      pending.then(function (w) { cb(w ? shape(w) : null); });
+    }
+    return { get: get };
+  })();
+
+  // Clock pop-up: Bangalore time and weather, a calendar and what Aayush is probably up to
   (function () {
+    var wx = null;
     var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     var pop = null, timer = 0;
@@ -717,6 +767,7 @@
       pop.querySelector('.window-body').innerHTML =
         '<p class="ck-time">' + t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' }) + '</p>' +
         '<p class="ck-date">' + DAYS[t.getDay()] + ', ' + t.getDate() + ' ' + MONTHS[t.getMonth()] + ' ' + t.getFullYear() + ' · IST</p>' +
+        (wx ? '<p class="ck-wx"><span aria-hidden="true">' + (wx.rain ? '☂' : wx.code <= 1 ? (wx.isDay ? '☀' : '☾') : '☁') + '</span> ' + wx.temp + '°C, ' + wx.text + '</p>' : '') +
         '<div class="ck-cal sunken-panel"><div class="ck-month">' + MONTHS[t.getMonth()] + ' ' + t.getFullYear() + '</div><div class="ck-grid">' + cells.join('') + '</div></div>' +
         '<div class="ck-status"><p>It\'s ' + short + ' in Bangalore, so Aayush is <b>' + doing(t) + '</b>.</p><p class="ck-small">' +
         (/Calcutta|Kolkata/.test(zone) ? 'You\'re in the same time zone as Aayush!' : 'Your time: ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + (zone ? ' (' + esc(zone.split('/').pop().replace(/_/g, ' ')) + ')' : '') + '.' + dtxt) + '</p></div>';
@@ -732,6 +783,7 @@
       pop.addEventListener('mousedown', function (ev) { ev.stopPropagation(); });
       pop.addEventListener('touchstart', function (ev) { ev.stopPropagation(); }, { passive: true });
       document.body.appendChild(pop); draw(); timer = setInterval(draw, 1000);
+      Weather.get(function (w) { wx = w; if (pop) draw(); });
     });
     document.addEventListener('mousedown', close);
     document.addEventListener('touchstart', function (e) { if (pop && !pop.contains(e.target) && e.target !== clock) close(); }, { passive: true });
@@ -1140,7 +1192,7 @@
         }
         return ['guest is not in the sudoers file. This incident will be reported.'];
       },
-      white: function () { return ['*pssht* One cold can of White, opened. Productivity +10.']; },
+      white: function () { achieve('refuel'); return ['*pssht* One cold can of White, opened. Productivity +10.']; },
       chai: function () { return ['Out of chai. There is a cold can of White in the fridge though: try <b>white</b>.']; },
       coffee: function () { return ['Error 418: this desk runs on White, not coffee.']; },
       hello: function () { return ['Hi there! Type <b>help</b> to see what I can do.']; },
