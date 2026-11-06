@@ -2,7 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Colors from '../../constants/colors';
 import ShowcaseExplorer from '../applications/ShowcaseExplorer';
 import ShutdownSequence from './ShutdownSequence';
-// import ThisComputer from '../applications/ThisComputer';
+import ThisComputer from '../applications/ThisComputer';
+import Welcome, { WELCOME_OFF_KEY } from '../applications/Welcome';
+import CheatCode from '../applications/CheatCode';
+import Extras from './Extras';
 import Henordle from '../applications/Henordle';
 import Toolbar from './Toolbar';
 import DesktopShortcut, { DesktopShortcutProps } from './DesktopShortcut';
@@ -44,6 +47,7 @@ const APPLICATIONS: { [key in string]: AppDef } = {
     terminal: { key: 'terminal', name: 'Terminal', shortcutIcon: 'terminalIcon', ...legacy('terminal', 'C:\\WINDOWS\\cmd.exe', 'terminalSmall', 860, 600, 70, 260, 'Type help to get started') },
     tetris: { key: 'tetris', name: 'Tetris', shortcutIcon: 'tetrisIcon', ...legacy('tetris', 'Tetris', 'tetrisSmall', 490, 684, 40, 420, 'Arrows to play · Space to drop') },
     paint: { key: 'paint', name: 'Paint', shortcutIcon: 'paintIcon', ...legacy('paint', 'untitled - Paint', 'paintSmall', 852, 678, 40, 240, 'Draw something!') },
+    mycomputer: { key: 'mycomputer', name: 'This Computer', shortcutIcon: 'myComputer', component: ThisComputer },
     wordle: { key: 'wordle', name: 'Codele', shortcutIcon: 'henordleIcon', component: Henordle },
     github: { key: 'github', name: 'GitHub', shortcutIcon: 'githubIcon', href: 'https://github.com/aayushagrawall' },
     linkedin: { key: 'linkedin', name: 'LinkedIn', shortcutIcon: 'linkedinIcon', href: 'https://www.linkedin.com/in/aayush-agrawall/' },
@@ -51,6 +55,8 @@ const APPLICATIONS: { [key in string]: AppDef } = {
     site: { key: 'site', name: 'My Website', shortcutIcon: 'globeIcon', href: 'https://aayushagrawal.codes' },
     recycle: { key: 'recycle', name: 'Recycle Bin', shortcutIcon: 'recycleIcon', ...legacy('recycle', 'Recycle Bin', 'recycleSmall', 760, 470, 160, 320, 'Double-click a file to peek inside') },
     credits: { key: 'credits', name: 'Credits', shortcutIcon: 'credits', component: Credits },
+    welcome: { key: 'welcome', name: 'Welcome', shortcutIcon: 'computerSmall', component: Welcome, hidden: true },
+    cheat: { key: 'cheat', name: 'Cheat Code', shortcutIcon: 'windowGameIcon', component: CheatCode, hidden: true },
 };
 
 const highestZ = (wins: DesktopWindows) =>
@@ -123,6 +129,13 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         openApp('showcase');
         setShortcuts(newShortcuts);
 
+        // tips dialog on first visit, but not inside the 3D monitor (keeps the hero clean there)
+        let welcomeOff = false;
+        try {
+            welcomeOff = localStorage.getItem(WELCOME_OFF_KEY) === '1';
+        } catch (e) {}
+        const welcomeTimer = window.parent === window && !welcomeOff ? setTimeout(() => openApp('welcome'), 700) : undefined;
+
         // messages from Aayush's apps running in iframes (Terminal, Paint...)
         const onMessage = (e: MessageEvent) => {
             const d = e.data;
@@ -132,7 +145,10 @@ const Desktop: React.FC<DesktopProps> = (props) => {
             if (d.type === 'aos-close' && windowsRef.current[d.app]) removeWindow(d.app);
         };
         window.addEventListener('message', onMessage);
-        return () => window.removeEventListener('message', onMessage);
+        return () => {
+            window.removeEventListener('message', onMessage);
+            if (welcomeTimer) clearTimeout(welcomeTimer);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -253,6 +269,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
                     );
                 })}
             </div>
+            <Extras onKonami={() => openApp('cheat')} />
             <Toolbar
                 windows={windows}
                 toggleMinimize={toggleMinimize}

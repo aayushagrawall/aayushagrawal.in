@@ -4,6 +4,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    // Start the big 3D downloads while the JavaScript bundle is still loading.
+    // Desktops only: phones see the 2D gate and shouldn't spend data on these.
+    (function () {
+      if (!(window.matchMedia && matchMedia('(pointer: fine)').matches)) return;
+      [['models/Computer/baked_computer.webp', 'image'], ['models/Decor/baked_decor_modified.webp', 'image'],
+       ['models/World/baked_environment.webp', 'image'], ['models/Computer/computer_setup.glb', 'fetch'],
+       ['models/World/environment.glb', 'fetch'], ['models/Decor/decor.glb', 'fetch']].forEach(function (f) {
+        var l = document.createElement('link');
+        l.rel = 'preload'; l.href = f[0]; l.as = f[1]; l.crossOrigin = 'anonymous';
+        document.head.appendChild(l);
+      });
+    })();
+  </script>
   <style>
     body {
       background-color: rgb(0, 0, 0);
