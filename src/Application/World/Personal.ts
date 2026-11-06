@@ -47,7 +47,9 @@ export default class Personal {
         this.addPoster(environment);
         this.addCan(environment, decor);
         if (OPEN_TO_INTERNSHIPS) this.addNeonSign(environment);
-        this.applyNightMode();
+        this.addLamp(environment);
+        if (decor) this.addSapling(decor);
+        this.initTimeOfDay();
     }
 
     texture(path: string) {
@@ -364,8 +366,13 @@ export default class Personal {
         this.neon = { lit, glow, state: 'off', t0: 0 };
     }
 
+    lastFrame = performance.now();
+
     /** Called every frame by World. */
     update() {
+        const now0 = performance.now();
+        this.stepTime(now0 - this.lastFrame);
+        this.lastFrame = now0;
         const n = this.neon;
         if (!n || n.state === 'on') return;
         const cam = (this.application as any).camera;
@@ -469,13 +476,237 @@ export default class Personal {
         return t;
     }
 
-    /** 'day', 'sunset' (5 to 7 pm IST) or 'night' (7 pm to 6 am IST). */
+    lamp?: { bulb: THREE.MeshBasicMaterial; inner: THREE.MeshBasicMaterial; pool: THREE.MeshBasicMaterial; halo: THREE.MeshBasicMaterial };
+
+    addLamp(environment: THREE.Object3D) {
+        // a classic two-arm desk lamp between the paper stack and the computer, facing forward
+        const spot = new THREE.Vector3(-1030, 2000, -660);
+        const h = this.hit(environment, spot, new THREE.Vector3(0, -1, 0));
+        const deskY = h ? h.point.y : -449;
+        const lamp = new THREE.Group();
+        const metalTex = this.texture('textures/personal/can-metal.webp');
+        const body = this.basic({ map: metalTex, color: new THREE.Color(0.3, 0.3, 0.33) });
+        const bodyDark = this.basic({ map: metalTex, color: new THREE.Color(0.18, 0.18, 0.2) });
+        const joint = this.basic({ color: 0x55555c });
+
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(170, 190, 40, 40), body);
+        base.position.y = 20;
+        lamp.add(base);
+        const rod = (a: THREE.Vector3, b: THREE.Vector3, r: number, mat: THREE.Material) => {
+            const len = a.distanceTo(b);
+            const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 12), mat);
+            m.position.copy(a).add(b).multiplyScalar(0.5);
+            m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
+            lamp.add(m);
+            const ball = new THREE.Mesh(new THREE.SphereGeometry(r * 1.7, 12, 10), joint);
+            ball.position.copy(b);
+            lamp.add(ball);
+        };
+        const foot = new THREE.Vector3(0, 46, -30);
+        const elbow = new THREE.Vector3(0, 900, -210);
+        const wrist = new THREE.Vector3(0, 1080, 330);
+        rod(foot, elbow, 19, bodyDark);
+        rod(elbow, wrist, 17, bodyDark);
+
+        // the shade: a cone hanging from the wrist, tipped forward and down
+        const head = new THREE.Group();
+        head.position.copy(wrist);
+        head.rotation.x = THREE.MathUtils.degToRad(-38); // cone axis points down and a bit forward
+        lamp.add(head);
+        const shadeGeo = new THREE.CylinderGeometry(70, 210, 320, 36, 1, true);
+        shadeGeo.translate(0, -160 - 26, 0);
+        head.add(new THREE.Mesh(shadeGeo, this.basic({ map: metalTex, color: new THREE.Color(0.85, 0.36, 0.12), side: THREE.FrontSide })));
+        // inside of the shade and the bulb are light sources when the lamp is on: not tinted
+        const inner = new THREE.MeshBasicMaterial({ color: 0x2a2a2a, side: THREE.BackSide });
+        head.add(new THREE.Mesh(shadeGeo, inner));
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(74, 74, 52, 24), body);
+        cap.position.y = -26;
+        head.add(cap);
+        const bulb = new THREE.MeshBasicMaterial({ color: 0x9a9a9a });
+        const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(78, 20, 16), bulb);
+        bulbMesh.position.y = -300;
+        head.add(bulbMesh);
+        // a soft halo around the opening and a warm pool of light on the desk
+        const halo = new THREE.MeshBasicMaterial({ map: this.shadowTexture(), color: 0xffc27a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+        const haloMesh = new THREE.Mesh(new THREE.PlaneGeometry(700, 700), halo);
+        haloMesh.position.y = -340;
+        haloMesh.rotation.x = Math.PI / 2;
+        head.add(haloMesh);
+        const pool = new THREE.MeshBasicMaterial({ map: this.shadowTexture(), color: 0xffb766, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+        const poolMesh = new THREE.Mesh(new THREE.PlaneGeometry(1300, 1100), pool);
+        poolMesh.rotation.x = -Math.PI / 2;
+        poolMesh.position.set(0, 2, 980);
+        lamp.add(poolMesh);
+        const shadow = new THREE.Mesh(
+            new THREE.PlaneGeometry(500, 360),
+            new THREE.MeshBasicMaterial({ map: this.shadowTexture(), transparent: true, depthWrite: false })
+        );
+        shadow.rotation.x = -Math.PI / 2;
+        shadow.position.set(30, 1.5, 0);
+        lamp.add(shadow);
+
+        lamp.position.set(spot.x, deskY, spot.z);
+        lamp.rotation.y = 0.05;
+        this.group.add(lamp);
+        this.lamp = { bulb, inner, pool, halo };
+
+        // click the lamp: switch between day and night for this visit
+        this.clickable([base, bulbMesh, ...head.children.filter((c) => c !== haloMesh)], () => {
+            const next = this.time === 'day' ? 'night' : 'day';
+            try {
+                sessionStorage.setItem('aayushos-time', next);
+            } catch (e) {}
+            this.setTime(next);
+            const world = (this.application as any).world;
+            if (world && world.audioManager) world.audioManager.playAudio('mouseUp', { volume: 0.9, position: new THREE.Vector3(spot.x, deskY + 100, spot.z) });
+            this.count('3d/lamp-' + next, 'Lamp: ' + next);
+        });
+    }
+
+    // ---------- Visitor sapling ----------
+    static MILESTONES = [25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000];
+
+    addSapling(decor: THREE.Object3D) {
+        decor.updateMatrixWorld(true);
+        const spot = new THREE.Vector3(-1350, 2000, 190);
+        const h = this.hit(decor, spot, new THREE.Vector3(0, -1, 0));
+        const topY = h ? h.point.y : -126; // top of the paper stack
+        const plant = new THREE.Group();
+        plant.position.set(spot.x, topY, spot.z);
+        this.group.add(plant);
+
+        // terracotta pot with a rolled rim and soil
+        const metal = this.texture('textures/personal/can-metal.webp');
+        const clay = this.basic({ map: metal, color: new THREE.Color(0.86, 0.45, 0.27), side: THREE.DoubleSide });
+        const pot = new THREE.Mesh(
+            new THREE.LatheGeometry([new THREE.Vector2(70, 0), new THREE.Vector2(84, 6), new THREE.Vector2(100, 120), new THREE.Vector2(112, 124), new THREE.Vector2(114, 160), new THREE.Vector2(100, 164), new THREE.Vector2(98, 150)], 32),
+            clay
+        );
+        plant.add(pot);
+        const soil = new THREE.Mesh(new THREE.CircleGeometry(99, 32), this.basic({ color: 0x3b2a1e }));
+        soil.rotation.x = -Math.PI / 2;
+        soil.position.y = 146;
+        plant.add(soil);
+        const shadow = new THREE.Mesh(
+            new THREE.PlaneGeometry(320, 240),
+            new THREE.MeshBasicMaterial({ map: this.shadowTexture(), transparent: true, depthWrite: false })
+        );
+        shadow.rotation.x = -Math.PI / 2;
+        shadow.position.set(30, 1.5, -10);
+        plant.add(shadow);
+
+        const leafTex = this.leafTexture();
+        const leafLight = this.basic({ map: leafTex, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide });
+        const leafDark = this.basic({ map: leafTex, color: new THREE.Color(0.72, 0.78, 0.72), transparent: true, alphaTest: 0.4, side: THREE.DoubleSide });
+        const stemMat = this.basic({ color: 0x4d7a32 });
+        const flowerMat = this.basic({ color: 0xff6a1a });
+
+        const grow = (count: number | null) => {
+            const passed = count === null ? 1 : Personal.MILESTONES.filter((m) => count >= m).length;
+            const leaves = Math.min(14, 3 + passed);
+            const scale = Math.min(2, 1 + 0.13 * passed); // the whole plant fills out as it grows
+            const height = (50 + leaves * 24) * Math.sqrt(scale);
+            const stem = new THREE.Mesh(new THREE.CylinderGeometry(7, 10, height, 8), stemMat);
+            stem.position.y = 146 + height / 2;
+            plant.add(stem);
+            for (let i = 0; i < leaves; i++) {
+                const t = (i + 1) / leaves; // 0 at the soil, 1 at the top
+                const size = (60 + 66 * Math.sin(Math.PI * Math.min(1, t * 1.1))) * scale; // younger leaves at the top are smaller
+                const g = new THREE.PlaneGeometry(size * 0.62, size);
+                g.translate(0, size / 2, 0);
+                const leaf = new THREE.Mesh(g, i % 2 ? leafDark : leafLight);
+                const pivot = new THREE.Group();
+                pivot.position.y = 146 + 20 + height * (0.15 + 0.85 * t) * 0.95;
+                pivot.rotation.y = i * 2.399; // golden angle
+                leaf.rotation.x = THREE.MathUtils.degToRad(70 - 35 * t); // lower leaves spread out, top ones point up
+                pivot.add(leaf);
+                plant.add(pivot);
+            }
+            if (count !== null && count >= 1000) {
+                const flower = new THREE.Mesh(new THREE.SphereGeometry(30 * scale, 14, 12), flowerMat);
+                flower.position.y = 146 + height + 20 * scale;
+                plant.add(flower);
+            }
+            const next = count === null ? null : Personal.MILESTONES.find((m) => count < m) || null;
+            this.clickable([pot, ...plant.children.filter((c) => c !== shadow)], () => {
+                const text =
+                    count === null
+                        ? "That's my visitor plant. It grows a new leaf as more people visit this site."
+                        : `That's my visitor plant. It grows a new leaf as more people visit: ${count.toLocaleString('en-IN')} so far` +
+                          (next ? `, and the next leaf comes at ${next.toLocaleString('en-IN')}. Tell a friend?` : '. It has grown all it can!');
+                const screen = document.querySelector('iframe[src="os/"]') as HTMLIFrameElement | null;
+                if (screen && screen.contentWindow) {
+                    screen.contentWindow.postMessage({ type: 'aos-activity' }, '*');
+                    screen.contentWindow.postMessage({ type: 'aos-say', text }, '*');
+                }
+                this.count('3d/plant', 'Plant click (3D)');
+            });
+        };
+
+        // the same public GoatCounter count as the hit counter on the Showcase home page
+        const path = encodeURIComponent((window.location.host || 'aayushagrawal.in').replace(/^www\./, '') + '/');
+        fetch(`https://clienterr.goatcounter.com/counter/${path}.json`)
+            .then((r) => r.json())
+            .then((j) => grow(j && j.count !== undefined ? parseInt(String(j.count).replace(/\D/g, ''), 10) || 0 : null))
+            .catch(() => grow(null));
+    }
+
+    leafTexture() {
+        const c = document.createElement('canvas');
+        c.width = 128;
+        c.height = 256;
+        const g = c.getContext('2d')!;
+        // leaf outline: wide in the middle, pointed tip at the top
+        g.beginPath();
+        g.moveTo(64, 250);
+        g.bezierCurveTo(-10, 180, 10, 60, 64, 4);
+        g.bezierCurveTo(118, 60, 138, 180, 64, 250);
+        const grd = g.createLinearGradient(0, 0, 128, 0);
+        grd.addColorStop(0, '#5f9e3a');
+        grd.addColorStop(0.5, '#7cbf4c');
+        grd.addColorStop(1, '#4e8a30');
+        g.fillStyle = grd;
+        g.fill();
+        g.strokeStyle = '#a6dd7a';
+        g.lineWidth = 3;
+        g.beginPath();
+        g.moveTo(64, 248);
+        g.quadraticCurveTo(60, 130, 64, 12);
+        g.stroke();
+        const t = new THREE.CanvasTexture(c);
+        t.encoding = THREE.sRGBEncoding;
+        return t;
+    }
+
+    // ---------- Time of day ----------
+    time: 'day' | 'sunset' | 'night' = 'day';
+    baseColors = new Map<THREE.MeshBasicMaterial, THREE.Color>();
+    tint = new THREE.Color(1, 1, 1);
+    tintTarget = new THREE.Color(1, 1, 1);
+    lampLevel = 0;
+    lampTarget = 0;
+
+    static TINTS = {
+        day: new THREE.Color(1, 1, 1),
+        sunset: new THREE.Color(1.0, 0.8, 0.62),
+        night: new THREE.Color(0.13, 0.15, 0.3),
+    };
+
+    /** 'day', 'sunset' (5 to 7 pm IST) or 'night' (7 pm to 6 am IST): URL, then the lamp, then the clock. */
     timeOfDay(): 'day' | 'sunset' | 'night' {
         const q = new URLSearchParams(window.location.search);
         const t = q.get('time');
         if (t === 'day' || t === 'sunset' || t === 'night') return t;
         if (q.get('night') === '1') return 'night';
         if (q.get('night') === '0') return 'day';
+        try {
+            const s = sessionStorage.getItem('aayushos-time');
+            if (s === 'day' || s === 'sunset' || s === 'night') return s;
+        } catch (e) {}
+        return this.clockTime();
+    }
+
+    clockTime(): 'day' | 'sunset' | 'night' {
         // Bangalore time (UTC+5:30)
         const now = new Date();
         const ist = (now.getUTCHours() + now.getUTCMinutes() / 60 + 5.5) % 24;
@@ -484,12 +715,52 @@ export default class Personal {
         return 'day';
     }
 
-    applyNightMode() {
-        const time = this.timeOfDay();
-        if (time === 'day') return;
-        // night: a cool blue dark; sunset: warm golden light coming in low
-        const tint = time === 'night' ? new THREE.Color(0.13, 0.15, 0.3) : new THREE.Color(1.0, 0.8, 0.62);
-        this.tintables.forEach((m) => m.color.multiply(tint));
-        document.documentElement.classList.add(time);
+    initTimeOfDay() {
+        this.tintables.forEach((m) => this.baseColors.set(m, m.color.clone()));
+        this.setTime(this.timeOfDay(), true);
+        // automatic: follow the clock (past 5 pm, 7 pm, 6 am) unless the lamp or the URL decided
+        setInterval(() => {
+            const t = this.timeOfDay();
+            if (t !== this.time) this.setTime(t);
+        }, 60000);
+    }
+
+    setTime(time: 'day' | 'sunset' | 'night', instant = false) {
+        this.time = time;
+        this.tintTarget.copy(Personal.TINTS[time]);
+        this.lampTarget = time === 'night' ? 1 : time === 'sunset' ? 0.55 : 0;
+        if (instant) {
+            this.tint.copy(this.tintTarget);
+            this.lampLevel = this.lampTarget;
+            this.paintTime();
+        }
+        const html = document.documentElement.classList;
+        html.remove('day', 'sunset', 'night');
+        if (time !== 'day') html.add(time);
+        // tell AayushOS on the monitor (night wallpaper and screen dimming)
+        const screen = document.querySelector('iframe[src="os/"]') as HTMLIFrameElement | null;
+        if (screen && screen.contentWindow) screen.contentWindow.postMessage({ type: 'aos-time', time }, '*');
+    }
+
+    paintTime() {
+        this.baseColors.forEach((base, m) => m.color.copy(base).multiply(this.tint));
+        const l = this.lamp;
+        if (!l) return;
+        const k = this.lampLevel;
+        l.bulb.color.setRGB(0.6 + 0.4 * k, 0.6 + 0.37 * k, 0.6 + 0.26 * k);
+        l.inner.color.setRGB(0.16 + 0.84 * k, 0.16 + 0.66 * k, 0.16 + 0.38 * k);
+        l.pool.opacity = 0.55 * k;
+        l.halo.opacity = 0.5 * k;
+    }
+
+    stepTime(dt: number) {
+        const a = Math.min(1, dt / 350);
+        const before = this.tint.clone();
+        this.tint.lerp(this.tintTarget, a);
+        const lampBefore = this.lampLevel;
+        this.lampLevel += (this.lampTarget - this.lampLevel) * a;
+        if (Math.abs(this.lampLevel - this.lampTarget) < 0.002) this.lampLevel = this.lampTarget;
+        const d = Math.abs(before.r - this.tint.r) + Math.abs(before.g - this.tint.g) + Math.abs(before.b - this.tint.b);
+        if (d > 1e-4 || lampBefore !== this.lampLevel) this.paintTime();
     }
 }

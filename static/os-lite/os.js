@@ -305,6 +305,29 @@
   }
 
   // ---------- Apps ----------
+  // ---------- Skills, shown as a Device Manager ----------
+  // [category, icon, [[name, maker, used in], ...]]. Keep in step with the resume.
+  var DEVICES = [
+    ['Programming languages', 'chip', [['Python', 'Python Software Foundation', 'Python tools'], ['JavaScript', 'Ecma International (ECMAScript)', 'websites and Discord bots'], ['Java', 'Oracle', ''], ['C', 'ISO/IEC', '']]],
+    ['Web', 'globe', [['HTML & CSS', 'W3C / WHATWG', 'clienterr.com, imgurr.me and this site'], ['Node.js', 'OpenJS Foundation', 'Discord bots'], ['Discord.js', 'discord.js contributors', 'a Discord moderation bot']]],
+    ['Databases', 'db', [['MySQL', 'Oracle', ''], ['MongoDB', 'MongoDB, Inc.', '']]],
+    ['AI & machine learning', 'brain', [['Machine learning', 'BMS College of Engineering (B.E. AI & ML)', 'coursework']]],
+    ['Tools', 'tool', [['Git', 'Git contributors', 'every project, including this one']]],
+    ['Spoken languages', 'talk', [['English (Professional)', '', ''], ['Hindi (Professional)', '', ''], ['Nepali (Native)', '', '']]],
+    ['Fuel', 'can', [['White, 500 ml', '', 'late-night coding sessions']]]
+  ];
+  var DI = {
+    pc: '<svg class="dmi" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="1" y="1" width="14" height="10" fill="#c0c0c0" stroke="#000"/><rect x="3" y="3" width="10" height="6" fill="#008080"/><rect x="5" y="12" width="6" height="2" fill="#808080"/><rect x="3" y="14" width="10" height="1" fill="#000"/></svg>',
+    chip: '<svg class="dmi" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="3" y="3" width="10" height="10" fill="#333" stroke="#000"/><rect x="5" y="5" width="6" height="6" fill="#ff6a1a"/><path d="M1 5h2M1 8h2M1 11h2M13 5h2M13 8h2M13 11h2M5 1v2M8 1v2M11 1v2M5 13v2M8 13v2M11 13v2" stroke="#808080"/></svg>',
+    globe: '<svg class="dmi" viewBox="0 0 16 16" shape-rendering="crispEdges"><circle cx="8" cy="8" r="6.5" fill="#3c7bd6" stroke="#000"/><path d="M4 5h3v2H5v3H3V6zM9 4h3v3h-2v3H9z" fill="#3cbf4a"/></svg>',
+    db: '<svg class="dmi" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="3" y="3" width="10" height="11" fill="#f6c94d" stroke="#000"/><rect x="3" y="2" width="10" height="2" fill="#ffec8c" stroke="#000"/><path d="M3 7h10M3 10h10" stroke="#c9962c"/></svg>',
+    brain: '<svg class="dmi" viewBox="0 0 16 16" shape-rendering="crispEdges"><path d="M5 2h6v1h2v2h1v5h-1v2h-2v1H9v1H7v-1H5v-1H3v-2H2V5h1V3h2z" fill="#ff9fb0" stroke="#000"/><path d="M8 3v10M5 6h2M9 8h3M5 10h2" stroke="#c06a7a"/></svg>',
+    tool: '<svg class="dmi" viewBox="0 0 16 16" shape-rendering="crispEdges"><path d="M10 1h3v1h1v3h-1v1h-3L4 12v2H2v-2h2L10 6V3z" fill="#c0c0c0" stroke="#000"/></svg>',
+    talk: '<svg class="dmi" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="1" y="2" width="14" height="9" fill="#fff" stroke="#000"/><path d="M4 11v3l3-3" fill="#fff" stroke="#000"/><path d="M4 5h8M4 8h5" stroke="#000080"/></svg>',
+    can: '<svg class="dmi" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="4" y="2" width="8" height="13" fill="#f4f5f7" stroke="#000"/><rect x="4" y="2" width="8" height="2" fill="#aeb5be"/><path d="M8 7l-1 2h2l-1 2" stroke="#7f9db8"/></svg>'
+  };
+  I.chip = '<svg viewBox="0 0 32 32" shape-rendering="crispEdges"><rect x="7" y="7" width="18" height="18" fill="#333" stroke="#000"/><rect x="11" y="11" width="10" height="10" fill="#ff6a1a"/><rect x="13" y="13" width="3" height="3" fill="#ffb07a"/><path d="M2 10h5M2 14h5M2 18h5M2 22h5M25 10h5M25 14h5M25 18h5M25 22h5M10 2v5M14 2v5M18 2v5M22 2v5M10 25v5M14 25v5M18 25v5M22 25v5" stroke="#9a9a9a" stroke-width="2"/></svg>';
+
   var APPS = {
     showcase: {
       title: 'Aayush Agrawal - Showcase 2026', short: 'My Showcase', icon: 'showcase', w: 940, h: 860, x: 136, y: 24, ie: true,
@@ -401,6 +424,59 @@
       mount: function (win) { Tetris(win.querySelector('#tetris'), win); }
     },
 
+    skills: {
+      title: 'Device Manager', icon: 'chip', w: 520, h: 560, x: 360, y: 60,
+      status: 'Double-click a device for details',
+      render: function () {
+        var tree = DEVICES.map(function (cat, ci) {
+          return '<li><details open><summary>' + DI[cat[1]] + esc(cat[0]) + '</summary><ul>' +
+            cat[2].map(function (d, di) { return '<li><a href="#" class="dm-dev" data-c="' + ci + '" data-d="' + di + '">' + DI[cat[1]] + esc(d[0]) + '</a></li>'; }).join('') +
+            '</ul></details></li>';
+        }).join('');
+        return '<div class="dm">' +
+          '<p class="dm-view"><b>View devices by type</b></p>' +
+          '<ul class="tree-view dm-tree"><li><details open><summary>' + DI.pc + 'AAYUSH-PC</summary><ul>' + tree + '</ul></details></li></ul>' +
+          '<div class="dm-btns"><button data-dm="props">Properties</button><button data-dm="refresh">Refresh</button><button disabled>Remove</button><button data-dm="print">Print...</button></div>' +
+          '</div>';
+      },
+      mount: function (win) {
+        var sel = null;
+        var status = win.querySelector('.status-bar-field');
+        function props(c, d) {
+          var cat = DEVICES[c], dev = cat[2][d];
+          var old = win.querySelector('.dm-props'); if (old) old.remove();
+          var box = el('<div class="window dm-props"><div class="title-bar"><div class="title-bar-text">' + esc(dev[0]) + ' Properties</div><div class="title-bar-controls"><button aria-label="Close"></button></div></div>' +
+            '<div class="window-body"><div class="dm-ph">' + DI[cat[1]] + '<b>' + esc(dev[0]) + '</b></div>' +
+            '<table class="dm-pt"><tr><td>Device type:</td><td>' + esc(cat[0]) + '</td></tr>' + (dev[1] ? '<tr><td>Manufacturer:</td><td>' + esc(dev[1]) + '</td></tr>' : '') + '</table>' +
+            '<fieldset><legend>Device status</legend><p>This device is working properly.</p>' + (dev[2] ? '<p>Used in: ' + esc(dev[2]) + '</p>' : '') + '</fieldset>' +
+            '<div class="dm-ok"><button class="default" data-dm="ok">OK</button></div></div></div>');
+          box.querySelector('[aria-label=Close]').addEventListener('click', function () { box.remove(); });
+          box.querySelector('[data-dm=ok]').addEventListener('click', function () { box.remove(); });
+          win.querySelector('.dm').appendChild(box);
+          track('skills/' + dev[0].toLowerCase().replace(/[^a-z0-9]+/g, '-'), 'Device: ' + dev[0]);
+        }
+        win.addEventListener('click', function (e) {
+          var a = e.target.closest('.dm-dev');
+          if (a) {
+            e.preventDefault();
+            win.querySelectorAll('.dm-dev.sel').forEach(function (x) { x.classList.remove('sel'); });
+            a.classList.add('sel'); sel = a;
+            return;
+          }
+          var b = e.target.closest('[data-dm]'); if (!b) return;
+          var act = b.dataset.dm;
+          if (act === 'props') { if (sel) props(+sel.dataset.c, +sel.dataset.d); else if (status) status.textContent = 'Select a device first.'; }
+          if (act === 'refresh' && status) {
+            status.textContent = 'Scanning for new hardware...';
+            setTimeout(function () { status.textContent = 'No new hardware found. Aayush is always learning, so check back soon.'; }, 1400);
+          }
+          if (act === 'print') window.open('/cv/', '_blank', 'noopener');
+        });
+        win.addEventListener('dblclick', function (e) {
+          var a = e.target.closest('.dm-dev'); if (a) { e.preventDefault(); props(+a.dataset.c, +a.dataset.d); }
+        });
+      }
+    },
     credits: {
       title: 'Credits', icon: 'credits', w: 700, h: 640, x: 320, y: 70,
       status: '© 2026 Aayush Agrawal',
@@ -459,7 +535,7 @@
     site: { title: 'My Website', icon: 'globe', external: ME.site }
   };
 
-  var DESKTOP = ['showcase', 'projects', 'resume', 'terminal', 'tetris', 'paint', 'mycomputer', 'achievements', 'ultra', 'github', 'linkedin', 'instagram', 'site'];
+  var DESKTOP = ['showcase', 'projects', 'resume', 'terminal', 'tetris', 'paint', 'mycomputer', 'skills', 'achievements', 'ultra', 'github', 'linkedin', 'instagram', 'site'];
 
   // ---------- Window manager ----------
   var windowsEl = document.getElementById('windows');
@@ -704,7 +780,7 @@
   var START = [
     ['showcase', null, 'My Showcase'], ['showcase', 'about', 'About'], ['showcase', 'experience', 'Experience'],
     ['showcase', 'projects', 'Projects'], ['showcase', 'contact', 'Contact'], '-',
-    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['achievements', null], ['ultra', null], ['welcome', null], ['credits', null], '-', 'crt', 'views', 'shutdown'
+    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['skills', null], ['achievements', null], ['ultra', null], ['welcome', null], ['credits', null], '-', 'crt', 'views', 'shutdown'
   ];
   START.forEach(function (item) {
     if (item === '-') { startList.appendChild(el('<hr>')); return; }
@@ -1521,7 +1597,7 @@
     home: ['showcase', 'home'], about: ['showcase', 'about'], experience: ['showcase', 'experience'], projects: ['showcase', 'projects'],
     'projects/software': ['showcase', 'projects'], 'projects/tools': ['showcase', 'projects'], contact: ['showcase', 'contact'],
     resume: ['resume'], terminal: ['terminal'], tetris: ['tetris'], paint: ['paint'], recycle: ['recycle'], credits: ['credits'],
-    achievements: ['achievements'], computer: ['mycomputer'], codele: ['showcase', 'home']
+    achievements: ['achievements'], skills: ['skills'], computer: ['mycomputer'], codele: ['showcase', 'home']
   };
   function openLink() {
     var h = decodeURIComponent(location.hash.replace(/^#\/?/, '')).toLowerCase();

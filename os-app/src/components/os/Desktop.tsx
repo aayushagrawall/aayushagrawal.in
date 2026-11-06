@@ -24,7 +24,7 @@ import WhatsNew from '../applications/WhatsNew';
 import ContextMenu from './ContextMenu';
 import { track } from '../../utils/track';
 import { getWallpaper, Wallpaper } from '../../utils/wallpaper';
-import { NIGHT, IN_MONITOR } from '../../utils/night';
+import { isNight, IN_MONITOR } from '../../utils/night';
 
 export interface DesktopProps {}
 
@@ -61,6 +61,7 @@ const APPLICATIONS: { [key in string]: AppDef } = {
     tetris: { key: 'tetris', name: 'Tetris', shortcutIcon: 'tetrisIcon', ...legacy('tetris', 'Tetris', 'tetrisSmall', 490, 684, 40, 420, 'Arrows to play · Space to drop') },
     paint: { key: 'paint', name: 'Paint', shortcutIcon: 'paintIcon', ...legacy('paint', 'untitled - Paint', 'paintSmall', 852, 678, 40, 240, 'Draw something!') },
     mycomputer: { key: 'mycomputer', name: 'This Computer', shortcutIcon: 'myComputer', component: ThisComputer },
+    skills: { key: 'skills', name: 'Skills', shortcutIcon: 'chipIcon', ...legacy('skills', 'Device Manager', 'chipSmall', 520, 600, 70, 380, 'Double-click a device for details') },
     wordle: { key: 'wordle', name: 'Codele', shortcutIcon: 'henordleIcon', component: Henordle },
     github: { key: 'github', name: 'GitHub', shortcutIcon: 'githubIcon', href: 'https://github.com/aayushagrawall' },
     linkedin: { key: 'linkedin', name: 'LinkedIn', shortcutIcon: 'linkedinIcon', href: 'https://www.linkedin.com/in/aayush-agrawall/' },
@@ -92,6 +93,7 @@ const DEEP_LINKS: { [hash: string]: { app: string; route?: string } } = {
     codele: { app: 'wordle' },
     achievements: { app: 'achievements' },
     computer: { app: 'mycomputer' },
+    skills: { app: 'skills' },
     recycle: { app: 'recycle' },
     credits: { app: 'credits' },
     whatsnew: { app: 'whatsnew' },
@@ -116,6 +118,12 @@ const Desktop: React.FC<DesktopProps> = (props) => {
 
     const [shortcuts, setShortcuts] = useState<DesktopShortcutProps[]>([]);
     const [wallpaper, setWallpaper] = useState<Wallpaper>(getWallpaper());
+    const [night, setNight] = useState(isNight());
+    useEffect(() => {
+        const sync = () => setNight(isNight());
+        window.addEventListener('aos-night-change', sync);
+        return () => window.removeEventListener('aos-night-change', sync);
+    }, []);
     const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
     const [byName, setByName] = useState(false);
     const [hideIcons, setHideIcons] = useState(false);
@@ -408,7 +416,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
             <Extras onKonami={() => openApp('cheat')} />
             <AchievementCenter />
             <CrtOverlay />
-            {NIGHT && IN_MONITOR && <div style={styles.nightDim} aria-hidden />}
+            {night && IN_MONITOR && <div style={styles.nightDim} aria-hidden />}
             {!shutdown && <Assistant />}
             {!booted && <BootScreen onDone={finishBoot} />}
         </>

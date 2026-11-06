@@ -2,6 +2,8 @@ import React from 'react';
 
 import close from './close.png';
 import canSmall from './canSmall.png';
+import chipIcon from './chipIcon.png';
+import chipSmall from './chipSmall.png';
 import canIcon from './canIcon.png';
 import trophySmall from './trophySmall.png';
 import trophyIcon from './trophyIcon.png';
@@ -40,6 +42,8 @@ const icons = {
     trophyIcon,
     trophySmall,
     canIcon,
+    chipIcon,
+    chipSmall,
     canSmall,
     close: close,
     computerBig: computerBig,

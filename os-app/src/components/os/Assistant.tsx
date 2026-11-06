@@ -6,7 +6,8 @@ import { track } from '../../utils/track';
  * "White", Aayush's desk assistant: a cold can of White, his energy drink of choice,
  * that answers common questions.
  * Answers are written ahead of time (no AI, no network). Open it with
- * window.postMessage({ type: 'aos-assistant' }, '*') or from the Start menu.
+ * window.postMessage({ type: 'aos-assistant' }, '*') or from the Start menu, or make White
+ * say something with { type: 'aos-say', text } (the 3D room uses this for the desk plant).
  */
 
 type Action = { label: string; app: string; route?: string };
@@ -124,6 +125,11 @@ const Assistant: React.FC = () => {
 
     useEffect(() => {
         const onMsg = (e: MessageEvent) => {
+            if (e.data && e.data.type === 'aos-say' && typeof e.data.text === 'string') {
+                setCurrent({ q: '', a: e.data.text.slice(0, 400) });
+                setOpen(true);
+                return;
+            }
             if (e.data && e.data.type === 'aos-assistant') {
                 setCurrent(null);
                 setOpen(true);
@@ -197,7 +203,7 @@ const Assistant: React.FC = () => {
                     </>
                 ) : (
                     <>
-                        <p style={styles.qTitle}>{current.q}</p>
+                        {current.q && <p style={styles.qTitle}>{current.q}</p>}
                         <p style={styles.text}>{current.a}</p>
                         <div style={styles.actions}>
                             {(current.actions || []).map((a) => (
