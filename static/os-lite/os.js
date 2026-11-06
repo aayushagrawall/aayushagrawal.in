@@ -626,10 +626,17 @@
   var START = [
     ['showcase', null, 'My Showcase'], ['showcase', 'about', 'About'], ['showcase', 'experience', 'Experience'],
     ['showcase', 'projects', 'Projects'], ['showcase', 'contact', 'Contact'], '-',
-    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['achievements', null], ['chai', null], ['welcome', null], ['credits', null], '-', 'shutdown'
+    ['resume', null], ['terminal', null], ['tetris', null], ['paint', null], ['github', null], ['linkedin', null], ['instagram', null], ['site', null], ['achievements', null], ['chai', null], ['welcome', null], ['credits', null], '-', 'views', 'shutdown'
   ];
   START.forEach(function (item) {
     if (item === '-') { startList.appendChild(el('<hr>')); return; }
+    if (item === 'views') {
+      // back to aayushagrawal.in: phones get the view picker there, computers get the 3D desk
+      var v = el('<li>' + I.computer + '<span>' + (TOUCH ? 'Switch view...' : '3D desk version') + '</span></li>');
+      v.addEventListener('click', function () { location.href = '/'; });
+      startList.appendChild(v);
+      return;
+    }
     if (item === 'shutdown') {
       var s = el('<li>' + I.power + '<span>Shut Down...</span></li>');
       s.addEventListener('click', shutdown);
