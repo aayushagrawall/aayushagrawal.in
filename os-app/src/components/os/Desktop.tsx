@@ -61,7 +61,7 @@ const APPLICATIONS: { [key in string]: AppDef } = {
     tetris: { key: 'tetris', name: 'Tetris', shortcutIcon: 'tetrisIcon', ...legacy('tetris', 'Tetris', 'tetrisSmall', 490, 684, 40, 420, 'Arrows to play · Space to drop') },
     paint: { key: 'paint', name: 'Paint', shortcutIcon: 'paintIcon', ...legacy('paint', 'untitled - Paint', 'paintSmall', 852, 678, 40, 240, 'Draw something!') },
     mycomputer: { key: 'mycomputer', name: 'This Computer', shortcutIcon: 'myComputer', component: ThisComputer },
-    skills: { key: 'skills', name: 'Skills', shortcutIcon: 'chipIcon', ...legacy('skills', 'Device Manager', 'chipSmall', 520, 600, 70, 380, 'Double-click a device for details') },
+    skills: { key: 'skills', name: 'Skills', shortcutIcon: 'chipIcon', ...legacy('skills', 'Device Manager', 'chipSmall', 580, 680, 40, 380, 'Double-click a device for details') },
     wordle: { key: 'wordle', name: 'Codele', shortcutIcon: 'henordleIcon', component: Henordle },
     github: { key: 'github', name: 'GitHub', shortcutIcon: 'githubIcon', href: 'https://github.com/aayushagrawall' },
     linkedin: { key: 'linkedin', name: 'LinkedIn', shortcutIcon: 'linkedinIcon', href: 'https://www.linkedin.com/in/aayush-agrawall/' },
@@ -531,7 +531,7 @@ const styles: StyleSheetCSS = {
         inset: 0,
         zIndex: 400000,
         pointerEvents: 'none',
-        background: 'rgba(8, 14, 48, 0.16)',
+        background: 'rgba(8, 14, 48, 0.08)', // just a hint of night; more washes out the text
     },
     minimized: {
         pointerEvents: 'none',
