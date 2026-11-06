@@ -81,7 +81,7 @@ export default class Personal {
         const plate = new THREE.Group();
 
         // walnut base: lit from the top-left like the baked scene
-        const wood = this.texture('textures/personal/walnut.png');
+        const wood = this.texture('textures/personal/walnut.webp');
         wood.wrapS = wood.wrapT = THREE.RepeatWrapping;
         const woodTop = this.basic({ map: wood, color: this.shade(0xffffff, 1.0) });
         const woodFront = this.basic({ map: wood, color: this.shade(0xffffff, 0.82) });
@@ -94,7 +94,7 @@ export default class Personal {
         plate.add(base);
 
         // slanted acrylic plate with the name, resting on the base and leaning back
-        const front = this.texture('textures/personal/nameplate.png');
+        const front = this.texture('textures/personal/nameplate.webp');
         const edge = this.basic({ color: 0x1a1a20 });
         const edgeLight = this.basic({ color: 0x2c2c34 });
         const face = this.basic({ map: front });
@@ -128,7 +128,7 @@ export default class Personal {
         const size = 175;
         const note = new THREE.Mesh(
             new THREE.PlaneGeometry(size, size),
-            this.basic({ map: this.texture('textures/personal/sticky.png'), transparent: true, alphaTest: 0.02 })
+            this.basic({ map: this.texture('textures/personal/sticky.webp'), transparent: true, alphaTest: 0.02 })
         );
         if (h && h.face) {
             const n = h.face.normal.clone().transformDirection(h.object.matrixWorld);

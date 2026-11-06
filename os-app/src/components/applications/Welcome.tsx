@@ -125,7 +125,7 @@ const styles: StyleSheetCSS = {
     },
     head: { margin: '0 0 14px', fontFamily: 'gastromond, serif', fontSize: 38, lineHeight: 1 },
     brand: { fontFamily: 'gastromond, serif' },
-    ver: { color: '#ff6a1a', marginLeft: 8, fontFamily: 'gastromond, serif' },
+    ver: { color: '#9a3709', marginLeft: 8, fontFamily: 'gastromond, serif' }, // darker orange: readable on grey
     main: { gap: 14, flex: 1, minHeight: 0 },
     tipbox: {
         flex: 1,

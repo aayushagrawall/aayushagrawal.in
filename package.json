@@ -4,7 +4,8 @@
         "dev": "webpack serve --config ./bundler/webpack.dev.js",
         "build:scene": "webpack --config ./bundler/webpack.prod.js",
         "build:os": "cd os-app && GENERATE_SOURCEMAP=false npm run build",
-        "build": "npm run build:scene && npm run build:os && rm -rf public/os && cp -r os-app/build public/os && rm -f public/*.map && touch public/.nojekyll",
+        "resume": "node scripts/resume-pdf.js",
+        "build": "npm run resume && npm run build:scene && npm run build:os && rm -rf public/os && cp -r os-app/build public/os && rm -f public/*.map && touch public/.nojekyll",
         "os:install": "cd os-app && npm install --legacy-peer-deps"
     },
     "dependencies": {
