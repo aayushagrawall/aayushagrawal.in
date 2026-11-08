@@ -59,13 +59,13 @@ export default class Personal {
 
     room?: Room;
 
-    /** The studio backdrop outside the room gets a dusky lavender (its own copy of the baked material). */
+    /** The studio backdrop outside the room goes dark grey (its own copy of the baked material). */
     tintBackdrop(environment: THREE.Object3D) {
         environment.traverse((o) => {
             const m = o as THREE.Mesh;
             if (m.isMesh && o.name === 'Background' && m.material instanceof THREE.MeshBasicMaterial) {
                 const mat = (m.material as THREE.MeshBasicMaterial).clone();
-                mat.color.setRGB(0.86, 0.82, 0.96);
+                mat.color.setRGB(0.36, 0.36, 0.4);
                 m.material = mat;
                 this.tintables.push(mat);
             }
@@ -607,10 +607,10 @@ export default class Personal {
 
     static TINTS = LOFI_ROOM
         ? {
-              // lo-fi: warm pink sunset, a deep purple night lit by the LEDs and the screen
+              // the bedroom: warm sunset, a dark blue-grey night lit by the LEDs and the screen
               day: new THREE.Color(1, 1, 1),
-              sunset: new THREE.Color(1.0, 0.78, 0.74),
-              night: new THREE.Color(0.18, 0.14, 0.34),
+              sunset: new THREE.Color(1.0, 0.8, 0.66),
+              night: new THREE.Color(0.17, 0.17, 0.24),
           }
         : {
               day: new THREE.Color(1, 1, 1),
