@@ -9,3 +9,7 @@ export const OPEN_TO_INTERNSHIPS = true;
 // Extra desk objects. Flip a value to put an object on the desk or take it off.
 export const SHOW_NAMEPLATE = false; // walnut nameplate with the name and title
 export const SHOW_RESUME_FRAME = true; // framed resume with a QR code (click opens /cv/)
+
+// The lo-fi bedroom around the desk (walls, window, LED backlight, shelf, fairy lights).
+// false = the original studio backdrop.
+export const LOFI_ROOM = true;
