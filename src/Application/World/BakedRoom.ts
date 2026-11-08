@@ -15,7 +15,7 @@ import Resources from '../Utils/Resources';
  */
 
 // light map intensities written by the bake (room.json)
-const LIGHT_SCALE = { night: 10.7951, day: 19.2406 };
+const LIGHT_SCALE = { night: 10.7121, day: 19.1283 };
 
 type Time = 'day' | 'sunset' | 'night';
 
