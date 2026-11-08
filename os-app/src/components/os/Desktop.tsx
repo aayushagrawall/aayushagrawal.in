@@ -226,9 +226,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         const onHash = () => openDeepLink(openApp);
         window.addEventListener('hashchange', onHash);
 
-        // Tips dialog at start (unless turned off). Inside the 3D monitor it waits until
-        // the visitor moves the mouse over the screen, so the first view of the desk
-        // shows the name, not a dialog.
+        // Tips dialog at start (unless turned off).
         let welcomeOff = false;
         try {
             welcomeOff = localStorage.getItem(WELCOME_OFF_KEY) === '1';
@@ -242,12 +240,9 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         const wantWelcome = !welcomeOff && !deepLinked && !shownThisVisit;
         const inMonitor = window.parent !== window;
         let welcomeTimer: ReturnType<typeof setTimeout> | undefined;
-        const onFirstMove = () => {
-            window.removeEventListener('mousemove', onFirstMove);
-            welcomeTimer = setTimeout(() => openApp('welcome'), 1200);
-        };
+        // on the 3D monitor the screen stays clean (name and links); the tips are one click away
+        // in the Start menu. Opened on its own, AayushOS shows them once per visit.
         if (wantWelcome && !inMonitor) welcomeTimer = setTimeout(() => openApp('welcome'), 700);
-        if (wantWelcome && inMonitor) window.addEventListener('mousemove', onFirstMove);
 
         // messages from Aayush's apps running in iframes (Terminal, Paint...)
         const onMessage = (e: MessageEvent) => {
@@ -261,7 +256,6 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         return () => {
             window.removeEventListener('message', onMessage);
             window.removeEventListener('hashchange', onHash);
-            window.removeEventListener('mousemove', onFirstMove);
             if (welcomeTimer) clearTimeout(welcomeTimer);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
