@@ -16,9 +16,9 @@ export const LOFI_ROOM = false;
 
 // The streetwear bedroom, modelled and light-baked in Blender (scripts/room-blender/).
 // Replaces Henry's desk, chair, backdrop and desk props; the CRT and the desk items stay.
-// In preview: off for everyone, on with ?room=new (remembered for the visit; ?room=old turns
-// it off again). Set NEW_ROOM_FOR_EVERYONE to true to make it the room everyone sees.
-export const NEW_ROOM_FOR_EVERYONE = false;
+// NEW_ROOM_FOR_EVERYONE = false puts it back in preview: then it's on only with ?room=new
+// (remembered for the visit; ?room=old turns it off again).
+export const NEW_ROOM_FOR_EVERYONE = true;
 export const NEW_ROOM: boolean = (() => {
     if (NEW_ROOM_FOR_EVERYONE) return true;
     try {
