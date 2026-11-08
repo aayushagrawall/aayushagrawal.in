@@ -12,7 +12,7 @@ const CHANGES: { date: string; items: string[] }[] = [
             'The window you are using now always has the blue title bar, also after closing another window.',
             'The Welcome tips open in the bottom corner, once per visit, so they no longer cover the home page.',
             'Tidier Showcase pages: the side menu is tighter and long headings no longer break over two lines.',
-            'A calmer desk in 3D: the nameplate and the framed resume are gone, so the screen stands out. The resume is still one click away (Resume button, or Resume.pdf on the desktop).',
+            'A calmer desk in 3D: the nameplate is gone, so the screen stands out.',
             'Camera moves in the 3D room now take the same time on slow computers as on fast ones.',
         ],
     },
