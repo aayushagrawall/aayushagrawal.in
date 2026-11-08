@@ -91,6 +91,8 @@ export default class Camera extends EventEmitter {
         this.setInstance();
         this.setMonitorListeners();
         this.setFreeCamListeners();
+        // for checking camera timing from the browser console
+        (window as any).__aosCamera = this;
     }
 
     // Camera moves are springs, not fixed-length tweens: each frame the camera accelerates
@@ -124,7 +126,9 @@ export default class Camera extends EventEmitter {
 
         // "response" (seconds): how quickly the camera gets there. The old tween lengths
         // map onto it so the room keeps its pacing. Reduced motion: shorter flights.
-        let response = Math.min(1.6, Math.max(0.55, (duration / 1000) * 0.9));
+        // 0.7 s for the usual 1 s move: 90% of the way in 0.43 s and done (99.9%) by ~1 s,
+        // the same overall length as Henry's 1 s tween, without a long slow drift at the end
+        let response = Math.min(1.4, Math.max(0.45, (duration / 1000) * 0.7));
         if (typeof window.matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches) response *= 0.5;
         this.omega = (2 * Math.PI) / response;
     }
