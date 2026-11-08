@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import Application from '../Application';
-import { OPEN_TO_INTERNSHIPS, SHOW_NAMEPLATE, SHOW_RESUME_FRAME } from '../config';
+import { OPEN_TO_INTERNSHIPS, SHOW_NAMEPLATE, SHOW_RESUME_FRAME, LOFI_ROOM } from '../config';
+import Room from './Room';
 
 /**
  * Aayush's personal touches on the desk:
@@ -49,7 +50,26 @@ export default class Personal {
         this.addCan(environment, decor);
         if (OPEN_TO_INTERNSHIPS) this.addNeonSign(environment);
         this.addLamp(environment);
+        if (LOFI_ROOM) {
+            this.room = new Room(this);
+            this.tintBackdrop(environment);
+        }
         this.initTimeOfDay();
+    }
+
+    room?: Room;
+
+    /** The studio backdrop outside the room gets a dusky lavender (its own copy of the baked material). */
+    tintBackdrop(environment: THREE.Object3D) {
+        environment.traverse((o) => {
+            const m = o as THREE.Mesh;
+            if (m.isMesh && o.name === 'Background' && m.material instanceof THREE.MeshBasicMaterial) {
+                const mat = (m.material as THREE.MeshBasicMaterial).clone();
+                mat.color.setRGB(0.86, 0.82, 0.96);
+                m.material = mat;
+                this.tintables.push(mat);
+            }
+        });
     }
 
     texture(path: string) {
@@ -585,11 +605,18 @@ export default class Personal {
     lampLevel = 0;
     lampTarget = 0;
 
-    static TINTS = {
-        day: new THREE.Color(1, 1, 1),
-        sunset: new THREE.Color(1.0, 0.8, 0.62),
-        night: new THREE.Color(0.13, 0.15, 0.3),
-    };
+    static TINTS = LOFI_ROOM
+        ? {
+              // lo-fi: warm pink sunset, a deep purple night lit by the LEDs and the screen
+              day: new THREE.Color(1, 1, 1),
+              sunset: new THREE.Color(1.0, 0.78, 0.74),
+              night: new THREE.Color(0.18, 0.14, 0.34),
+          }
+        : {
+              day: new THREE.Color(1, 1, 1),
+              sunset: new THREE.Color(1.0, 0.8, 0.62),
+              night: new THREE.Color(0.13, 0.15, 0.3),
+          };
 
     /** 'day', 'sunset' (5 to 7 pm IST) or 'night' (7 pm to 6 am IST): URL, then the lamp, then the clock. */
     timeOfDay(): 'day' | 'sunset' | 'night' {
@@ -633,6 +660,7 @@ export default class Personal {
             this.lampLevel = this.lampTarget;
             this.paintTime();
         }
+        if (this.room) this.room.setTime(time);
         const world = (this.application as any).world;
         if (world && world.monitorScreen && world.monitorScreen.setNight) world.monitorScreen.setNight(time === 'night');
         const html = document.documentElement.classList;
@@ -645,6 +673,7 @@ export default class Personal {
 
     paintTime() {
         this.baseColors.forEach((base, m) => m.color.copy(base).multiply(this.tint));
+        if (this.room) this.room.paint(this.lampLevel);
         const l = this.lamp;
         if (!l) return;
         const k = this.lampLevel;
