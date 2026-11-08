@@ -1,10 +1,12 @@
-"""Textures for the lo-fi bedroom around the desk (World/Room.ts).
+"""Textures for the bedroom around the desk (World/Room.ts): a darker, moodier college room.
 
   python3 scripts/room-textures.py FONT_DIR static/textures/room
 
-FONT_DIR holds caveat-700.ttf (Caveat, SIL OFL), grotesk-700.ttf / grotesk-400.ttf
-(Space Grotesk, SIL OFL) and pacifico.ttf (SIL OFL); the fonts end up only inside the images.
-Everything here is drawn from scratch: no photos, no brand artwork.
+FONT_DIR holds caveat-700.ttf (Caveat), grotesk-700/400.ttf (Space Grotesk), bebas.ttf
+(Bebas Neue), playfair-700.ttf / playfair-italic.ttf (Playfair Display) and oswald-300/600.ttf
+(Oswald), all SIL OFL; the fonts end up only inside the images.
+Everything here is drawn from scratch: no photos, no brand artwork. The film posters are for
+made-up films with made-up credits.
 """
 import math
 import random
@@ -62,7 +64,7 @@ def floor(w=1024, h=1024):
         X, Y = np.meshgrid(xs, ys)
         # fine, mostly straight grain running along the plank
         grain = 0.022 * np.sin(X * 0.21 + np.sin((Y + offset) * 0.004) * 1.5 + i * 3) + 0.012 * np.sin(X * 0.55 + i) + 0.018 * noise(plank_w, h, 50, 0.8)
-        base = np.array([236, 214, 186]) * tone
+        base = np.array([176, 128, 92]) * tone  # dark walnut (multiplied over a grey floor)
         px[:, x0:x0 + plank_w] = base[None, None, :] * (1 + grain[..., None])
         # plank ends
         for cut in (offset % h, (offset + h // 2) % h):
@@ -75,8 +77,8 @@ def floor(w=1024, h=1024):
 # ---------- window: frame, sky, Bangalore-ish skyline (three moods)
 SKIES = {
     'day': [(0, (136, 190, 236)), (0.7, (198, 226, 246)), (1, (236, 240, 244))],
-    'sunset': [(0, (92, 86, 168)), (0.45, (240, 142, 150)), (0.8, (255, 190, 140)), (1, (255, 214, 168))],
-    'night': [(0, (22, 18, 54)), (0.6, (52, 36, 96)), (1, (98, 60, 120))],
+    'sunset': [(0, (38, 44, 92)), (0.5, (206, 96, 68)), (0.85, (255, 158, 88)), (1, (255, 196, 128))],
+    'night': [(0, (8, 12, 26)), (0.6, (20, 30, 56)), (1, (44, 54, 82))],
 }
 
 
@@ -125,9 +127,9 @@ def window(mood):
             d.ellipse([sx - r, sy - r, sx + r, sy + r], fill=(255, 250, 235, random.randint(120, 230)))
         # moon with a soft halo
         halo = Image.new('L', (W, H), 0)
-        ImageDraw.Draw(halo).ellipse([520, 120, 700, 300], fill=150)
+        ImageDraw.Draw(halo).ellipse([520, 120, 700, 300], fill=120)
         halo = halo.filter(ImageFilter.GaussianBlur(40))
-        im.paste((150, 140, 210), (0, 0), halo)
+        im.paste((120, 140, 180), (0, 0), halo)
         d = ImageDraw.Draw(im, 'RGBA')
         d.ellipse([570, 170, 650, 250], fill=(255, 246, 222))
         d.ellipse([595, 160, 675, 240], fill=tuple(int(c) for c in sky[200]) + (255,))
@@ -147,8 +149,8 @@ def window(mood):
             im.paste((255, 255, 255), (0, 0), cl.filter(ImageFilter.GaussianBlur(6)))
         d = ImageDraw.Draw(im, 'RGBA')
     far, near = skyline_layers(W, base)
-    farc = {'day': (150, 170, 196), 'sunset': (160, 110, 150), 'night': (52, 40, 92)}[mood]
-    nearc = {'day': (110, 126, 156), 'sunset': (96, 66, 118), 'night': (28, 22, 54)}[mood]
+    farc = {'day': (150, 170, 196), 'sunset': (120, 76, 92), 'night': (30, 40, 64)}[mood]
+    nearc = {'day': (110, 126, 156), 'sunset': (62, 40, 62), 'night': (14, 18, 34)}[mood]
     for b in far:
         d.rectangle(b, fill=farc)
     # a TV tower and a temple-ish dome in the far layer, for a bit of Bangalore
@@ -165,14 +167,14 @@ def window(mood):
             for wy in range(b[1] + 14, base - 6, 22):
                 for wx in range(b[0] + 10, b[2] - 10, 18):
                     if random.random() < p:
-                        c = random.choice([(255, 210, 140), (255, 230, 170), (190, 200, 255), (255, 170, 210)])
+                        c = random.choice([(255, 210, 140), (255, 226, 160), (255, 196, 120), (170, 220, 255)])
                         d.rectangle([wx, wy, wx + 8, wy + 11], fill=c + (235,))
         else:
             for wy in range(b[1] + 14, base - 6, 22):
                 for wx in range(b[0] + 10, b[2] - 10, 18):
                     d.rectangle([wx, wy, wx + 8, wy + 11], fill=(150, 168, 196))
     # a few trees in front (Garden City)
-    treec = {'day': (92, 136, 110), 'sunset': (80, 62, 96), 'night': (22, 30, 44)}[mood]
+    treec = {'day': (92, 136, 110), 'sunset': (52, 40, 52), 'night': (10, 16, 24)}[mood]
     for tx in range(-20, W + 40, 64):
         r = random.randint(36, 58)
         d.ellipse([tx - r, base - r * 0.9, tx + r, base + r], fill=treec)
@@ -185,7 +187,7 @@ def window(mood):
     im.paste((255, 255, 255), (0, 0), refl)
     # frame: white wood with a cross bar
     d = ImageDraw.Draw(im)
-    fc, fs = (246, 244, 240), (214, 210, 204)
+    fc, fs = (34, 34, 38), (58, 58, 64)  # black aluminium frame
     t = 38
     d.rectangle([0, 0, W, t], fill=fc)
     d.rectangle([0, H - t, W, H], fill=fc)
@@ -302,15 +304,204 @@ def rug(S=768):
     save(Image.fromarray(np.uint8(col)), 'rug.webp')
 
 
+
+
+# ---------- film grain helper
+def grain(im, amt=14):
+    a = np.asarray(im.convert('RGB'), float)
+    a += rng.normal(0, amt, a.shape[:2])[..., None]
+    return Image.fromarray(np.uint8(np.clip(a, 0, 255)))
+
+
+def billing(d, W, y, color):
+    """A made-up credits block, the small condensed text at the bottom of film posters."""
+    f = font('oswald-300.ttf', 15)
+    lines = ['KESTREL PICTURES PRESENTS  A NIGHTJAR FILM  MUSIC BY R. VARMA  EDITED BY J. COLE-MARSH',
+             'PRODUCTION DESIGN A. DESAI  DIRECTOR OF PHOTOGRAPHY S. LINDQVIST  WRITTEN AND DIRECTED BY K. ARORA']
+    for i, t in enumerate(lines):
+        d.text((W // 2, y + i * 20), t, font=f, anchor='mm', fill=color)
+
+
+def poster_static():
+    W, H = 600, 900
+    im = Image.new('RGB', (W, H), (12, 12, 14))
+    # a block of TV static with one red line through it
+    st = np.uint8(np.clip(rng.normal(120, 70, (360, 440)), 0, 255))
+    stim = Image.fromarray(st).convert('RGB').filter(ImageFilter.GaussianBlur(0.6))
+    im.paste(stim, (80, 150))
+    d = ImageDraw.Draw(im)
+    d.rectangle([80, 150, 520, 510], outline=(40, 40, 44), width=6)
+    d.rectangle([60, 322, 540, 334], fill=(214, 28, 36))
+    d.text((W // 2, 640), 'COLD STATIC', font=font('bebas.ttf', 132), anchor='mm', fill=(236, 232, 224))
+    d.text((W // 2, 722), 'THE SIGNAL NEVER STOPS.', font=font('oswald-300.ttf', 26), anchor='mm', fill=(214, 28, 36))
+    billing(d, W, 812, (120, 118, 112))
+    d.text((W // 2, 868), 'COMING NEVER', font=font('oswald-600.ttf', 18), anchor='mm', fill=(160, 156, 150))
+    save(grain(im, 12), 'poster-static.webp')
+
+
+def poster_personal():
+    W, H = 600, 900
+    im = Image.new('RGB', (W, H), (232, 226, 214))
+    d = ImageDraw.Draw(im)
+    d.rectangle([292, 0, 304, H], fill=(178, 24, 30))
+    d.text((52, 120), 'Nothing', font=font('playfair-700.ttf', 104), fill=(16, 16, 16))
+    d.text((52, 240), 'Personal', font=font('playfair-italic.ttf', 112), fill=(16, 16, 16))
+    d.text((54, 400), 'it was never about you.', font=font('oswald-300.ttf', 26), fill=(60, 58, 54))
+    # a lone office tower at night, one window lit
+    d.rectangle([360, 470, 520, 790], fill=(18, 18, 20))
+    for y in range(490, 780, 26):
+        for x in range(378, 510, 26):
+            d.rectangle([x, y, x + 12, y + 14], fill=(46, 46, 50))
+    d.rectangle([430, 594, 442, 608], fill=(255, 214, 120))
+    billing(d, W, 832, (90, 86, 80))
+    save(grain(im, 10), 'poster-personal.webp')
+
+
+def poster_city():
+    W, H = 600, 900
+    sky = grad(H, [(0, (10, 6, 8)), (0.55, (90, 12, 18)), (0.8, (190, 40, 30)), (1, (40, 8, 10))])
+    im = Image.fromarray(np.uint8(np.repeat(sky[:, None, :], W, 1)))
+    d = ImageDraw.Draw(im)
+    far, near = skyline_layers(W, 700)
+    for b in far:
+        d.rectangle(b, fill=(40, 6, 10))
+    for b in near:
+        d.rectangle(b, fill=(12, 4, 6))
+    d.rectangle([0, 690, W, H], fill=(12, 4, 6))
+    d.text((W // 2, 110), 'SLEEPLESS', font=font('bebas.ttf', 150), anchor='mm', fill=(240, 236, 230))
+    d.text((W // 2, 228), 'CITY', font=font('bebas.ttf', 150), anchor='mm', fill=(240, 236, 230))
+    d.text((W // 2, 320), 'NOBODY HERE IS WHO THEY SAY THEY ARE', font=font('oswald-300.ttf', 21), anchor='mm', fill=(255, 150, 120))
+    billing(d, W, 780, (150, 120, 112))
+    d.text((W // 2, 846), 'ONLY IN THEATRES  ·  MIDNIGHT', font=font('oswald-600.ttf', 20), anchor='mm', fill=(200, 170, 160))
+    save(grain(im, 14), 'poster-city.webp')
+
+
+def poster_404():
+    W, H = 600, 900
+    im = Image.new('RGB', (W, H), (16, 16, 18))
+    d = ImageDraw.Draw(im)
+    d.text((W // 2, 290), '404', font=font('bebas.ttf', 330), anchor='mm', fill=(236, 232, 224))
+    d.rectangle([90, 470, 510, 478], fill=(214, 28, 36))
+    d.text((W // 2, 560), 'SLEEP NOT FOUND', font=font('bebas.ttf', 74), anchor='mm', fill=(236, 232, 224))
+    d.text((W // 2, 640), 'try again after the next commit', font=font('oswald-300.ttf', 26), anchor='mm', fill=(150, 146, 140))
+    save(grain(im, 10), 'poster-404.webp')
+
+
+# ---------- black-and-white polaroids
+def polaroid_bw(name, caption, motif):
+    W, H = 400, 480
+    im = Image.new('RGB', (W, H), (238, 236, 230))
+    photo = Image.new('L', (360, 340), 0)
+    pd = ImageDraw.Draw(photo)
+    for y in range(340):
+        pd.line([0, y, 360, y], fill=int(40 + 60 * y / 340))
+    motif(pd)
+    photo = grain(photo.convert('RGB'), 16)
+    im.paste(photo, (20, 20))
+    d = ImageDraw.Draw(im)
+    d.text((W // 2, 412), caption, font=font('caveat-700.ttf', 50), anchor='mm', fill=(40, 40, 46))
+    save(im, name)
+
+
+def bw_upload(d):
+    d.rounded_rectangle([110, 80, 250, 240], radius=18, fill=210)
+    d.polygon([(180, 110), (140, 160), (165, 160), (165, 205), (195, 205), (195, 160), (220, 160)], fill=40)
+
+
+def bw_bot(d):
+    d.rounded_rectangle([110, 110, 250, 230], radius=30, fill=220)
+    d.ellipse([140, 150, 165, 175], fill=30)
+    d.ellipse([195, 150, 220, 175], fill=30)
+    d.line([180, 110, 180, 80], fill=220, width=8)
+    d.ellipse([170, 66, 190, 86], fill=240)
+
+
+def bw_crowd(d):
+    for i in range(18):
+        x = random.randint(-10, 360)
+        r = random.randint(30, 52)
+        d.ellipse([x - r, 260 - r * 0.6, x + r, 260 + r * 1.6], fill=random.randint(10, 30))
+    for i in range(7):
+        x = 30 + i * 50
+        d.line([x, 0, x + 60, 200], fill=170, width=3)
+
+
+def bw_code(d):
+    d.rounded_rectangle([40, 60, 320, 280], radius=14, fill=18)
+    for i, y in enumerate(range(90, 260, 24)):
+        x0 = 64 + (i % 3) * 20
+        d.rounded_rectangle([x0, y, x0 + random.randint(60, 180), y + 10], radius=5, fill=[200, 140, 110][i % 3])
+
+
+# ---------- rug: charcoal with an off-white border (multiplied over the floor)
+def rug_dark(Wd=1024, Hd=704):
+    yy, xx = np.mgrid[0:Hd, 0:Wd]
+    col = np.full((Hd, Wd, 3), [74, 74, 78], float)
+    m = 40
+    border = (xx < m) | (xx >= Wd - m) | (yy < m) | (yy >= Hd - m)
+    inner = ((xx >= m + 26) & (xx < m + 40)) | ((xx >= Wd - m - 40) & (xx < Wd - m - 26)) | ((yy >= m + 26) & (yy < m + 40)) | ((yy >= Hd - m - 40) & (yy < Hd - m - 26))
+    inner &= ~border
+    col[inner] = [214, 208, 196]
+    col *= (1 + 0.06 * noise(Wd, Hd, 70, 0.5))[..., None]
+    col[border] = 255  # outside the rug: no change to the floor
+    # fringe at the short ends
+    for x in range(m, Wd - m, 9):
+        col[m - 22:m, x:x + 4] = [200, 194, 182]
+        col[Hd - m:Hd - m + 22, x:x + 4] = [200, 194, 182]
+    save(Image.fromarray(np.uint8(np.clip(col, 0, 255))), 'rug.webp')
+
+
+# ---------- slatted wood panel behind the desk
+def slats(w=1024, h=1024):
+    im = Image.new('RGB', (w, h), (20, 18, 18))  # dark felt between the slats
+    a = np.asarray(im, float).copy()
+    sw, gap = 46, 18
+    x = 6
+    i = 0
+    while x < w:
+        tone = 1 + 0.06 * math.sin(i * 1.7)
+        g = 0.05 * noise(sw, h, 60, 0.7)
+        base = np.array([120, 82, 56]) * tone
+        a[:, x:x + sw] = base[None, None, :] * (1 + g[..., None])
+        a[:, x:x + 4] *= 1.12  # lit edge
+        a[:, x + sw - 5:x + sw] *= 0.7  # shadow edge
+        x += sw + gap
+        i += 1
+    save(Image.fromarray(np.uint8(np.clip(a, 0, 255))), 'slats.webp')
+
+
+# ---------- skateboard deck graphic (original)
+def deck(w=320, h=1024):
+    im = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    mask = Image.new('L', (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, w - 1, h - 1], radius=w // 2, fill=255)
+    body = Image.new('RGB', (w, h), (18, 18, 20))
+    d = ImageDraw.Draw(body)
+    for i, y in enumerate(range(300, 720, 60)):
+        d.rectangle([0, y, w, y + 30], fill=(214, 28, 36) if i % 2 else (236, 232, 224))
+    d.text((w // 2, 160), 'NIGHT', font=font('bebas.ttf', 96), anchor='mm', fill=(236, 232, 224))
+    d.text((w // 2, 860), 'RIDE', font=font('bebas.ttf', 96), anchor='mm', fill=(214, 28, 36))
+    for y in (110, 914):
+        for x in (w // 2 - 40, w // 2 + 40):
+            d.ellipse([x - 7, y - 7, x + 7, y + 7], fill=(90, 90, 96))
+    im.paste(body, (0, 0), mask)
+    im.save(f'{OUT}/deck.webp', quality=88, method=6)
+    print('deck.webp', im.size)
+
+
 wall('wall-back.webp', True, True)
 wall('wall-side.webp', False, True)
 floor()
 for m in ('day', 'sunset', 'night'):
     window(m)
+poster_static()
+poster_personal()
 poster_city()
-poster_sleep()
-polaroid('polaroid-1.webp', 'imgurr.me', [(0, (186, 160, 255)), (1, (255, 190, 220))], m_upload)
-polaroid('polaroid-2.webp', 'my first bot!', [(0, (140, 210, 230)), (1, (190, 160, 255))], m_bot)
-polaroid('polaroid-3.webp', 'utsav fest', [(0, (255, 214, 170)), (1, (255, 150, 170))], m_fest)
-polaroid('polaroid-4.webp', '3am commits', [(0, (60, 50, 110)), (1, (150, 110, 200))], m_code)
-rug()
+poster_404()
+polaroid_bw('polaroid-1.webp', 'imgurr.me', bw_upload)
+polaroid_bw('polaroid-2.webp', 'first bot', bw_bot)
+polaroid_bw('polaroid-3.webp', "utsav '25", bw_crowd)
+polaroid_bw('polaroid-4.webp', '3am commits', bw_code)
+rug_dark()
+slats()
+deck()

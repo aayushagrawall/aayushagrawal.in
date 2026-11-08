@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import type Personal from './Personal';
 
 /**
- * The lo-fi bedroom around the desk: walls, a window onto Bangalore, a wooden floor with a
- * wavy rug, an LED backlight behind the desk, fairy lights with polaroids, a floating shelf
- * and two posters. Textures come from scripts/room-textures.py (all drawn from scratch).
+ * The bedroom around the desk, a darker college room: charcoal walls, a slatted wood panel
+ * behind the desk with an LED backlight, a window onto Bangalore, a walnut floor and rug, a
+ * bed, fairy lights with black-and-white polaroids, a floating shelf, film posters (made-up
+ * films) and a skate deck. Textures come from scripts/room-textures.py (all drawn from scratch).
  *
  * It's a diorama: the walls are single-sided and face into the room, so from outside, the
  * walls between the camera and the desk disappear and the room reads like a cut-away model.
@@ -18,11 +19,12 @@ const TOP_Y = 5200;
 const X0 = -6000;
 const X1 = 6200;
 const BACK_Z = -2600;
-const FRONT_Z = 6400;
+const FRONT_Z = 7600;
 
-export type RoomMood = 'lofi' | 'sunset' | 'cyber' | 'off';
+export type RoomMood = 'ember' | 'lofi' | 'sunset' | 'cyber' | 'off';
 
 const MOODS: { [k in RoomMood]: [string, string, string] } = {
+    ember: ['#c4002f', '#ff2a2a', '#ff5a1f'],
     lofi: ['#8a5cff', '#ff5fb4', '#4f7dff'],
     sunset: ['#ff7a3d', '#ff4f8b', '#ffb347'],
     cyber: ['#00e5ff', '#3d5afe', '#c040ff'],
@@ -37,7 +39,7 @@ export default class Room {
     led?: { glow: THREE.MeshBasicMaterial; line: THREE.MeshBasicMaterial; floor: THREE.MeshBasicMaterial; canvas: HTMLCanvasElement; tex: THREE.CanvasTexture; lineTex: THREE.CanvasTexture; lineCanvas: HTMLCanvasElement };
     bulbs: THREE.MeshBasicMaterial[] = [];
     moonGlow?: THREE.MeshBasicMaterial;
-    mood: RoomMood = 'lofi';
+    mood: RoomMood = 'ember';
     level = 0;
 
     constructor(personal: Personal) {
@@ -47,6 +49,8 @@ export default class Room {
         personal.group.add(this.group);
 
         this.addShell();
+        this.addSlats();
+        this.addBed();
         this.addWindow();
         this.addLedStrip();
         this.addShelf();
@@ -79,14 +83,14 @@ export default class Room {
 
         const back = new THREE.Mesh(
             new THREE.PlaneGeometry(X1 - X0, H),
-            P.basic({ color: new THREE.Color(0.8, 0.75, 0.93), map: this.tex('wall-back.webp') })
+            P.basic({ color: new THREE.Color(0.105, 0.11, 0.125), map: this.tex('wall-back.webp') })
         );
         back.position.set((X0 + X1) / 2, midY, BACK_Z);
         this.group.add(back);
 
         const sideLen = FRONT_Z - BACK_Z;
         const leftMap = this.tex('wall-side.webp');
-        const left = new THREE.Mesh(new THREE.PlaneGeometry(sideLen, H), P.basic({ color: new THREE.Color(0.7, 0.65, 0.84), map: leftMap }));
+        const left = new THREE.Mesh(new THREE.PlaneGeometry(sideLen, H), P.basic({ color: new THREE.Color(0.08, 0.085, 0.1), map: leftMap }));
         left.rotation.y = Math.PI / 2; // faces +x; texture's right edge (darker corner) is at the back
         left.position.set(X0, midY, (BACK_Z + FRONT_Z) / 2);
         this.group.add(left);
@@ -94,14 +98,14 @@ export default class Room {
         const rightMap = this.tex('wall-side.webp');
         rightMap.wrapS = THREE.RepeatWrapping;
         rightMap.repeat.x = -1; // mirror, so its darker corner is at the back too
-        const right = new THREE.Mesh(new THREE.PlaneGeometry(sideLen, H), P.basic({ color: new THREE.Color(0.75, 0.7, 0.88), map: rightMap }));
+        const right = new THREE.Mesh(new THREE.PlaneGeometry(sideLen, H), P.basic({ color: new THREE.Color(0.092, 0.097, 0.112), map: rightMap }));
         right.rotation.y = -Math.PI / 2;
         right.position.set(X1, midY, (BACK_Z + FRONT_Z) / 2);
         this.group.add(right);
 
         // skirting boards
         const skirt = (w: number, x: number, z: number, ry: number) => {
-            const s = this.box(w, 220, 40, 0xf4f0fa);
+            const s = this.box(w, 220, 40, 0x232326);
             s.position.set(x, FLOOR_Y + 110, z);
             s.rotation.y = ry;
             this.group.add(s);
@@ -120,11 +124,64 @@ export default class Room {
         floor.renderOrder = 1;
         this.group.add(floor);
 
-        const rug = new THREE.Mesh(new THREE.PlaneGeometry(4800, 4800), multiply(this.tex('rug.webp')));
+        const rug = new THREE.Mesh(new THREE.PlaneGeometry(4600, 3160), multiply(this.tex('rug.webp')));
         rug.rotation.x = -Math.PI / 2;
-        rug.position.set(700, FLOOR_Y + 8, 2500);
+        rug.position.set(800, FLOOR_Y + 8, 2700);
         rug.renderOrder = 2;
         this.group.add(rug);
+    }
+
+    // ---------- slatted walnut panel behind the desk (the LEDs wash over it)
+    addSlats() {
+        const P = this.personal;
+        const x0 = -2050;
+        const x1 = 2900;
+        const y1 = 3500;
+        const map = this.tex('slats.webp', [(x1 - x0) / 2600, 1]);
+        const panel = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, y1 - FLOOR_Y), P.basic({ color: new THREE.Color(0.62, 0.6, 0.6), map }));
+        panel.position.set((x0 + x1) / 2, (FLOOR_Y + y1) / 2, BACK_Z + 4);
+        this.group.add(panel);
+        const cap = this.box(x1 - x0 + 40, 40, 60, 0x2a2420);
+        cap.position.set((x0 + x1) / 2, y1 + 20, BACK_Z + 30);
+        this.group.add(cap);
+    }
+
+    // ---------- a low bed along the left wall: dark frame, grey duvet, two pillows, a folded throw
+    addBed() {
+        const P = this.personal;
+        const x0 = X0 + 60;
+        const x1 = -3150;
+        const z0 = 2100;
+        const z1 = FRONT_Z - 120;
+        const w = x1 - x0;
+        const l = z1 - z0;
+        const cx = (x0 + x1) / 2;
+        const cz = (z0 + z1) / 2;
+        const frame = this.box(w, 520, l, 0x2b2622);
+        frame.position.set(cx, FLOOR_Y + 260, cz);
+        this.group.add(frame);
+        const mattress = this.box(w - 120, 420, l - 120, 0xdedad2);
+        mattress.position.set(cx, FLOOR_Y + 520 + 210, cz);
+        this.group.add(mattress);
+        const duvet = this.box(w - 60, 120, l * 0.72, 0x3a3d44);
+        duvet.position.set(cx, FLOOR_Y + 940 + 60, z1 - l * 0.36 - 40);
+        this.group.add(duvet);
+        const fold = this.box(w - 40, 150, 420, 0x4a4e57);
+        fold.position.set(cx, FLOOR_Y + 940 + 75, z1 - l * 0.72 - 120);
+        this.group.add(fold);
+        const throwBlanket = this.box(w * 0.5, 60, 700, 0x8a3a2e);
+        throwBlanket.position.set(cx + w * 0.18, FLOOR_Y + 1060 + 30, z1 - 700);
+        throwBlanket.rotation.y = 0.18;
+        this.group.add(throwBlanket);
+        for (const dx of [-0.24, 0.24]) {
+            const pillow = this.box(w * 0.4, 220, 620, 0xeeebe4);
+            pillow.position.set(cx + dx * w, FLOOR_Y + 940 + 110, z0 + 420);
+            pillow.rotation.y = dx * 0.25;
+            this.group.add(pillow);
+        }
+        const head = this.box(w, 1500, 120, 0x2b2622);
+        head.position.set(cx, FLOOR_Y + 750, z0 - 40);
+        this.group.add(head);
     }
 
     // ---------- window onto Bangalore (day, sunset and night pictures)
@@ -135,18 +192,18 @@ export default class Room {
         this.windowMat = new THREE.MeshBasicMaterial({ map: this.windowTex.day });
         const W = 2400;
         const H = 3000;
-        const cx = -3500;
+        const cx = -3900;
         const cy = 1950;
         const win = new THREE.Mesh(new THREE.PlaneGeometry(W, H), this.windowMat);
         win.position.set(cx, cy, BACK_Z + 6);
         this.group.add(win);
-        const sill = this.box(W + 300, 110, 300, 0xf6f4f0);
+        const sill = this.box(W + 300, 110, 300, 0x26262a);
         sill.position.set(cx, cy - H / 2 - 40, BACK_Z + 150);
         this.group.add(sill);
         // moonlight / city glow spilling onto the wall around the window at night
         this.moonGlow = new THREE.MeshBasicMaterial({
             map: P.glowTexture(),
-            color: new THREE.Color('#7b6cff'),
+            color: new THREE.Color('#5b7cff'),
             transparent: true,
             opacity: 0,
             blending: THREE.AdditiveBlending,
@@ -156,10 +213,10 @@ export default class Room {
         glow.position.set(cx, cy, BACK_Z + 3);
         this.group.add(glow);
         // a tiny plant on the sill
-        const pot = new THREE.Mesh(new THREE.CylinderGeometry(110, 85, 200, 20), P.basic({ color: P.shade(0xf2a7a0, 0.95) }));
+        const pot = new THREE.Mesh(new THREE.CylinderGeometry(110, 85, 200, 20), P.basic({ color: P.shade(0x2a2a2e, 0.95) }));
         pot.position.set(cx + 800, cy - H / 2 + 115, BACK_Z + 160);
         this.group.add(pot);
-        const leafMat = P.basic({ color: P.shade(0x7fbf8e, 0.95) });
+        const leafMat = P.basic({ color: P.shade(0x4f7f5a, 0.95) });
         for (const [dx, dy, s] of [[0, 200, 1], [-70, 150, 0.8], [75, 160, 0.85], [-20, 260, 0.7]] as [number, number, number][]) {
             const leaf = new THREE.Mesh(new THREE.SphereGeometry(90 * s, 12, 10), leafMat);
             leaf.scale.set(1, 1.4, 0.7);
@@ -186,16 +243,17 @@ export default class Room {
         const line = new THREE.MeshBasicMaterial({ map: lineTex });
         this.led = { glow, line, floor, canvas, tex, lineTex, lineCanvas };
 
-        const x0 = -3700;
-        const x1 = 2700;
+        // along the slat panel
+        const x0 = -1950;
+        const x1 = 2800;
         const y = -330;
         // the strip itself, on the wall just above the desk top
         const strip = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, 26, 26), line);
         strip.position.set((x0 + x1) / 2, y, BACK_Z + 16);
         this.group.add(strip);
         // light washing up the wall
-        const wash = new THREE.Mesh(new THREE.PlaneGeometry((x1 - x0) * 1.35, 4200), glow);
-        wash.position.set((x0 + x1) / 2, y + 2100 - 500, BACK_Z + 10);
+        const wash = new THREE.Mesh(new THREE.PlaneGeometry((x1 - x0) * 1.15, 4200), glow);
+        wash.position.set((x0 + x1) / 2, y - 150 + 2100, BACK_Z + 10);
         this.group.add(wash);
         // and a little spill under the desk onto the floor (the strip under the desk top)
         const spill = new THREE.Mesh(new THREE.PlaneGeometry((x1 - x0) * 1.2, 3000), floor);
@@ -271,18 +329,18 @@ export default class Room {
         const cx = 3000;
         const y = 1500;
         const z = BACK_Z + 200;
-        const plank = this.box(2600, 90, 400, 0xc8955f, P.texture('textures/personal/walnut.webp'));
+        const plank = this.box(2600, 90, 400, 0x6b4a32, P.texture('textures/personal/walnut.webp'));
         plank.position.set(cx, y, z);
         this.group.add(plank);
         const top = y + 45;
 
         // books, upright, one leaning
         const books: [number, number, number][] = [
-            [120, 600, 0xb9a6ff],
-            [90, 540, 0x8fd3c1],
-            [140, 640, 0xffb4a2],
-            [100, 560, 0x3d3a6b],
-            [120, 520, 0xff8fb8],
+            [120, 600, 0x1e1e22],
+            [90, 540, 0x4b5a3c],
+            [140, 640, 0x7a1f24],
+            [100, 560, 0xcfc6b4],
+            [120, 520, 0x2c3a52],
         ];
         let x = cx - 1180;
         books.forEach(([w, h, c], i) => {
@@ -297,12 +355,12 @@ export default class Room {
             x += w + 8;
         });
 
-        // a little cactus in a pink pot
-        const potMat = P.basic({ color: P.shade(0xf7a8c4, 0.95) });
+        // a little cactus in a black pot
+        const potMat = P.basic({ color: P.shade(0x1f1f22, 0.95) });
         const pot = new THREE.Mesh(new THREE.CylinderGeometry(120, 95, 220, 20), potMat);
         pot.position.set(cx - 250, top + 110, z);
         this.group.add(pot);
-        const green = P.basic({ color: P.shade(0x76c48a, 0.95) });
+        const green = P.basic({ color: P.shade(0x4f8a5c, 0.95) });
         const stem = new THREE.Mesh(new THREE.CylinderGeometry(70, 75, 360, 16), green);
         stem.position.set(pot.position.x, top + 220 + 180, z);
         this.group.add(stem);
@@ -323,34 +381,34 @@ export default class Room {
         }
 
         // a cassette leaning on the wall
-        const tape = this.box(420, 270, 60, 0xf4f0fa);
+        const tape = this.box(420, 270, 60, 0x1c1c1f);
         tape.position.set(cx + 250, top + 135, BACK_Z + 80);
         tape.rotation.x = -0.12;
         this.group.add(tape);
-        const label = this.box(330, 120, 64, 0xff9ec6);
+        const label = this.box(330, 120, 64, 0xd8d2c4);
         label.position.set(tape.position.x, tape.position.y + 40, tape.position.z + 2);
         label.rotation.x = -0.12;
         this.group.add(label);
         for (const s of [-1, 1]) {
-            const reel = new THREE.Mesh(new THREE.CylinderGeometry(38, 38, 70, 14), P.basic({ color: P.shade(0x2a2840, 1) }));
+            const reel = new THREE.Mesh(new THREE.CylinderGeometry(38, 38, 70, 14), P.basic({ color: P.shade(0xe8e2d6, 1) }));
             reel.rotation.x = Math.PI / 2 - 0.12;
             reel.position.set(tape.position.x + s * 85, tape.position.y - 40, tape.position.z + 4);
             this.group.add(reel);
         }
 
         // an instant camera
-        const cam = this.box(420, 300, 260, 0xbfe6ff);
+        const cam = this.box(420, 300, 260, 0x2a2a2e);
         cam.position.set(cx + 820, top + 150, z);
         this.group.add(cam);
-        const lens = new THREE.Mesh(new THREE.CylinderGeometry(95, 95, 60, 24), P.basic({ color: P.shade(0x2a2840, 1) }));
+        const lens = new THREE.Mesh(new THREE.CylinderGeometry(95, 95, 60, 24), P.basic({ color: P.shade(0x111114, 1) }));
         lens.rotation.x = Math.PI / 2;
         lens.position.set(cam.position.x, cam.position.y - 20, z + 150);
         this.group.add(lens);
-        const glass = new THREE.Mesh(new THREE.CylinderGeometry(60, 60, 64, 24), P.basic({ color: P.shade(0x6f7fbf, 1) }));
+        const glass = new THREE.Mesh(new THREE.CylinderGeometry(60, 60, 64, 24), P.basic({ color: P.shade(0x3a4a66, 1) }));
         glass.rotation.x = Math.PI / 2;
         glass.position.set(cam.position.x, cam.position.y - 20, z + 154);
         this.group.add(glass);
-        const flash = this.box(110, 60, 20, 0xffffff);
+        const flash = this.box(110, 60, 20, 0xd8d8d8);
         flash.position.set(cam.position.x + 120, cam.position.y + 100, z + 132);
         this.group.add(flash);
     }
@@ -372,7 +430,7 @@ export default class Room {
         const wire = new THREE.Mesh(new THREE.TubeGeometry(curve, 60, 7, 6, false), P.basic({ color: P.shade(0x3b3550, 1) }));
         this.group.add(wire);
         const glowMap = P.glowTexture();
-        const warm = ['#ffd27a', '#ffb3d9', '#fff0b8', '#c7b8ff'];
+        const warm = ['#ffd58a', '#ffe7b0', '#ffc970', '#fff1cc'];
         for (let i = 1; i < 14; i++) {
             const p = curve.getPoint(i / 14);
             const bulb = new THREE.Mesh(new THREE.SphereGeometry(18, 8, 6), new THREE.MeshBasicMaterial({ color: new THREE.Color(warm[i % warm.length]) }));
@@ -401,23 +459,72 @@ export default class Room {
             pol.position.set(p.x, p.y - ph / 2 - 30, z + 12 + i);
             pol.rotation.z = [0.08, -0.05, 0.06, -0.09][i];
             this.group.add(pol);
-            const peg = this.box(26, 70, 20, 0xe9c79a);
+            const peg = this.box(26, 70, 20, 0xb08a60);
             peg.position.set(p.x, p.y - 20, z + 30 + i);
             this.group.add(peg);
         });
     }
 
-    // ---------- posters on the side walls
+    // ---------- film posters (made-up films), a skate deck and a basketball
     addPosters() {
         const P = this.personal;
-        const city = new THREE.Mesh(new THREE.PlaneGeometry(1500, 2100), P.basic({ map: this.tex('poster-city.webp') }));
-        city.rotation.y = Math.PI / 2;
-        city.position.set(X0 + 8, 1500, 900);
-        this.group.add(city);
-        const sleep = new THREE.Mesh(new THREE.PlaneGeometry(1300, 1820), P.basic({ map: this.tex('poster-sleep.webp') }));
-        sleep.rotation.y = -Math.PI / 2;
-        sleep.position.set(X1 - 8, 1600, 400);
-        this.group.add(sleep);
+        const poster = (name: string, w: number, x: number, y: number, z: number, ry: number) => {
+            const m = new THREE.Mesh(new THREE.PlaneGeometry(w, w * 1.5), P.basic({ map: this.tex(name) }));
+            m.rotation.y = ry;
+            m.position.set(x, y, z);
+            this.group.add(m);
+            return m;
+        };
+        // left wall, above the bed
+        poster('poster-static.webp', 1300, X0 + 8, 1500, 3300, Math.PI / 2);
+        poster('poster-personal.webp', 1300, X0 + 8, 1500, 5100, Math.PI / 2);
+        // back wall, right of the shelf
+        poster('poster-city.webp', 1250, 5250, 2300, BACK_Z + 6, 0);
+        // right wall
+        poster('poster-404.webp', 1200, X1 - 8, 1700, 1000, -Math.PI / 2);
+        const deck = new THREE.Mesh(
+            new THREE.PlaneGeometry(700, 2240),
+            new THREE.MeshBasicMaterial({ map: this.tex('deck.webp'), transparent: true, alphaTest: 0.5 })
+        );
+        this.personal.tintables.push(deck.material as THREE.MeshBasicMaterial);
+        deck.rotation.y = -Math.PI / 2;
+        deck.rotation.x = 0.12;
+        deck.position.set(X1 - 14, 1500, 3300);
+        this.group.add(deck);
+
+        // a basketball in the corner
+        const c = document.createElement('canvas');
+        c.width = 256;
+        c.height = 128;
+        const g = c.getContext('2d')!;
+        g.fillStyle = '#c4572a';
+        g.fillRect(0, 0, 256, 128);
+        g.strokeStyle = '#1c1410';
+        g.lineWidth = 4;
+        g.beginPath();
+        g.moveTo(0, 64);
+        g.lineTo(256, 64);
+        for (const x of [64, 192]) {
+            g.moveTo(x, 0);
+            g.lineTo(x, 128);
+        }
+        g.stroke();
+        g.beginPath();
+        g.ellipse(128, 64, 46, 64, 0, 0, Math.PI * 2);
+        g.stroke();
+        const ballTex = new THREE.CanvasTexture(c);
+        ballTex.encoding = THREE.sRGBEncoding;
+        const ball = new THREE.Mesh(new THREE.SphereGeometry(400, 32, 20), P.basic({ map: ballTex }));
+        ball.position.set(X1 - 700, FLOOR_Y + 400, 5600);
+        ball.rotation.set(0.4, 0.8, 0.2);
+        this.group.add(ball);
+        const shadow = new THREE.Mesh(
+            new THREE.PlaneGeometry(1100, 700),
+            new THREE.MeshBasicMaterial({ map: P.shadowTexture(), transparent: true, depthWrite: false })
+        );
+        shadow.rotation.x = -Math.PI / 2;
+        shadow.position.set(ball.position.x + 80, FLOOR_Y + 14, ball.position.z + 60);
+        this.group.add(shadow);
     }
 
     // ---------- time of day and moods
