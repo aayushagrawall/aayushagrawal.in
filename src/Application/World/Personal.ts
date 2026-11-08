@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import Application from '../Application';
-import { OPEN_TO_INTERNSHIPS, SHOW_NAMEPLATE, SHOW_RESUME_FRAME, LOFI_ROOM } from '../config';
+import { OPEN_TO_INTERNSHIPS, SHOW_NAMEPLATE, SHOW_RESUME_FRAME, LOFI_ROOM, NEW_ROOM } from '../config';
 import Room from './Room';
 
 /**
@@ -605,7 +605,14 @@ export default class Personal {
     lampLevel = 0;
     lampTarget = 0;
 
-    static TINTS = LOFI_ROOM
+    static TINTS = NEW_ROOM
+        ? {
+              // the CRT and the desk items, matched to the baked room's light
+              day: new THREE.Color(0.9, 0.9, 0.92),
+              sunset: new THREE.Color(0.8, 0.66, 0.6),
+              night: new THREE.Color(0.36, 0.32, 0.42),
+          }
+        : LOFI_ROOM
         ? {
               // the bedroom: warm sunset, a dark blue-grey night lit by the LEDs and the screen
               day: new THREE.Color(1, 1, 1),
@@ -662,6 +669,7 @@ export default class Personal {
         }
         if (this.room) this.room.setTime(time);
         const world = (this.application as any).world;
+        if (world && world.room) world.room.setTime(time, instant);
         if (world && world.monitorScreen && world.monitorScreen.setNight) world.monitorScreen.setNight(time === 'night');
         const html = document.documentElement.classList;
         html.remove('day', 'sunset', 'night');
@@ -679,7 +687,8 @@ export default class Personal {
         const k = this.lampLevel;
         l.bulb.color.setRGB(0.6 + 0.4 * k, 0.6 + 0.37 * k, 0.6 + 0.26 * k);
         l.inner.color.setRGB(0.16 + 0.84 * k, 0.16 + 0.66 * k, 0.16 + 0.38 * k);
-        l.pool.opacity = 0.6 * k;
+        // the new room has the lamp's light baked in
+        l.pool.opacity = NEW_ROOM ? 0 : 0.6 * k;
         l.halo.opacity = 0.3 * k;
     }
 

@@ -1,4 +1,6 @@
-const sources: Resource[] = [
+import { NEW_ROOM } from './config';
+
+const allSources: Resource[] = [
     {
         name: 'computerSetupModel',
         type: 'gltfModel',
@@ -100,5 +102,18 @@ const sources: Resource[] = [
         path: 'audio/desk/can_open.mp3',
     },
 ];
+
+// With the new baked room, Henry's desk, chair, backdrop and desk props aren't downloaded.
+const roomSources: Resource[] = [
+    { name: 'roomModel', type: 'gltfModel', path: 'models/Room/room.glb' },
+    { name: 'roomGlowModel', type: 'gltfModel', path: 'models/Room/glow.glb' },
+    { name: 'roomAlbedo', type: 'texture', path: 'models/Room/albedo.webp' },
+    { name: 'roomLightNight', type: 'texture', path: 'models/Room/light-night.webp' },
+    { name: 'roomLightDay', type: 'texture', path: 'models/Room/light-day.webp' },
+];
+
+const sources: Resource[] = NEW_ROOM
+    ? [...allSources.filter((s) => !['environmentModel', 'environmentTexture', 'decorModel', 'decorTexture'].includes(s.name)), ...roomSources]
+    : allSources;
 
 export default sources;
