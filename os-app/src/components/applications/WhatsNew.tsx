@@ -6,6 +6,13 @@ export interface WhatsNewProps extends WindowAppProps {}
 // The changelog. Newest first; add a new entry at the top when the site changes.
 const CHANGES: { date: string; items: string[] }[] = [
     {
+        date: '9 November 2026, later',
+        items: [
+            'A whole new 3D room: a streetwear bedroom around the old CRT, modelled in Blender with real baked lighting. Sneaker wall, clothes rack, bed, gaming chair, skate decks, a STAY UP neon sign and red LED strips.',
+            'Day and night are now two different lighting bakes: click the desk lamp to switch and the whole room relights.',
+        ],
+    },
+    {
         date: '9 November 2026',
         items: [
             'New pixel fonts all over AayushOS, closer to a real Windows 98 screen: a crisp pixel serif for the pages and Pixel Operator for the menus and title bars.',
