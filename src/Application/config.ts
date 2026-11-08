@@ -12,4 +12,8 @@ export const SHOW_RESUME_FRAME = true; // framed resume with a QR code (click op
 
 // The lo-fi bedroom around the desk (walls, window, LED backlight, shelf, fairy lights).
 // false = the original studio backdrop.
-export const LOFI_ROOM = true;
+export const LOFI_ROOM = false;
+
+// The streetwear bedroom, modelled and light-baked in Blender (scripts/room-blender/).
+// Replaces Henry's desk, chair, backdrop and desk props; the CRT and the desk items stay.
+export const NEW_ROOM = true;
