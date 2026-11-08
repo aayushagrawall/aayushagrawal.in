@@ -5,7 +5,7 @@ import type Personal from './Personal';
  * The bedroom around the desk, a darker college room: charcoal walls, a slatted wood panel
  * behind the desk with an LED backlight, a window onto Bangalore, a walnut floor and rug, a
  * bed, fairy lights with black-and-white polaroids, a floating shelf, film posters (made-up
- * films) and a skate deck. Textures come from scripts/room-textures.py (all drawn from scratch).
+ * films), a skate deck and a football. Textures come from scripts/room-textures.py (all drawn from scratch).
  *
  * It's a diorama: the walls are single-sided and face into the room, so from outside, the
  * walls between the camera and the desk disappear and the room reads like a cut-away model.
@@ -465,7 +465,7 @@ export default class Room {
         });
     }
 
-    // ---------- film posters (made-up films), a skate deck and a basketball
+    // ---------- film posters (made-up films), a skate deck and a football
     addPosters() {
         const P = this.personal;
         const poster = (name: string, w: number, x: number, y: number, z: number, ry: number) => {
@@ -492,31 +492,51 @@ export default class Room {
         deck.position.set(X1 - 14, 1500, 3300);
         this.group.add(deck);
 
-        // a basketball in the corner
-        const c = document.createElement('canvas');
-        c.width = 256;
-        c.height = 128;
-        const g = c.getContext('2d')!;
-        g.fillStyle = '#c4572a';
-        g.fillRect(0, 0, 256, 128);
-        g.strokeStyle = '#1c1410';
-        g.lineWidth = 4;
-        g.beginPath();
-        g.moveTo(0, 64);
-        g.lineTo(256, 64);
-        for (const x of [64, 192]) {
-            g.moveTo(x, 0);
-            g.lineTo(x, 128);
+        // a football (black pentagons on white) in the corner, shaded per face like the rest
+        const R = 380;
+        const geo = new THREE.IcosahedronGeometry(R, 14);
+        const t = (1 + Math.sqrt(5)) / 2;
+        const centres = [
+            [-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0], [0, -1, t], [0, 1, t],
+            [0, -1, -t], [0, 1, -t], [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1],
+        ].map(([x, y, z]) => new THREE.Vector3(x, y, z).normalize());
+        // each black pentagon sits on an icosahedron vertex, its corners pointing at the
+        // neighbouring vertices (like a real truncated-icosahedron ball)
+        const frames = centres.map((c) => {
+            const nearest = centres.filter((o) => o !== c).sort((p, q) => q.dot(c) - p.dot(c))[0];
+            const u = nearest.clone().addScaledVector(c, -c.dot(nearest)).normalize();
+            return { c, u, w: new THREE.Vector3().crossVectors(c, u) };
+        });
+        const R0 = 0.34; // corner distance (radians on the ball)
+        const inPentagon = (p: THREE.Vector3) =>
+            frames.some(({ c, u, w }) => {
+                const d = Math.acos(Math.min(1, c.dot(p)));
+                if (d > R0) return false;
+                const th = Math.atan2(p.dot(w), p.dot(u));
+                const seg = (2 * Math.PI) / 5;
+                const local = ((th % seg) + seg) % seg - seg / 2;
+                return d < (R0 * Math.cos(seg / 2)) / Math.cos(local);
+            });
+        const pos = geo.attributes.position;
+        const colors = new Float32Array(pos.count * 3);
+        const light = new THREE.Vector3(-0.5, 0.8, 0.6).normalize();
+        const a = new THREE.Vector3();
+        const b = new THREE.Vector3();
+        const c = new THREE.Vector3();
+        const centroid = new THREE.Vector3();
+        for (let i = 0; i < pos.count; i += 3) {
+            a.fromBufferAttribute(pos, i);
+            b.fromBufferAttribute(pos, i + 1);
+            c.fromBufferAttribute(pos, i + 2);
+            centroid.copy(a).add(b).add(c).normalize();
+            const lit = 0.5 + 0.5 * Math.max(0, centroid.dot(light));
+            const base = inPentagon(centroid) ? 0.07 : 0.93;
+            for (let k = 0; k < 3; k++) colors.set([base * lit, base * lit, base * lit * 1.02], (i + k) * 3);
         }
-        g.stroke();
-        g.beginPath();
-        g.ellipse(128, 64, 46, 64, 0, 0, Math.PI * 2);
-        g.stroke();
-        const ballTex = new THREE.CanvasTexture(c);
-        ballTex.encoding = THREE.sRGBEncoding;
-        const ball = new THREE.Mesh(new THREE.SphereGeometry(400, 32, 20), P.basic({ map: ballTex }));
-        ball.position.set(X1 - 700, FLOOR_Y + 400, 5600);
-        ball.rotation.set(0.4, 0.8, 0.2);
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const ball = new THREE.Mesh(geo, P.basic({ vertexColors: true }));
+        ball.position.set(X1 - 700, FLOOR_Y + R, 5600);
+        ball.rotation.set(0.3, 0.5, 0.1);
         this.group.add(ball);
         const shadow = new THREE.Mesh(
             new THREE.PlaneGeometry(1100, 700),
