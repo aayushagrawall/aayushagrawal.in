@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import Application from '../Application';
-import { OPEN_TO_INTERNSHIPS } from '../config';
+import { OPEN_TO_INTERNSHIPS, SHOW_NAMEPLATE, SHOW_RESUME_FRAME } from '../config';
 
 /**
  * Aayush's personal touches on the desk:
- *  - a walnut nameplate with his name
+ *  - a walnut nameplate with his name (off: SHOW_NAMEPLATE in config.ts)
  *  - a sticky note on the monitor bezel
- *  - a framed poster on the desk with a QR code to the web resume (click it too)
+ *  - a framed poster on the desk with a QR code to the web resume, click it too
+ *    (off: SHOW_RESUME_FRAME in config.ts)
  *  - a cold can of White, his energy drink, in place of the coffee mug (click it: pssht)
  *  - an "Open to internships" neon sign that flickers on when you first come up to the desk
  *    (switch it off in src/Application/config.ts)
@@ -42,9 +43,9 @@ export default class Personal {
         computer.updateMatrixWorld(true);
         environment.updateMatrixWorld(true);
 
-        this.addNameplate(environment);
+        if (SHOW_NAMEPLATE) this.addNameplate(environment);
         this.addStickyNote(computer);
-        this.addPoster(environment);
+        if (SHOW_RESUME_FRAME) this.addPoster(environment);
         this.addCan(environment, decor);
         if (OPEN_TO_INTERNSHIPS) this.addNeonSign(environment);
         this.addLamp(environment);

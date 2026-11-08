@@ -25,6 +25,7 @@ import ContextMenu from './ContextMenu';
 import { track } from '../../utils/track';
 import { getWallpaper, Wallpaper } from '../../utils/wallpaper';
 import { isNight, IN_MONITOR } from '../../utils/night';
+import { WindowActiveContext } from './WindowFocus';
 
 export interface DesktopProps {}
 
@@ -129,6 +130,8 @@ const Desktop: React.FC<DesktopProps> = (props) => {
     const [hideIcons, setHideIcons] = useState(false);
     const [kbIndex, setKbIndex] = useState<number | null>(null);
     const desktopFocused = useRef(true);
+    // the desktop background was clicked last: no window is active (grey title bars)
+    const [bgFocus, setBgFocus] = useState(false);
 
     useEffect(() => {
         const onWp = () => setWallpaper(getWallpaper());
@@ -182,6 +185,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
             openApp(app.alias.app, app.alias.route);
             return;
         }
+        setBgFocus(false);
         const existing = windowsRef.current[key];
         if (existing) {
             setWindows((prev) => ({
@@ -229,7 +233,13 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         try {
             welcomeOff = localStorage.getItem(WELCOME_OFF_KEY) === '1';
         } catch (e) {}
-        const wantWelcome = !welcomeOff && !deepLinked;
+        // once per visit: reloading or coming back to the screen doesn't bring it back
+        let shownThisVisit = false;
+        try {
+            shownThisVisit = sessionStorage.getItem('aayushos-welcome-shown') === '1';
+            sessionStorage.setItem('aayushos-welcome-shown', '1');
+        } catch (e) {}
+        const wantWelcome = !welcomeOff && !deepLinked && !shownThisVisit;
         const inMonitor = window.parent !== window;
         let welcomeTimer: ReturnType<typeof setTimeout> | undefined;
         const onFirstMove = () => {
@@ -281,6 +291,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
     }, []);
 
     const toggleMinimize = useCallback((key: string) => {
+        setBgFocus(false);
         setWindows((prev) => {
             const w = prev[key];
             if (!w) return prev;
@@ -394,7 +405,10 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         const t = e.target as HTMLElement;
         const onBackground = t === e.currentTarget || t.dataset.desktop === 'icons';
         desktopFocused.current = true;
-        if (onBackground) setKbIndex(null);
+        if (onBackground) {
+            setKbIndex(null);
+            setBgFocus(true);
+        }
     };
 
     const onDesktopContextMenu = (e: React.MouseEvent) => {
@@ -408,6 +422,11 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         setHideIcons(true);
         setTimeout(() => setHideIcons(false), 180);
     };
+
+    // the active window: the topmost one on screen
+    const activeKey = Object.keys(windows)
+        .filter((k) => windows[k] && windows[k].component && !windows[k].minimized)
+        .sort((a, b) => windows[b].zIndex - windows[a].zIndex)[0];
 
     const perColumn = Math.max(1, Math.floor((window.innerHeight - 70) / 96));
 
@@ -438,6 +457,7 @@ const Desktop: React.FC<DesktopProps> = (props) => {
                         key={`win-${key}`}
                         onMouseDownCapture={() => {
                             desktopFocused.current = false;
+                            setBgFocus(false);
                         }}
                         style={Object.assign(
                             {},
@@ -445,11 +465,13 @@ const Desktop: React.FC<DesktopProps> = (props) => {
                             windows[key].minimized && styles.minimized
                         )}
                     >
-                        {React.cloneElement(element, {
-                            key,
-                            onInteract: () => onWindowInteract(key),
-                            onClose: () => removeWindow(key),
-                        })}
+                        <WindowActiveContext.Provider value={!bgFocus && key === activeKey}>
+                            {React.cloneElement(element, {
+                                key,
+                                onInteract: () => onWindowInteract(key),
+                                onClose: () => removeWindow(key),
+                            })}
+                        </WindowActiveContext.Provider>
                     </div>
                 );
             })}

@@ -1,4 +1,9 @@
-Copyright 2020 The DotGothic16 Project Authors (https://github.com/fontworks-fonts/DotGothic16/)
+AOS Pixel Serif (aos-pixel-serif.woff2, aos-pixel-serif-bold.woff2)
+Made by scripts/pixel-fonts.py from Liberation Serif 2.1.5: each glyph rendered in monochrome at 18 px and traced as pixels.
+
+Digitized data copyright (c) 2010 Google Corporation with Reserved Font Arimo, Tinos and Cousine.
+Copyright (c) 2012 Red Hat, Inc. with Reserved Font Name Liberation.
+Pixel conversion copyright (c) 2026 Aayush Agrawal. Renamed as the licence requires for modified versions.
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

@@ -442,6 +442,7 @@ const styles: StyleSheetCSS = {
     skipLink: {
         marginTop: 18,
         color: '#aaa',
+        fontFamily: 'monospace',
         fontSize: 14,
         textAlign: 'center',
         textDecoration: 'underline',
