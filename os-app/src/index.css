@@ -18,17 +18,21 @@ code {
 
 
 /* Fonts: free/open replacements registered under the original family names so the
-   layout code stays unchanged.
-   MSSerif + lores-15-bold-alt-oakland -> 98.css pixel MS Sans Serif recreation (MIT)
-   Millennium(+Bold)                    -> Tinos (Apache 2.0)
-   gastromond                           -> Fraunces Black, soft (SIL OFL)
-   Terminal                             -> VT323 (SIL OFL) */
-/* UI pixel font: DotGothic16 (SIL OFL), scaled to the width of the classic Windows UI font.
-   The family names below are the ones Henry's components already use. */
-@font-face { font-family: MSSerif; src: url(./assets/fonts/dotgothic16.woff2) format('woff2'); size-adjust: 90%; font-display: swap; }
-@font-face { font-family: lores-15-bold-alt-oakland; src: url(./assets/fonts/dotgothic16.woff2) format('woff2'); size-adjust: 90%; font-display: swap; }
-@font-face { font-family: Millennium; src: url(./assets/fonts/tinos-400.woff2) format('woff2'); font-display: swap; }
-@font-face { font-family: MillenniumBold; src: url(./assets/fonts/tinos-700.woff2) format('woff2'); font-display: swap; }
+   layout code stays unchanged. All of them are pixel fonts, like the Windows 98 screen fonts.
+   MSSerif (UI)               -> Pixel Operator (CC0), 16 px grid; size-adjust puts the common
+                                 14 px size on that grid so every pixel is crisp
+   lores-15-bold-alt-oakland  -> Pixel Operator Bold (CC0), titles and the Start button
+   Millennium(+Bold)          -> AOS Pixel Serif (SIL OFL), Liberation Serif drawn at 18 px
+                                 without smoothing (scripts/pixel-fonts.py)
+   gastromond                 -> Fraunces Black, soft (SIL OFL)
+   Terminal                   -> VT323 (SIL OFL) */
+@font-face { font-family: MSSerif; src: url(./assets/fonts/pixel-operator.woff2) format('woff2'); size-adjust: 114.3%; font-display: swap; }
+@font-face { font-family: MSSerif; src: url(./assets/fonts/pixel-operator-bold.woff2) format('woff2'); font-weight: 700; size-adjust: 114.3%; font-display: swap; }
+@font-face { font-family: lores-15-bold-alt-oakland; src: url(./assets/fonts/pixel-operator-bold.woff2) format('woff2'); size-adjust: 106.7%; font-display: swap; }
+@font-face { font-family: Millennium; src: url(./assets/fonts/aos-pixel-serif.woff2) format('woff2'); font-display: swap; }
+@font-face { font-family: Millennium; src: url(./assets/fonts/aos-pixel-serif-bold.woff2) format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: MillenniumBold; src: url(./assets/fonts/aos-pixel-serif-bold.woff2) format('woff2'); font-display: swap; }
+@font-face { font-family: MillenniumBold; src: url(./assets/fonts/aos-pixel-serif-bold.woff2) format('woff2'); font-weight: 700; font-display: swap; }
 @font-face { font-family: gastromond; src: url(./assets/fonts/fraunces-black-soft.woff2) format('woff2'); font-display: swap; }
 @font-face { font-family: Terminal; src: url(./assets/fonts/vt323.woff2) format('woff2'); font-display: swap; }
 
@@ -96,7 +100,7 @@ h4,
 
 .router-link {
     display: block;
-    margin: 1.33em 0; /* same spacing the h4 had */
+    margin: 0; /* the h4 it replaced had no margin either (h1-h6 are reset above) */
 }
 
 li {
@@ -441,7 +445,7 @@ body.aos-moving iframe {
     color: #fff;
 }
 
-/* DotGothic16 has no bold; a fake bold smudges the pixels, so keep it crisp */
+/* the pixel fonts have real bold faces; a fake bold or italic smudges the pixels */
 html {
     font-synthesis: none;
 }

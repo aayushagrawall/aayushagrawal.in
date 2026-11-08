@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { WindowActiveContext } from './WindowFocus';
 import { IconName } from '../../assets/icons';
 import colors from '../../constants/colors';
 import Colors from '../../constants/colors';
@@ -47,7 +48,9 @@ const Window: React.FC<WindowProps> = (props) => {
     const [contentWidth, setContentWidth] = useState(props.width);
     const [contentHeight, setContentHeight] = useState(props.height);
 
-    const [windowActive, setWindowActive] = useState(true);
+    const [selfActive, setWindowActive] = useState(true);
+    const deskActive = useContext(WindowActiveContext);
+    const windowActive = deskActive === undefined ? selfActive : deskActive;
 
     const [isMaximized, setIsMaximized] = useState(false);
     const [preMaxSize, setPreMaxSize] = useState({

@@ -133,7 +133,9 @@ export default class Camera extends EventEmitter {
         const now = performance.now();
         let dt = this.lastTick ? (now - this.lastTick) / 1000 : 1 / 60;
         this.lastTick = now;
-        dt = Math.min(dt, 0.05);
+        // up to a quarter second per frame: on a slow or busy machine the flight still ends
+        // on time (like a timed tween) instead of stretching out; substeps keep it stable
+        dt = Math.min(dt, 0.25);
         const key = this.targetKeyframe || (this.settling ? this.currentKeyframe : undefined);
         if (!key) return;
         const kf = this.keyframes[key];

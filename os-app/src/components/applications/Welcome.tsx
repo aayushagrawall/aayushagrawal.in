@@ -56,12 +56,9 @@ const Welcome: React.FC<WelcomeProps> = (props) => {
         } catch (e) {}
     };
 
-    const left = Math.max(10, Math.round((window.innerWidth - 640) / 2));
-    // in the 3D monitor, sit low so the name on the Showcase stays visible
-    const top =
-        window.parent !== window
-            ? Math.max(10, window.innerHeight - 32 - 380 - 24)
-            : Math.max(10, Math.round((window.innerHeight - 32 - 380) / 2));
+    // bottom right, so the name and the links on the Showcase stay in view
+    const left = Math.max(10, window.innerWidth - 640 - 40);
+    const top = Math.max(10, window.innerHeight - 32 - 380 - 28);
 
     return (
         <Window

@@ -36,7 +36,8 @@ const CREDITS = [
         title: 'Open-Source Fonts',
         rows: [
             ['Fraunces', 'Tinos'],
-            ['VT323', 'DotGothic16'],
+            ['VT323', 'Pixel Operator'],
+            ['Liberation Serif', 'AOS Pixel Serif'],
         ],
     },
 ]

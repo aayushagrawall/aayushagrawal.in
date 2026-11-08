@@ -10,7 +10,7 @@ const Experience: React.FC<ExperienceProps> = () => {
             <div style={styles.headerContainer}>
                 <div style={styles.header}>
                     <div style={styles.headerRow}>
-                        <h1>BMS College of Engineering</h1>
+                        <h1>BMSCE</h1>
                         <a rel="noreferrer" target="_blank" href={'https://bmsce.ac.in'}>
                             <h4>bmsce.ac.in</h4>
                         </a>
@@ -24,7 +24,7 @@ const Experience: React.FC<ExperienceProps> = () => {
                 </div>
             </div>
             <div className="text-block">
-                <p>Undergraduate in AI &amp; ML in Bengaluru, studying machine learning, data structures, computer networks and more.</p>
+                <p>Undergraduate in AI &amp; ML at BMS College of Engineering, Bengaluru, studying machine learning, data structures, computer networks and more.</p>
             </div>
             <div style={styles.headerContainer}>
                 <div style={styles.header}>
@@ -52,7 +52,7 @@ const Experience: React.FC<ExperienceProps> = () => {
             <div style={styles.headerContainer}>
                 <div style={styles.header}>
                     <div style={styles.headerRow}>
-                        <h1>Rotaract Club of BMSCE</h1>
+                        <h1 style={{ fontSize: 56 }}>Rotaract Club of BMSCE</h1>
                     </div>
                     <div style={styles.headerRow}>
                         <h3>Member</h3>

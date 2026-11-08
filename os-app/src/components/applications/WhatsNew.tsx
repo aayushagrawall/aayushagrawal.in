@@ -6,6 +6,17 @@ export interface WhatsNewProps extends WindowAppProps {}
 // The changelog. Newest first; add a new entry at the top when the site changes.
 const CHANGES: { date: string; items: string[] }[] = [
     {
+        date: '9 November 2026',
+        items: [
+            'New pixel fonts all over AayushOS, closer to a real Windows 98 screen: a crisp pixel serif for the pages and Pixel Operator for the menus and title bars.',
+            'The window you are using now always has the blue title bar, also after closing another window.',
+            'The Welcome tips open in the bottom corner, once per visit, so they no longer cover the home page.',
+            'Tidier Showcase pages: the side menu is tighter and long headings no longer break over two lines.',
+            'A calmer desk in 3D: the nameplate and the framed resume are gone, so the screen stands out. The resume is still one click away (Resume button, or Resume.pdf on the desktop).',
+            'Camera moves in the 3D room now take the same time on slow computers as on fast ones.',
+        ],
+    },
+    {
         date: '6 November 2026',
         items: [
             'About, Experience, Projects and Contact now have their own pages too (aayushagrawal.in/about and friends), fast and easy for Google to find.',
