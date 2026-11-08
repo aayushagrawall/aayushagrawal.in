@@ -176,12 +176,10 @@ def poster(name, image, X, Y, Z, w, h, coll, wall='back'):
     hw, hh = w / 2, h / 2
     if wall == 'back':
         corners = [(X - hw, Y - hh, Z), (X + hw, Y - hh, Z), (X + hw, Y + hh, Z), (X - hw, Y + hh, Z)]
-    elif wall == 'left':  # on the left wall, facing +X; image left edge towards the back
-        corners = [(X, Y - hh, Z - hw), (X, Y - hh, Z + hw), (X, Y + hh, Z + hw), (X, Y + hh, Z - hw)]
-        corners = [corners[1], corners[0], corners[3], corners[2]][::-1]
-        corners = [(X, Y - hh, Z - hw), (X, Y - hh, Z + hw), (X, Y + hh, Z + hw), (X, Y + hh, Z - hw)]
-    else:  # right wall, facing -X
+    elif wall == 'left':  # facing +X: seen from inside, the image's left edge is towards the front (+Z)
         corners = [(X, Y - hh, Z + hw), (X, Y - hh, Z - hw), (X, Y + hh, Z - hw), (X, Y + hh, Z + hw)]
+    else:  # right wall, facing -X: the image's left edge is towards the back (-Z)
+        corners = [(X, Y - hh, Z - hw), (X, Y - hh, Z + hw), (X, Y + hh, Z + hw), (X, Y + hh, Z - hw)]
     ob = plane(name, corners, m, coll)
     # UVs: whole image on the quad
     uv = ob.data.uv_layers.new(name='src')
@@ -392,7 +390,7 @@ def build():
         for (u, v) in pts:
             uu = u * math.cos(tilt) - v * math.sin(tilt)
             vv = u * math.sin(tilt) + v * math.cos(tilt)
-            vs.append(bm.verts.new(V(X1 - 30, 1500 + vv, z - uu)))
+            vs.append(bm.verts.new(V(X1 - 30, 1500 + vv, z + uu)))  # facing -X, into the room
         f = bm.faces.new(vs)
         ob = mesh_obj(f'deck{i}', bm, deck_m, bake)
         uv = ob.data.uv_layers.new(name='src')
