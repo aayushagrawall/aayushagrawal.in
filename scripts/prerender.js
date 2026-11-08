@@ -242,7 +242,10 @@ try {
   <meta name="description" content="${escAttr(pg.desc)}" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="${url}" />
-  <link rel="icon" href="/images/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/images/android-chrome-192x192.png" type="image/png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
   <meta property="og:type" content="${pg.type === 'ProfilePage' ? 'profile' : 'website'}" />
   <meta property="og:site_name" content="Aayush Agrawal" />
   <meta property="og:title" content="${escAttr(pg.title)}" />
