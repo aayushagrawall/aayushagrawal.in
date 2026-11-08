@@ -37,7 +37,7 @@ Live at **[aayushagrawal.in](https://aayushagrawal.in)** · Minimal version at *
 - **Analytics**: app opens, questions asked to White, achievements and resume downloads are counted as GoatCounter events (`os/...` and `os-lite/...`), once per visit.
 - **Shareable links**: `/os/#projects`, `#about`, `#experience`, `#contact`, `#resume`, `#terminal`, `#tetris`, `#paint`, `#codele`, `#achievements` open AayushOS straight to that window or page. They work on AayushOS Lite too, and phones are sent there with the link intact.
 - **AayushOS Lite** (`static/os-lite/`, served at `/os-lite/`): my original plain HTML/CSS/JS desktop built on [98.css](https://github.com/jdan/98.css). It is the phone-friendly version, and its Terminal (try `help` or `sudo hire aayush`), Tetris, Paint and Recycle Bin also run inside AayushOS windows through `/os-lite/?app=terminal` and friends.
-- **Deploy**: `npm run build` writes the whole site to `public/`, which is published to GitHub Pages (`gh-pages` branch, or `.github/workflows/deploy.yml`).
+- **Deploy**: every push to `main` builds the site (`npm run build` writes it to `public/`) and publishes it with GitHub Actions (`.github/workflows/deploy.yml`). So anything not ready for everyone goes behind a switch, like `?room=new`.
 
 ## Run locally
 
