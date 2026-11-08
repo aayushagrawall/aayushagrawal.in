@@ -326,7 +326,7 @@ export default class Room {
     // ---------- floating shelf with books, a cactus, a cassette and an instant camera
     addShelf() {
         const P = this.personal;
-        const cx = 3000;
+        const cx = 3450;
         const y = 1500;
         const z = BACK_Z + 200;
         const plank = this.box(2600, 90, 400, 0x6b4a32, P.texture('textures/personal/walnut.webp'));
@@ -417,10 +417,12 @@ export default class Room {
     addFairyLights() {
         const P = this.personal;
         const z = BACK_Z + 30;
-        const xA = -1750;
-        const xB = 1750;
-        const yTop = 2420;
-        const sag = 300;
+        // low enough to be in view at the desk on short screens too; the polaroids hang
+        // either side of the monitor
+        const xA = -2000;
+        const xB = 2000;
+        const yTop = 2080;
+        const sag = 260;
         const pts: THREE.Vector3[] = [];
         for (let i = 0; i <= 40; i++) {
             const t = i / 40;
@@ -450,7 +452,7 @@ export default class Room {
             this.bulbs.push(m);
         }
         // four polaroids clipped on, slightly tilted
-        const spots = [0.2, 0.4, 0.6, 0.8];
+        const spots = [0.1, 0.24, 0.76, 0.9];
         spots.forEach((t, i) => {
             const p = curve.getPoint(t);
             const pw = 330;
@@ -479,7 +481,7 @@ export default class Room {
         poster('poster-static.webp', 1300, X0 + 8, 1500, 3300, Math.PI / 2);
         poster('poster-personal.webp', 1300, X0 + 8, 1500, 5100, Math.PI / 2);
         // back wall, right of the shelf
-        poster('poster-city.webp', 1250, 5250, 2300, BACK_Z + 6, 0);
+        poster('poster-city.webp', 1150, 5480, 2350, BACK_Z + 6, 0);
         // right wall
         poster('poster-404.webp', 1200, X1 - 8, 1700, 1000, -Math.PI / 2);
         const deck = new THREE.Mesh(
