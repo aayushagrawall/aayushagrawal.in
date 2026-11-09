@@ -1,4 +1,8 @@
-# aayushagrawal.in
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## aayushagrawal.in
 
 Aayush Agrawal's 3D portfolio: a Three.js bedroom with a CRT computer that runs AayushOS. Live at https://aayushagrawal.in (GitHub Pages). `README.md` has the full feature-by-feature notes; read the relevant bullet there before changing a feature, and update it when behaviour changes.
 
@@ -8,7 +12,7 @@ Aayush Agrawal's 3D portfolio: a Three.js bedroom with a CRT computer that runs 
 |---|---|
 | `src/` | The 3D scene (TypeScript, Three.js r137, webpack). `src/script.ts` lazy-loads `Application/Application.ts`. |
 | `src/index.html` | Page shell: SEO tags, phone choice screen (`#phone-gate-room`), preloads. |
-| `os-app/` | AayushOS, a React (CRA) desktop served at `/os/` and shown on the 3D monitor in an iframe. |
+| `os-app/` | AayushOS, a React (CRA) desktop served at `/os/` and shown on the 3D monitor in an iframe (`World/MonitorScreen.ts`, placed in 3D with `CSS3DRenderer`). |
 | `static/os-lite/` | AayushOS Lite: plain HTML/CSS/JS, no build. The phone version; also runs single apps inside AayushOS via `?app=`. |
 | `static/cv/` | Web resume at `/cv/`; the PDF is rendered from it. |
 | `scripts/` | `prerender.js` (indexable pages, sitemap), `resume-pdf.js`, texture/sound generators, `room-blender/` (Blender bake of the room). |
@@ -23,12 +27,12 @@ npm ci && npm run os:install   # first time
 npm run dev                    # 3D scene dev server
 npm run build                  # everything into public/ (resume PDF, scene, OS, prerender)
 npm run build:scene            # scene only (fast); then: rm -rf public/os && cp -r os-app/build public/os
-cd os-app && npm start         # AayushOS alone
+cd os-app && npm start         # AayushOS alone (port 3000); open the scene with ?dev to show it on the monitor
 ```
 
-`npm run build` needs Playwright (`npm i --no-save playwright && npx playwright install chromium`). To check a build: `cd public && python3 -m http.server 8080`.
+`npm run build` needs Playwright for the resume PDF and the prerender; without it both are skipped with only a warning, and the build still exits 0. Install it with `npm i --no-save playwright@1.63.0 && npx playwright install chromium` (the version the deploy workflow pins). Claude Code cloud sessions already have that version and Chromium, so skip the install there. To check a build: `cd public && python3 -m http.server 8080`.
 
-There is no test suite. Verify changes by building and loading the page (desktop and a phone-sized viewport), and check the browser console for errors. The AayushOS build fails on TypeScript/ESLint warnings-as-errors, so always run it before pushing.
+There is no test suite. Verify changes by building and loading the page (desktop and a phone-sized viewport), and check the browser console for errors. TypeScript errors fail the AayushOS build, and so the deploy, so always run it before pushing. ESLint warnings fail it only when `CI=true`; the deploy workflow runs `CI=false npm run build`.
 
 ## Deploying
 
@@ -46,7 +50,7 @@ There is no test suite. Verify changes by building and loading the page (desktop
 - **Keep content in step.** The resume lives in `static/cv/index.html`; skills are in `DEVICES` in `static/os-lite/os.js`; Showcase pages exist in both `os-app/src/components/showcase/` and the top of `static/os-lite/os.js`. Change both.
 - **Changelog.** User-visible changes get a line at the top of `os-app/src/components/applications/WhatsNew.tsx`, in plain language.
 - **Bump cache versions** in `static/os-lite/index.html` (`os.css?v=`, `os.js?v=`) when those files change.
-- Don't touch the separate profile-README repo or `aayushagrawal.codes` from here.
+- Don't touch the separate profile-README repo or `aayushagrawal.codes` from here. One exception is built in: `npm run resume` (and so `npm run build`) also writes the PDF into `../aayushagrawal.codes/assets/docs/` when that repo is checked out next to this one.
 
 ## Things that bite
 
