@@ -3,6 +3,18 @@
 
 export type Achievement = { id: string; title: string; hint: string; done: string };
 
+// The room toys (src/Application/config.ts ROOM_TOYS) add three achievements in the 3D room.
+// In preview they are on only when the page was opened with ?toys=1 (the page sets this key).
+export const ROOM_TOYS_FOR_EVERYONE = false;
+const ROOM_TOYS = (() => {
+    if (ROOM_TOYS_FOR_EVERYONE) return true;
+    try {
+        return sessionStorage.getItem('aayushos-toys') === '1';
+    } catch (e) {
+        return false;
+    }
+})();
+
 export const ACHIEVEMENTS: Achievement[] = [
     { id: 'explorer', title: 'Explorer', hint: 'Open every app on the desktop.', done: 'Opened every app on the desktop.' },
     { id: 'reader', title: 'Background Check', hint: 'Read every page of My Showcase.', done: 'Read About, Experience, Projects and Contact.' },
@@ -19,6 +31,13 @@ export const ACHIEVEMENTS: Achievement[] = [
     { id: 'refuel', title: 'Refuel', hint: 'Crack open a can of White.', done: 'Opened a cold can of White.' },
     { id: 'shutdown', title: 'Persistent', hint: 'Try to turn the computer off. A few times.', done: 'Shut down AayushOS five times.' },
     { id: 'night', title: 'Night Owl', hint: 'Visit when Bangalore is asleep.', done: 'Visited between midnight and 5 am IST.' },
+    ...(ROOM_TOYS
+        ? [
+              { id: 'footballer', title: 'Footballer', hint: 'There is a ball in the room. Use it.', done: 'Kicked the football five times.' },
+              { id: 'goodnight', title: 'Lights Out', hint: 'Get some sleep for once.', done: 'Went to bed and turned the lights out.' },
+              { id: 'catperson', title: 'Cat Person', hint: 'Say hi to the roommate.', done: 'Petted the cat.' },
+          ]
+        : []),
     { id: 'all', title: 'Completionist', hint: 'Unlock every other achievement.', done: 'Unlocked everything. Respect.' },
 ];
 

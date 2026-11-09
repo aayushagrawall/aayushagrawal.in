@@ -658,10 +658,22 @@ export default class Personal {
         }, 60000);
     }
 
+    sleeping = false;
+
+    /** Sleep mode (Toys: click the bed): the CRT and the desk items go dark, the lamp goes off. */
+    setSleep(on: boolean) {
+        this.sleeping = on;
+        this.setTime(this.time);
+    }
+
     setTime(time: 'day' | 'sunset' | 'night', instant = false) {
         this.time = time;
         this.tintTarget.copy(Personal.TINTS[time]);
         this.lampTarget = time === 'night' ? 1 : time === 'sunset' ? 0.55 : 0;
+        if (this.sleeping) {
+            this.tintTarget.copy(Personal.TINTS.night).multiplyScalar(0.45);
+            this.lampTarget = 0;
+        }
         if (instant) {
             this.tint.copy(this.tintTarget);
             this.lampLevel = this.lampTarget;
@@ -669,7 +681,10 @@ export default class Personal {
         }
         if (this.room) this.room.setTime(time);
         const world = (this.application as any).world;
-        if (world && world.room) world.room.setTime(time, instant);
+        if (world && world.room) {
+            world.room.setTime(time, instant);
+            world.room.setSleep(this.sleeping);
+        }
         if (world && world.monitorScreen && world.monitorScreen.setNight) world.monitorScreen.setNight(time === 'night');
         const html = document.documentElement.classList;
         html.remove('day', 'sunset', 'night');

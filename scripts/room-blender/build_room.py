@@ -210,6 +210,7 @@ def build():
     occl = new_coll('occluders')  # cast shadows only
     lights_night = new_coll('lights_night')
     lights_day = new_coll('lights_day')
+    props = new_coll('props')  # baked into the atlas like the room, exported one by one (props.glb) to move
 
     # ---- materials
     wall_m = mat('wall', '#45474d', 0.95)
@@ -287,7 +288,7 @@ def build():
             verts.append(row)
         for i in range(N):
             bm.faces.new([verts[1][i], verts[1][i + 1], verts[0][i + 1], verts[0][i]])
-        ob = mesh_obj(f'curtain_{side}', bm, curtain, bake)
+        ob = mesh_obj(f'curtain_{side}', bm, curtain, props)  # they sway a little on the site
         mod = ob.modifiers.new('solid', 'SOLIDIFY')
         mod.thickness = 0.03
     cyl('curtain_rod', (wx0 + wx1) / 2, wy1 + 320, BACK + 120, 22, (wx1 - wx0) + 1700, metal, bake, seg=12, axis='X')
@@ -415,12 +416,20 @@ def build():
         for li, (u, v) in zip(poly.loop_indices, [(mu, mv), (1 - mu, mv), (1 - mu, 1 - mv), (mu, 1 - mv)]):
             uv.data[li].uv = (u, v)
     bb = sphere('beanbag', 2700, FLOOR + 520, 5600, 900, beanbag, bake, scale=(1.15, 0.6, 1.1), seg=32)
-    sphere('football', 400, FLOOR + 330, 6400, 330, mat('football', '#e8e6e0', 0.6), bake, seg=24)
+    # the football moves on the site (kick it): its own mesh, white here (the panels are drawn
+    # by the site's shader so they can roll), and it casts no baked shadow (the site draws one)
+    ball = sphere('football', *BALL, 330, mat('football', '#e8e6e0', 0.6), props, seg=32)
+    ball.visible_shadow = False
     cyl('plant_pot', -2700, FLOOR + 380, -1900, 380, 760, plant_pot, bake, r2=300, seg=24)
     for k in range(9):
         a = k * 2 * math.pi / 9
         h = 1400 + 500 * ((k * 7) % 5) / 4
         leaf_ob = box(f'snake_leaf{k}', -2700 + math.cos(a) * 120, FLOOR + 760 + h / 2, -1900 + math.sin(a) * 120, 130, h, 24, leaf, bake, rot_y=a, rot_x=0.08 * math.cos(a), rot_z=0.08 * math.sin(a))
+
+    # ---- the cat asleep on the bed, a phone and an earbuds case on the desk
+    build_cat(props)
+    build_phone(props, glow)
+    build_case(props)
 
     # ---- glowing parts (unlit on the site; light sources in the bake)
     led_red = mat('led', '#ff2a2a', emit='#ff2a2a', strength=0)
@@ -455,6 +464,183 @@ def build():
     area('window_sky', ((wx0 + wx1) / 2, (wy0 + wy1) / 2, BACK - 150), ((wx0 + wx1) / 2, 0, 3000), '#cfe0ff', 900, wx1 - wx0, wy1 - wy0, lights_day)
     area('monitor_glow_day', (0, 950, 520), (0, 950, 3000), '#bcd0ff', 80, 1.3, 1.0, lights_day)
     return scene
+
+
+BALL = (400, FLOOR + 330, 6400)
+CAT = dict(at=(-4750, -2060, 5000), yaw=-1.98)  # on the duvet; yaw is Blender's Z rotation
+PHONE = dict(at=(2080, DESK_Y, 1300), yaw=0.32, w=250, l=520, t=30)
+CASE = dict(at=(1250, DESK_Y, 1480), yaw=-0.25, w=220, d=170, hb=70, hl=36)
+META = {}  # positions the site needs (pivots, eyes, screen), written to room.json
+
+
+def smooth(ob):
+    for p in ob.data.polygons:
+        p.use_smooth = True
+    return ob
+
+
+def join(obs, name):
+    select_only(obs)
+    bpy.ops.object.join()
+    ob = bpy.context.view_layer.objects.active
+    ob.name = name
+    ob.data.name = name
+    return ob
+
+
+def set_origin(ob, loc):
+    bpy.context.scene.cursor.location = loc
+    select_only([ob])
+    bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+
+
+def place(obs, at, yaw):
+    M = Matrix.Translation(V(*at)) @ Matrix.Rotation(yaw, 4, 'Z')
+    for o in obs:
+        o.matrix_world = M @ o.matrix_world
+    return M
+
+
+def to_scene(M, X, Y, Z):
+    w = M @ V(X, Y, Z)
+    return [round(w.x * 1000, 1), round(w.z * 1000, 1), round(-w.y * 1000, 1)]
+
+
+def mat_tabby():
+    if 'tabby' in MATS:
+        return MATS['tabby']
+    m = mat('tabby', '#c8742e', 0.95)
+    nt = m.node_tree
+    bsdf = nt.nodes.get('Principled BSDF')
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    # stripes across the spine: turn the object space so X runs along the cat
+    mp = nt.nodes.new('ShaderNodeMapping')
+    mp.inputs['Rotation'].default_value = (0, 0, -CAT['yaw'])
+    wave = nt.nodes.new('ShaderNodeTexWave')
+    wave.wave_type = 'BANDS'
+    wave.bands_direction = 'X'
+    wave.inputs['Scale'].default_value = 6.0
+    wave.inputs['Distortion'].default_value = 1.2
+    wave.inputs['Detail'].default_value = 1.0
+    ramp = nt.nodes.new('ShaderNodeValToRGB')
+    ramp.color_ramp.elements[0].position = 0.56
+    ramp.color_ramp.elements[0].color = srgb('#c8742e')
+    ramp.color_ramp.elements[1].position = 0.78
+    ramp.color_ramp.elements[1].color = srgb('#9a4c1a')
+    nt.links.new(tc.outputs['Object'], mp.inputs['Vector'])
+    nt.links.new(mp.outputs['Vector'], wave.inputs['Vector'])
+    nt.links.new(wave.outputs['Fac'], ramp.inputs['Fac'])
+    nt.links.new(ramp.outputs['Color'], bsdf.inputs['Base Color'])
+    return m
+
+
+def build_cat(coll):
+    """A ginger tabby curled up asleep. Built around (0, 0, 0) facing +X (scene units), then placed.
+    Two meshes: cat_body (body, paws, tail) and cat_head (origin at the neck, so the site can turn it)."""
+    fur, white = mat_tabby(), mat('cat_white', '#e8dfd0', 0.95)
+    pink, dark = mat('cat_pink', '#d88a8a', 0.8), mat('cat_dark', '#1c1412', 0.8)
+    body = [
+        sphere('cat_b', 0, 245, 0, 1, fur, coll, scale=(520, 265, 380), seg=32),
+        sphere('cat_haunch', -250, 255, -60, 1, fur, coll, scale=(330, 262, 345), seg=28),
+        sphere('cat_chest', 380, 205, -40, 1, white, coll, scale=(230, 185, 260), seg=24),
+    ]
+    for z in (-110, 40):
+        body.append(sphere('cat_paw', 660, 60, z, 1, white, coll, scale=(150, 58, 72), seg=16))
+    # tail: wrapped round the right side to the front paws
+    bm = bmesh.new()
+    rings, N = [], 14
+    for i in range(41):
+        t = i / 40
+        th = math.pi + t * (math.pi - 0.5)
+        cx, cz, cy = 620 * math.cos(th), 460 * math.sin(th), 100 - 30 * t
+        r = 86 - 40 * t
+        tang = Vector((-620 * math.sin(th), 0, 460 * math.cos(th))).normalized()
+        side = Vector((0, 1, 0)).cross(tang).normalized()
+        ring = []
+        for k in range(N):
+            a = 2 * math.pi * k / N
+            p = Vector((cx, cy, cz)) + side * (r * math.cos(a)) + Vector((0, 1, 0)) * (r * math.sin(a))
+            ring.append(bm.verts.new(V(p.x, p.y, p.z)))
+        rings.append(ring)
+    for i in range(len(rings) - 1):
+        for k in range(N):
+            bm.faces.new([rings[i][k], rings[i][(k + 1) % N], rings[i + 1][(k + 1) % N], rings[i + 1][k]])
+    bm.faces.new(rings[0][::-1])
+    bm.faces.new(rings[-1])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    body.append(mesh_obj('cat_tail', bm, fur, coll))
+    hx, hy, hz = 540, 345, -30
+    head = [
+        sphere('cat_h', hx, hy, hz, 1, fur, coll, scale=(205, 175, 220), seg=28),
+        sphere('cat_muzzle', hx + 160, hy - 42, hz, 1, white, coll, scale=(88, 70, 112), seg=20),
+        sphere('cat_nose', hx + 240, hy - 12, hz, 1, pink, coll, scale=(14, 14, 24), seg=10),
+    ]
+    for s in (-1, 1):
+        # closed eyes: two dark lines
+        e = sphere('cat_eye', hx + 165, hy + 45, hz + s * 88, 1, dark, coll, scale=(14, 9, 46), seg=10)
+        e.rotation_euler = (s * 0.25, 0, 0)
+        head.append(e)
+        ear = cyl('cat_ear', hx - 10, hy + 205, hz + s * 125, 82, 170, fur, coll, seg=12, r2=4)
+        ear.rotation_euler = (s * 0.38, -0.15, 0)
+        head.append(ear)
+        inner = cyl('cat_ear_in', hx + 22, hy + 195, hz + s * 122, 52, 120, pink, coll, seg=10, r2=3)
+        inner.rotation_euler = (s * 0.38, -0.15, 0)
+        head.append(inner)
+    for o in body + head:
+        smooth(o)
+    bpy.context.view_layer.update()
+    b = join(body, 'cat_body')
+    h = join(head, 'cat_head')
+    set_origin(b, V(0, 0, 0))
+    pivot = (hx - 170, hy - 40, hz)
+    set_origin(h, V(*pivot))
+    bpy.context.view_layer.update()
+    M = place([b, h], CAT['at'], CAT['yaw'])
+    META['cat'] = {
+        'pivot': to_scene(M, *pivot),
+        'eyes': [to_scene(M, hx + 176, hy + 45, hz + s * 88) for s in (-1, 1)],
+        'zzz': to_scene(M, hx, hy + 420, hz),
+        'forward': to_scene(Matrix.Rotation(CAT['yaw'], 4, 'Z'), 1000, 0, 0),
+    }
+
+
+def build_phone(coll, glow_coll):
+    P = PHONE
+    w, l, t = P['w'], P['l'], P['t']
+    case_m = mat('phone_case', '#1d1e22', 0.5)
+    ph = box('phone', 0, t / 2, 0, w, t, l, case_m, coll, bevel=14)
+    set_origin(ph, V(0, 0, 0))
+    # the screen: an unlit plane on the face (the site draws notifications on it)
+    sw, sl = w - 22, l - 24
+    y = t + 0.8
+    scr = plane('phone_screen', [(-sw / 2, y, sl / 2), (sw / 2, y, sl / 2), (sw / 2, y, -sl / 2), (-sw / 2, y, -sl / 2)], mat('screen_glow', '#000000'), glow_coll)
+    uv = scr.data.uv_layers.new(name='src')
+    for poly in scr.data.polygons:
+        for li, (u, v) in zip(poly.loop_indices, [(0, 0), (1, 0), (1, 1), (0, 1)]):
+            uv.data[li].uv = (u, v)
+    M = place([ph, scr], P['at'], P['yaw'])
+    META['phone'] = {'center': to_scene(M, 0, t, 0), 'size': [sw, sl]}
+
+
+def build_case(coll):
+    C = CASE
+    w, d, hb, hl = C['w'], C['d'], C['hb'], C['hl']
+    white = mat('case_white', '#ecebe6', 0.35)
+    base = smooth(box('case_base', 0, hb / 2, 0, w, hb, d, white, coll, bevel=34))
+    set_origin(base, V(0, 0, 0))
+    # the earbuds: their own mesh that casts no shadow, so the inside of the lid isn't
+    # marked with their shadows when the site opens it
+    buds = [smooth(sphere('bud', s * 52, hb + 4, -6, 1, mat('bud_white', '#f4f4f0', 0.3), coll, scale=(34, 30, 34), seg=14)) for s in (-1, 1)]
+    bpy.context.view_layer.update()
+    buds = join(buds, 'case_buds')
+    set_origin(buds, V(0, 0, 0))
+    buds.visible_shadow = False
+    buds.visible_diffuse = False
+    lid = smooth(box('case_lid', 0, hb + 1 + hl / 2, 0, w, hl, d, white, coll, bevel=17))
+    set_origin(lid, V(0, hb + 1, -d / 2))  # the hinge runs along the back edge
+    lid.visible_shadow = False  # so the earbuds inside are lit when the site opens it
+    M = place([base, buds, lid], C['at'], C['yaw'])
+    META['case'] = {'hinge': to_scene(M, 0, hb + 1, -d / 2), 'axis': to_scene(Matrix.Rotation(C['yaw'], 4, 'Z'), 1000, 0, 0)}
 
 
 SNEAKERS = [
@@ -623,6 +809,10 @@ def preview(out, mode='night', samples=24, view='idle'):
         frm, to = (-20000, 9500, 20000), (0, -1000, 0)
     elif view == 'idle2':
         frm, to = (20000, 9500, 20000), (0, -1000, 0)
+    elif view == 'cat':
+        frm, to = (-2600, 600, 9000), (-4750, -1800, 5000)
+    elif view == 'phone':
+        frm, to = (1700, 1100, 3600), (1700, DESK_Y, 1300)
     else:
         frm, to = (0, 1500, 5300), (0, 500, 0)
     cam.location = V(*frm)
@@ -651,7 +841,7 @@ DENSITY = [  # (name prefix, texel density weight)
     ('poster', 3.2), ('deck', 3.0), ('rug', 2.0), ('neon_board', 1.0), ('sneaker', 2.6), ('shoebox', 2.0),
     ('hoodie', 1.6), ('chair', 1.8), ('desk_top', 2.2), ('paper', 2.0), ('bed', 1.4), ('mattress', 1.4),
     ('duvet', 1.4), ('pillow', 1.6), ('throw', 1.6), ('floor', 1.15), ('wall', 0.9), ('slab', 0.35),
-    ('reveal', 0.8), ('frame', 1.4), ('curtain', 1.2),
+    ('reveal', 0.8), ('frame', 1.4), ('curtain', 1.2), ('cat', 3.0), ('phone', 2.4), ('case', 3.0), ('football', 1.6),
 ]
 
 
@@ -692,7 +882,8 @@ def prepare_room():
     scaled by its texel density weight), join everything in 'bake' into one mesh, pack."""
     coll = bpy.data.collections['bake']
     obs = [o for o in coll.objects if o.type == 'MESH']
-    for o in obs:
+    props = [o for o in bpy.data.collections['props'].objects if o.type == 'MESH']
+    for o in obs + props:
         select_only([o])
         for m in list(o.modifiers):
             bpy.ops.object.modifier_apply(modifier=m.name)
@@ -715,15 +906,19 @@ def prepare_room():
     room = bpy.context.view_layer.objects.active
     room.name = 'room'
     room.data.uv_layers.active = room.data.uv_layers['atlas']
+    # the room and the props share one atlas: pack them together
+    select_only([room] + props, room)
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.select_all(action='SELECT')
     bpy.ops.uv.pack_islands(rotate=True, scale=True, margin=0.004)
     bpy.ops.object.mode_set(mode='OBJECT')
-    return room
+    return room, props
 
 
 def bake_into(room, image, kind, samples):
-    for m in room.data.materials:
+    """room: the room mesh and the props, baked together into one image."""
+    mats = {m for o in room for m in o.data.materials}
+    for m in mats:
         nt = m.node_tree
         n = nt.nodes.get('bake_target') or nt.nodes.new('ShaderNodeTexImage')
         n.name = 'bake_target'
@@ -733,7 +928,7 @@ def bake_into(room, image, kind, samples):
     sc.cycles.samples = samples
     sc.render.bake.margin = 8
     sc.render.bake.use_clear = True
-    select_only([room])
+    select_only(room, room[0])
     if kind == 'albedo':
         bpy.ops.object.bake(type='DIFFUSE', pass_filter={'COLOR'}, margin=8)
     else:
@@ -790,28 +985,30 @@ def bake_all(out, size=2048, light_size=1024, samples=64):
     cycles(samples)
     # glow parts don't emit in the bake (the lights do that), they only block light
     t0 = time.time()
-    room = prepare_room()
+    room, props = prepare_room()
+    every = [room] + props
     print('uv ready', round(time.time() - t0, 1), 's', flush=True)
     meta = {}
     alb = bpy.data.images.new('albedo', size, size, float_buffer=True)
     alb.colorspace_settings.name = 'Linear Rec.709' if 'Linear Rec.709' in [c.identifier for c in alb.colorspace_settings.bl_rna.properties['name'].enum_items] else 'Non-Color'
     use_lights('day')
-    bake_into(room, alb, 'albedo', 4)
+    bake_into(every, alb, 'albedo', 4)
     save_image(alb, os.path.join(out, 'albedo.webp'))
     print('albedo', round(time.time() - t0, 1), 's', flush=True)
     for mode in ('night', 'day'):
         use_lights(mode)
         img = bpy.data.images.new('light-' + mode, light_size, light_size, float_buffer=True)
-        bake_into(room, img, 'light', samples)
+        bake_into(every, img, 'light', samples)
         sc = light_scale(img)
         meta[mode] = round(sc, 4)
         save_image(img, os.path.join(out, f'light-{mode}.webp'), scale=sc, blur=0.8)
         print(mode, 'scale', sc, round(time.time() - t0, 1), 's', flush=True)
     export_glb([room], os.path.join(out, 'room.glb'), 'atlas')
+    export_glb(props, os.path.join(out, 'props.glb'), 'atlas')
     glow = [o for o in bpy.data.collections['glow'].objects]
     export_glb(glow, os.path.join(out, 'glow.glb'), 'src')
     with open(os.path.join(out, 'room.json'), 'w') as f:
-        json.dump({'lightMapIntensity': meta}, f)
+        json.dump({'lightMapIntensity': meta, 'props': META, 'ball': {'at': BALL, 'r': 330}}, f, indent=1)
     print('done', meta, round(time.time() - t0, 1), 's')
 
 

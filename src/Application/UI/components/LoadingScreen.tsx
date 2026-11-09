@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import eventBus from '../EventBus';
+import { ROOM_TOYS } from '../../config';
 
 type LoadingProps = {};
 
@@ -198,6 +199,10 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                 transform: `scale(${overlayOpacity === 0 ? 1.1 : 1})`,
             })}
         >
+            {ROOM_TOYS && (
+                // the room, blurred, behind the start box
+                <div style={Object.assign({}, styles.roomBg, { opacity: startPopupOpacity * 0.9 })} />
+            )}
             {startPopupOpacity === 0 && loadingTextOpacity === 0 && (
                 <div style={styles.blinkingContainer}>
                     <span className="blinking-cursor" />
@@ -415,6 +420,19 @@ const styles: StyleSheetCSS = {
 
     spacer: {
         height: 16,
+    },
+    roomBg: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#000',
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.5)), url(images/room-blur.webp)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        transition: 'opacity 0.8s ease-out',
+        pointerEvents: 'none',
     },
     header: {
         width: '100%',

@@ -17,6 +17,7 @@ export interface ExtrasProps {
 
 const Extras: React.FC<ExtrasProps> = ({ onKonami }) => {
     const [saver, setSaver] = useState(false);
+    const held = useRef(false); // screensaver held on by the room's sleep mode
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const logoRef = useRef<HTMLDivElement>(null);
     const confettiRef = useRef<HTMLCanvasElement>(null);
@@ -28,12 +29,21 @@ const Extras: React.FC<ExtrasProps> = ({ onKonami }) => {
     useEffect(() => {
         let t: ReturnType<typeof setTimeout>;
         const poke = () => {
+            if (held.current) return;
             setSaver(false);
             clearTimeout(t);
             t = setTimeout(() => setSaver(true), IDLE_MS);
         };
         const onMsg = (e: MessageEvent) => {
             if (e.data && (e.data.type === 'aos-activity' || e.data.type === 'aos-focus')) poke();
+            // the room's sleep mode holds the screensaver on until it wakes up
+            if (e.data && e.data.type === 'aos-saver') {
+                held.current = !!e.data.on;
+                if (held.current) {
+                    clearTimeout(t);
+                    setSaver(true);
+                } else poke();
+            }
         };
         const evs = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel'];
         evs.forEach((ev) => window.addEventListener(ev, poke, { passive: true }));
@@ -49,7 +59,7 @@ const Extras: React.FC<ExtrasProps> = ({ onKonami }) => {
     // starfield + bouncing logo
     useEffect(() => {
         if (!saver) return;
-        achieve('afk');
+        if (!held.current) achieve('afk');
         const cv = canvasRef.current!;
         const logo = logoRef.current!;
         const cx = cv.getContext('2d')!;
@@ -158,7 +168,7 @@ const Extras: React.FC<ExtrasProps> = ({ onKonami }) => {
         <>
             <canvas ref={confettiRef} style={styles.confetti} />
             {saver && (
-                <div style={styles.saver} onMouseDown={() => setSaver(false)}>
+                <div style={styles.saver} onMouseDown={() => !held.current && setSaver(false)}>
                     <canvas ref={canvasRef} style={styles.canvas} />
                     <div ref={logoRef} style={styles.logo}>
                         <span style={styles.mark}>A</span>
