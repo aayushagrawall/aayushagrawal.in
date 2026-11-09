@@ -128,29 +128,68 @@ export class AmbienceAudio extends AudioSource {
 /**
  * Rain on the window when it's raining in Bangalore right now (live weather from
  * Open-Meteo). Force it with ?rain=1 or turn it off with ?rain=0. The loop is only
- * downloaded when it's needed.
+ * downloaded when it's needed. set() turns it on and off (clicking the window, see
+ * World/Toys.ts), fading in and out; every change is announced as a 'rain' event so the
+ * window can show it.
  */
 export class RainAudio extends AudioSource {
     poolKey: string;
+    on = false;
+    loading = false;
+    static VOLUME = 0.35;
 
     constructor(manager: AudioManager) {
         super(manager);
         UIEventBus.on('loadingScreenDone', () => {
             const q = new URLSearchParams(window.location.search).get('rain');
             if (q === '0') return;
-            const start = () => {
-                new THREE.AudioLoader().load('audio/atmosphere/rain.mp3', (buffer) => {
-                    this.manager.loadedAudio['rain'] = buffer as any;
-                    this.poolKey = this.manager.playAudio('rain', {
-                        volume: 0.35,
-                        loop: true,
-                        randDetuneScale: 0,
-                        filter: { type: 'lowpass', frequency: 2400 },
-                    });
-                });
-            };
-            if (q === '1') return start();
-            getWeather().then((w) => w && w.rain && start());
+            if (q === '1') return this.set(true);
+            getWeather().then((w) => w && w.rain && this.set(true));
         });
+    }
+
+    set(on: boolean) {
+        if (on === this.on) return;
+        this.on = on;
+        UIEventBus.dispatch('rain', on);
+        const playing = this.poolKey && this.manager.audioPool[this.poolKey];
+        if (on) {
+            if (playing) return this.fade(RainAudio.VOLUME);
+            const play = () => {
+                if (!this.on) return;
+                this.poolKey = this.manager.playAudio('rain', {
+                    volume: 0.001,
+                    loop: true,
+                    randDetuneScale: 0,
+                    filter: { type: 'lowpass', frequency: 2400 },
+                });
+                this.fade(RainAudio.VOLUME);
+            };
+            if (this.manager.loadedAudio['rain']) return play();
+            if (this.loading) return;
+            this.loading = true;
+            new THREE.AudioLoader().load('audio/atmosphere/rain.mp3', (buffer) => {
+                this.loading = false;
+                this.manager.loadedAudio['rain'] = buffer as any;
+                play();
+            });
+        } else if (playing) {
+            this.fade(0.0001);
+            const key = this.poolKey;
+            setTimeout(() => {
+                const a = this.manager.audioPool[key];
+                if (!this.on && a) {
+                    a.stop();
+                    delete this.manager.audioPool[key];
+                    if (this.poolKey === key) this.poolKey = '';
+                }
+            }, 2500);
+        }
+    }
+
+    fade(volume: number) {
+        const a = this.manager.audioPool[this.poolKey];
+        if (!a) return;
+        a.gain.gain.setTargetAtTime(volume, a.context.currentTime, 0.5);
     }
 }

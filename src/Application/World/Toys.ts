@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import Application from '../Application';
 import BakedRoom from './BakedRoom';
 import { ROOM_DATA } from './roomData';
-import { REDUCED_MOTION } from '../config';
+import { REDUCED_MOTION, NEXT } from '../config';
+import UIEventBus from '../UI/EventBus';
 
 /**
  * Things to play with in the room:
@@ -16,6 +17,8 @@ import { REDUCED_MOTION } from '../config';
  *  - the phone on the desk: lights up now and then with a notification; click it to open
  *    the link (GitHub, LinkedIn, Instagram)
  *  - the earbuds case: click it to flip the lid open
+ *  - the window (preview, ?next=1): click it to make it rain, on the glass and in your ears;
+ *    it also rains by itself when it's really raining in Bangalore
  * Sounds are synthesised with Web Audio (no extra files) and go through the scene's audio
  * listener, so the mute switch covers them.
  */
@@ -239,6 +242,7 @@ export default class Toys {
         this.addPhone();
         this.addCase();
         this.addNeon();
+        if (NEXT) this.addRain(); // before the bed: the bed's click box is big
         this.addBed();
         this.wirePointer();
     }
@@ -937,6 +941,23 @@ export default class Toys {
             n.t0 = -1;
             this.room.neonMul = 1;
         }
+    }
+
+    // ------------------------------------------------------------ rain on the window
+    addRain() {
+        const glass = this.room.glowMeshes['window_glass'];
+        UIEventBus.on('rain', (on: boolean) => this.room.setRain(on));
+        if (!glass) return;
+        this.targets.push({
+            meshes: [glass],
+            click: () => {
+                const world = (this.application as any).world;
+                const rain = world && world.audioManager && world.audioManager.audioSources.rain;
+                if (!rain) return this.room.setRain(this.room.rainTarget === 0);
+                rain.set(!rain.on);
+                this.count(rain.on ? '3d/rain-on' : '3d/rain-off', 'Rain on the window (3D)');
+            },
+        });
     }
 
     // ------------------------------------------------------------ the bed: sleep mode
