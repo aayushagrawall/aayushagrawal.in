@@ -16,7 +16,7 @@ const ToolProjects: React.FC<ToolProjectsProps> = () => {
             <div className="text-block">
                 <h2>Discord Moderation Bot</h2>
                 <p style={styles.meta}>
-                    <b>Bot · Python, MongoDB, Discord API · Sept 2024</b>
+                    <b>Bot · Python, MongoDB, Discord API · Sep 2024</b>
                 </p>
                 <br />
                 <p>A feature-rich Discord bot that improves the server experience and adds moderation commands, with slash commands and buttons. Built for the Clienterrverse community.</p>

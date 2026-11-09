@@ -51,7 +51,7 @@ const About: React.FC<AboutProps> = () => {
                 <h3>Outside of code</h3>
                 <br />
                 <p>
-                    At college I volunteer for BMSCE UTSAV, our fest, and I was a
+                    At college I volunteer for BMSCE UTSAV, our fest, and I'm a
                     member of the Rotaract Club of BMSCE, doing community service
                     around Bengaluru. When I'm not coding, I'm reading docs,
                     taking things apart to see how they work, and collecting

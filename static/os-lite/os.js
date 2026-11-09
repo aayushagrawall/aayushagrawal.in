@@ -19,7 +19,7 @@
   var PROJECTS = [
     { name: 'imgurr.me', type: 'Web app', stack: ['JavaScript'], url: 'https://imgurr.me/', urlLabel: 'Open imgurr.me',
       desc: 'Share an image or a short video without making an account. Drop a file, get a link, send it. Files up to 10 MB.' },
-    { name: 'Discord Moderation Bot', type: 'Bot', stack: ['Python', 'MongoDB', 'Discord API'], date: 'Sept 2024', url: 'https://github.com/aayushagrawall/clienterrverse-bot', urlLabel: 'View on GitHub',
+    { name: 'Discord Moderation Bot', type: 'Bot', stack: ['Python', 'MongoDB', 'Discord API'], date: 'Sep 2024', url: 'https://github.com/aayushagrawall/clienterrverse-bot', urlLabel: 'View on GitHub',
       desc: 'A feature-rich Discord bot that improves the server experience and adds moderation commands, with slash commands and buttons. Built for the Clienterrverse community.' },
     { name: 'QR Code Generator', type: 'Python tool', stack: ['Python'], date: 'Oct 2024', url: 'https://github.com/aayushagrawall/QR-Code-Generator', urlLabel: 'View on GitHub',
       desc: 'Turns any URL or text into a scannable QR code. Handles custom sizing and encoding.' },
@@ -190,7 +190,7 @@
         job('Student Volunteer', 'BMSCE UTSAV, college fest', '2025 – 2026', [
           'Managed end-to-end distribution of festival merchandise across sales counters.',
           'Worked with committee members on merch strategy and sales targets for the fest.']) +
-        job('Member', 'Rotaract Club of BMSCE', '2023 – 2024', [
+        job('Member', 'Rotaract Club of BMSCE', '2024 – Present', [
           'Community service and leadership initiatives across Bengaluru.',
           'Contributed 40+ hours of social and community service.']) +
         '<h3 class="sc-h">Certifications</h3>' +
@@ -1357,7 +1357,7 @@
           '  Mayo College — CBSE 5–10, Ajmer .......................... 2022',
           '', '<b>LEADERSHIP</b>',
           '  Student Volunteer, BMSCE UTSAV (merch distribution) .. 2025–2026',
-          '  Member, Rotaract Club of BMSCE (40+ service hours) .... 2023–2024',
+          '  Member, Rotaract Club of BMSCE (40+ service hours) ... since 2024',
           '', '<b>CERTIFICATIONS</b>',
           '  C for Beginners — Great Learning ..................... Jan 2025',
           '  Using MongoDB with Python — MongoDB .................. Nov 2024'];
