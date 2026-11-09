@@ -82,6 +82,10 @@
     ['refuel', 'Refuel', 'Crack open a can of White.', 'Opened a cold can of White.'],
     ['shutdown', 'Persistent', 'Try to turn the computer off. A few times.', 'Shut down AayushOS five times.'],
     ['night', 'Night Owl', 'Visit when Bangalore is asleep.', 'Visited between midnight and 5 am IST.'],
+    // these three are in the 3D room (the desktop site), like Codele they don't count for Completionist here
+    ['footballer', 'Footballer', 'There is a ball in the 3D room. Use it.', 'Kicked the football five times.'],
+    ['goodnight', 'Lights Out', 'Get some sleep for once (in the 3D room).', 'Went to bed and turned the lights out.'],
+    ['catperson', 'Cat Person', 'Say hi to the roommate in the 3D room.', 'Petted the cat.'],
     ['all', 'Completionist', 'Unlock every other achievement.', 'Unlocked everything. Respect.']
   ];
   var LITE_APPS = ['showcase', 'resume', 'terminal', 'tetris', 'paint', 'mycomputer', 'recycle', 'credits', 'achievements'];
@@ -105,7 +109,7 @@
     toastQ.push(a); nextToast();
     if (typeof refreshAch === 'function') refreshAch();
     // Codele only exists on the big-screen OS, so phones can finish without it
-    var need = ACH.map(function (x) { return x[0]; }).filter(function (x) { return x !== 'all' && x !== 'codele'; });
+    var need = ACH.map(function (x) { return x[0]; }).filter(function (x) { return ['all', 'codele', 'footballer', 'goodnight', 'catperson'].indexOf(x) < 0; });
     if (need.every(function (x) { return got.indexOf(x) >= 0; })) setTimeout(function () { achieve('all'); }, 600);
   }
   function nextToast() {

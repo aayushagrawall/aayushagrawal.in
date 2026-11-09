@@ -9,11 +9,11 @@
     // Desktops only: phones see the 2D gate and shouldn't spend data on these.
     (function () {
       if (!(window.matchMedia && matchMedia('(pointer: fine)').matches)) return;
-      // the room's bake (Room2: the room with the toys, see src/Application/config.ts)
-      var room = 'models/Room2/';
+      // the room's bake (scripts/room-blender/)
+      var room = 'models/Room/';
       [['models/Computer/baked_computer.webp', 'image'], ['models/Computer/computer_setup.glb', 'fetch'],
        [room + 'albedo.webp', 'image'], [room + 'light-night.webp', 'image'], [room + 'light-day.webp', 'image'],
-       [room + 'room.glb', 'fetch'], [room + 'glow.glb', 'fetch']].forEach(function (f) {
+       [room + 'room.glb', 'fetch'], [room + 'glow.glb', 'fetch'], [room + 'props.glb', 'fetch']].forEach(function (f) {
         var l = document.createElement('link');
         l.rel = 'preload'; l.href = f[0]; l.as = f[1]; l.crossOrigin = 'anonymous';
         document.head.appendChild(l);

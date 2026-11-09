@@ -1,6 +1,7 @@
 """Textures for the bedroom around the desk (World/Room.ts): a darker, moodier college room.
 
-  python3 scripts/room-textures.py FONT_DIR static/textures/room
+  python3 scripts/room-textures.py FONT_DIR scripts/room-blender/textures
+  (then move window-*.webp to static/textures/room: the site shows those)
 
 FONT_DIR holds caveat-700.ttf (Caveat), grotesk-700/400.ttf (Space Grotesk), bebas.ttf
 (Bebas Neue), playfair-700.ttf / playfair-italic.ttf (Playfair Display) and oswald-300/600.ttf

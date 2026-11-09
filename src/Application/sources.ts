@@ -1,5 +1,3 @@
-import { NEW_ROOM, ROOM_TOYS } from './config';
-
 const allSources: Resource[] = [
     {
         name: 'computerSetupModel',
@@ -10,26 +8,6 @@ const allSources: Resource[] = [
         name: 'computerSetupTexture',
         type: 'texture',
         path: 'models/Computer/baked_computer.webp',
-    },
-    {
-        name: 'environmentModel',
-        type: 'gltfModel',
-        path: 'models/World/environment.glb',
-    },
-    {
-        name: 'environmentTexture',
-        type: 'texture',
-        path: 'models/World/baked_environment.webp',
-    },
-    {
-        name: 'decorModel',
-        type: 'gltfModel',
-        path: 'models/Decor/decor.glb',
-    },
-    {
-        name: 'decorTexture',
-        type: 'texture',
-        path: 'models/Decor/baked_decor_modified.webp',
     },
     {
         name: 'monitorSmudgeTexture',
@@ -103,27 +81,17 @@ const allSources: Resource[] = [
     },
 ];
 
-// With the new baked room, Henry's desk, chair, backdrop and desk props aren't downloaded.
+// The room, modelled and light-baked in Blender (scripts/room-blender/): the room, its glowing
+// parts, and the props that move (props.glb), all on one atlas.
 const roomSources: Resource[] = [
     { name: 'roomModel', type: 'gltfModel', path: 'models/Room/room.glb' },
     { name: 'roomGlowModel', type: 'gltfModel', path: 'models/Room/glow.glb' },
+    { name: 'roomPropsModel', type: 'gltfModel', path: 'models/Room/props.glb' },
     { name: 'roomAlbedo', type: 'texture', path: 'models/Room/albedo.webp' },
     { name: 'roomLightNight', type: 'texture', path: 'models/Room/light-night.webp' },
     { name: 'roomLightDay', type: 'texture', path: 'models/Room/light-day.webp' },
 ];
 
-// The room with toys (ROOM_TOYS) has its own bake, with the movable props in props.glb.
-const toySources: Resource[] = [
-    { name: 'roomModel', type: 'gltfModel', path: 'models/Room2/room.glb' },
-    { name: 'roomGlowModel', type: 'gltfModel', path: 'models/Room2/glow.glb' },
-    { name: 'roomPropsModel', type: 'gltfModel', path: 'models/Room2/props.glb' },
-    { name: 'roomAlbedo', type: 'texture', path: 'models/Room2/albedo.webp' },
-    { name: 'roomLightNight', type: 'texture', path: 'models/Room2/light-night.webp' },
-    { name: 'roomLightDay', type: 'texture', path: 'models/Room2/light-day.webp' },
-];
-
-const sources: Resource[] = NEW_ROOM
-    ? [...allSources.filter((s) => !['environmentModel', 'environmentTexture', 'decorModel', 'decorTexture'].includes(s.name)), ...(ROOM_TOYS ? toySources : roomSources)]
-    : allSources;
+const sources: Resource[] = [...allSources, ...roomSources];
 
 export default sources;

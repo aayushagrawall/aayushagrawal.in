@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import eventBus from '../EventBus';
-import { ROOM_TOYS } from '../../config';
 
 type LoadingProps = {};
 
@@ -199,10 +198,8 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                 transform: `scale(${overlayOpacity === 0 ? 1.1 : 1})`,
             })}
         >
-            {ROOM_TOYS && (
-                // the room, blurred, behind the start box
-                <div style={Object.assign({}, styles.roomBg, { opacity: startPopupOpacity * 0.9 })} />
-            )}
+            {/* the room, blurred, behind the start box */}
+            <div style={Object.assign({}, styles.roomBg, { opacity: startPopupOpacity * 0.9 })} />
             {startPopupOpacity === 0 && loadingTextOpacity === 0 && (
                 <div style={styles.blinkingContainer}>
                     <span className="blinking-cursor" />

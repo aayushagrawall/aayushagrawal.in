@@ -30,7 +30,8 @@ from mathutils import Vector, Matrix
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
-TEX = os.path.join(REPO, 'static', 'textures', 'room')
+# the posters, floor and walls (made by scripts/room-textures.py) only go into the bake
+TEX = os.path.join(REPO, 'scripts', 'room-blender', 'textures')
 
 FLOOR = -2985.0
 DESK_Y = -452.0

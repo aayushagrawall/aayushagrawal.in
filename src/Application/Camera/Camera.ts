@@ -9,6 +9,7 @@ import Resources from '../Utils/Resources';
 import UIEventBus from '../UI/EventBus';
 import Time from '../Utils/Time';
 import BezierEasing from 'bezier-easing';
+import { NEXT } from '../config';
 import {
     CameraKeyframeInstance,
     MonitorKeyframe,
@@ -78,6 +79,11 @@ export default class Camera extends EventEmitter {
                 this.currentKeyframe === CameraKey.IDLE ||
                 this.targetKeyframe === CameraKey.IDLE
             ) {
+                // with drag to look around (NEXT), zoom in on release unless it was a drag
+                if (NEXT) {
+                    this.pendingZoom = { x: event.clientX, y: event.clientY };
+                    return;
+                }
                 this.transition(CameraKey.DESK);
             } else if (
                 this.currentKeyframe === CameraKey.DESK ||
@@ -87,6 +93,7 @@ export default class Camera extends EventEmitter {
             }
         });
 
+        if (NEXT) this.setDragListeners();
         this.setPostLoadTransition();
         this.setInstance();
         this.setMonitorListeners();
@@ -195,6 +202,46 @@ export default class Camera extends EventEmitter {
             this.transition(CameraKey.DESK);
             UIEventBus.dispatch('leftMonitor', {});
         });
+    }
+
+    pendingZoom: { x: number; y: number } | null = null;
+
+    /**
+     * Drag to look around the room (mouse or finger): in the room view a drag turns the camera
+     * about the room; a click (no drag) still zooms in to the desk.
+     */
+    setDragListeners() {
+        let drag: { x: number; id: number; moved: number } | null = null;
+        const inRoom = () => this.currentKeyframe === CameraKey.IDLE || this.targetKeyframe === CameraKey.IDLE;
+        window.addEventListener('pointerdown', (e) => {
+            // @ts-ignore events relayed from inside the monitor
+            if (e.inComputer || !inRoom() || this.freeCam) return;
+            drag = { x: e.clientX, id: e.pointerId, moved: 0 };
+        });
+        window.addEventListener('pointermove', (e) => {
+            if (!drag || e.pointerId !== drag.id) return;
+            const dx = e.clientX - drag.x;
+            drag.x = e.clientX;
+            drag.moved += Math.abs(dx);
+            if (drag.moved > 6 && inRoom()) {
+                (this.keyframes.idle as IdleKeyframe).turn(-dx * 0.004);
+                document.body.style.cursor = 'grabbing';
+            }
+        });
+        const end = () => {
+            if (drag && drag.moved > 6) document.body.style.cursor = '';
+            drag = null;
+        };
+        window.addEventListener('pointerup', end);
+        window.addEventListener('pointercancel', end);
+        document.addEventListener('mouseup', (e) => {
+            const p = this.pendingZoom;
+            this.pendingZoom = null;
+            if (!p || Math.hypot(e.clientX - p.x, e.clientY - p.y) > 6) return;
+            if (inRoom()) this.transition(CameraKey.DESK);
+        });
+        // a finger dragging across the room turns it instead of scrolling the page
+        document.body.style.touchAction = 'none';
     }
 
     setFreeCamListeners() {

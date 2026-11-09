@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import Application from '../Application';
 import BakedRoom from './BakedRoom';
-import { ROOM2 } from './roomData';
+import { ROOM_DATA } from './roomData';
+import { REDUCED_MOTION } from '../config';
 
 /**
- * Things to play with in the room (ROOM_TOYS in config.ts):
+ * Things to play with in the room:
  *  - the football: click it to kick it. It rolls, bounces off the walls and the furniture,
  *    and five kicks unlock "Footballer"
  *  - the bed: click it to go to sleep. Lights out, the CRT's screensaver comes on and a few
@@ -24,7 +25,7 @@ const X0 = -6000;
 const X1 = 6200;
 const BACK = -2600;
 const FRONT = 7600;
-const R = ROOM2.ball.r;
+const R = ROOM_DATA.ball.r;
 const GRAVITY = 30000; // scene units are about 3 per mm
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -104,7 +105,7 @@ class Sfx {
         o.frequency.setValueAtTime(150, t);
         o.frequency.exponentialRampToValueAtTime(55, t + 0.12);
         const g = c.createGain();
-        this.env(g, t, 0.9 * vol, 0.004, 0.2);
+        this.env(g, t, 0.36 * vol, 0.004, 0.2); // levels measured against the site's other sounds
         o.connect(g).connect(this.out!);
         o.start(t);
         o.stop(t + 0.25);
@@ -113,7 +114,7 @@ class Sfx {
         f.type = 'bandpass';
         f.frequency.value = 500;
         const gn = c.createGain();
-        this.env(gn, t, 0.35 * vol, 0.002, 0.05);
+        this.env(gn, t, 0.14 * vol, 0.002, 0.05);
         n.connect(f).connect(gn).connect(this.out!);
     }
 
@@ -144,8 +145,8 @@ class Sfx {
             f.frequency.value = 380;
             const g = c.createGain();
             g.gain.setValueAtTime(0.0001, t + at);
-            g.gain.exponentialRampToValueAtTime(0.16, t + at + 0.02);
-            g.gain.setValueAtTime(0.16, t + at + 0.24);
+            g.gain.exponentialRampToValueAtTime(0.036, t + at + 0.02);
+            g.gain.setValueAtTime(0.036, t + at + 0.24);
             g.gain.exponentialRampToValueAtTime(0.0001, t + at + 0.28);
             o.connect(f).connect(g).connect(this.out!);
             o.start(t + at);
@@ -205,8 +206,8 @@ class Sfx {
         lfo.connect(depth).connect(am.gain);
         const g = c.createGain();
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.9, t + 0.25);
-        g.gain.setValueAtTime(0.9, t + dur - 0.5);
+        g.gain.exponentialRampToValueAtTime(0.5, t + 0.25);
+        g.gain.setValueAtTime(0.5, t + dur - 0.5);
         g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
         n.connect(lp).connect(am).connect(g).connect(this.out!);
         lfo.start(t);
@@ -341,6 +342,19 @@ export default class Toys {
             }
         });
         document.addEventListener('mouseleave', () => this.pointer.set(-9, -9));
+        // touch: a tap already arrives as mouse events (so the toys work), but a moving finger
+        // doesn't: follow it too, so the cat can watch it
+        window.addEventListener(
+            'pointermove',
+            (e) => {
+                if (e.pointerType !== 'touch') return;
+                this.pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+                const p = pick();
+                if (p && p.t.hover) p.t.hover();
+                if (this.cat && this.cat.awake) this.cat.seen = performance.now();
+            },
+            { passive: true }
+        );
     }
 
     // ------------------------------------------------------------ football
@@ -503,7 +517,7 @@ export default class Toys {
         const head = this.room.props['cat_head'];
         const body = this.room.props['cat_body'];
         if (!head || !body) return;
-        const m = ROOM2.props.cat;
+        const m = ROOM_DATA.props.cat;
         const pivot = v3(m.pivot);
         const forward = v3(m.forward).setY(0).normalize();
         const side = new THREE.Vector3().crossVectors(forward, UP).normalize();
@@ -610,13 +624,13 @@ export default class Toys {
         c.eyeMeshes.forEach((m) => m.scale.set(1, Math.max(0.001, c.open * 0.8), 1));
         // breathing
         const t = now / 1000;
-        const sy = c.bodyScale.y * (1 + (c.awake ? 0.008 : 0.018) * Math.sin(t * (c.awake ? 3 : 2)));
+        const sy = REDUCED_MOTION ? c.bodyScale.y : c.bodyScale.y * (1 + (c.awake ? 0.008 : 0.018) * Math.sin(t * (c.awake ? 3 : 2)));
         c.body.scale.y = sy;
         c.body.position.y = c.bodyBottom - c.bodyMinY * sy; // keep it lying on the bed
         // a small z now and then while it sleeps
         if (!c.awake && now > c.zzzAt) {
             c.zzzAt = now + 3800 + Math.random() * 1500;
-            this.spawnZ(v3(ROOM2.props.cat.zzz), 110, 2600);
+            this.spawnZ(v3(ROOM_DATA.props.cat.zzz), 110, 2600);
         }
     }
 
@@ -625,6 +639,7 @@ export default class Toys {
     zTex?: THREE.Texture;
 
     spawnZ(at: THREE.Vector3, size: number, life: number) {
+        if (REDUCED_MOTION) return;
         if (!this.zTex) {
             const c = document.createElement('canvas');
             c.width = c.height = 64;
@@ -695,7 +710,7 @@ export default class Toys {
         const spill = new THREE.MeshBasicMaterial({ map: this.softTexture('rgba(255,255,255,1)', 'rgba(255,255,255,0)'), color: 0xbfd2ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
         const glow = new THREE.Mesh(new THREE.PlaneGeometry(1100, 1300), spill);
         glow.rotation.x = -Math.PI / 2;
-        const at = v3(ROOM2.props.phone.center);
+        const at = v3(ROOM_DATA.props.phone.center);
         glow.position.set(at.x, at.y - 28, at.z);
         this.scene.add(glow);
         this.phone = { mesh, screen, canvas, tex, base: mesh.position.clone(), screenBase: screen.position.clone(), spill, lit: 0, litUntil: 0, nextAt: performance.now() + 9000, buzzUntil: 0, i: 0, social: 0, drawn: '' };
@@ -824,8 +839,9 @@ export default class Toys {
         p.lit += (target - p.lit) * Math.min(1, dt * (target ? 10 : 3));
         if (p.lit < 0.005) p.lit = 0;
         // buzzing: the phone shivers on the desk
-        const jx = now < p.buzzUntil ? (Math.random() - 0.5) * 5 : 0;
-        const jz = now < p.buzzUntil ? (Math.random() - 0.5) * 5 : 0;
+        const shiver = now < p.buzzUntil && !REDUCED_MOTION;
+        const jx = shiver ? (Math.random() - 0.5) * 5 : 0;
+        const jz = shiver ? (Math.random() - 0.5) * 5 : 0;
         p.mesh.position.set(p.base.x + jx, p.base.y, p.base.z + jz);
         p.screen.position.set(p.screenBase.x + jx, p.screenBase.y, p.screenBase.z + jz);
         const night = 1 - this.room.mix;
@@ -840,7 +856,7 @@ export default class Toys {
         const lid = this.room.props['case_lid'];
         const base = this.room.props['case_base'];
         if (!lid || !base) return;
-        this.lid = { mesh: lid, axis: v3(ROOM2.props.case.axis).normalize(), hinge: v3(ROOM2.props.case.hinge), base: lid.position.clone(), angle: 0, vel: 0, target: 0, closeAt: 0 };
+        this.lid = { mesh: lid, axis: v3(ROOM_DATA.props.case.axis).normalize(), hinge: v3(ROOM_DATA.props.case.hinge), base: lid.position.clone(), angle: 0, vel: 0, target: 0, closeAt: 0 };
         this.targets.push({
             desk: true,
             meshes: [lid, base, ...(this.room.props['case_buds'] ? [this.room.props['case_buds']] : [])],

@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import Application from '../Application';
-import { OPEN_TO_INTERNSHIPS, SHOW_NAMEPLATE, SHOW_RESUME_FRAME, LOFI_ROOM, NEW_ROOM } from '../config';
-import Room from './Room';
+import { OPEN_TO_INTERNSHIPS, SHOW_NAMEPLATE, SHOW_RESUME_FRAME } from '../config';
 
 /**
  * Aayush's personal touches on the desk:
@@ -29,8 +28,7 @@ export default class Personal {
     constructor(
         computer: THREE.Object3D,
         environment: THREE.Object3D,
-        bakedMaterials: THREE.MeshBasicMaterial[],
-        decor?: THREE.Object3D
+        bakedMaterials: THREE.MeshBasicMaterial[]
     ) {
         this.application = new Application();
         this.scene = this.application.scene;
@@ -47,29 +45,10 @@ export default class Personal {
         if (SHOW_NAMEPLATE) this.addNameplate(environment);
         this.addStickyNote(computer);
         if (SHOW_RESUME_FRAME) this.addPoster(environment);
-        this.addCan(environment, decor);
+        this.addCan(environment);
         if (OPEN_TO_INTERNSHIPS) this.addNeonSign(environment);
         this.addLamp(environment);
-        if (LOFI_ROOM) {
-            this.room = new Room(this);
-            this.tintBackdrop(environment);
-        }
         this.initTimeOfDay();
-    }
-
-    room?: Room;
-
-    /** The studio backdrop outside the room goes dark grey (its own copy of the baked material). */
-    tintBackdrop(environment: THREE.Object3D) {
-        environment.traverse((o) => {
-            const m = o as THREE.Mesh;
-            if (m.isMesh && o.name === 'Background' && m.material instanceof THREE.MeshBasicMaterial) {
-                const mat = (m.material as THREE.MeshBasicMaterial).clone();
-                mat.color.setRGB(0.36, 0.36, 0.4);
-                m.material = mat;
-                this.tintables.push(mat);
-            }
-        });
     }
 
     texture(path: string) {
@@ -90,6 +69,7 @@ export default class Personal {
         this.tintables.push(m);
         return m;
     }
+
 
     /** Cast a ray and return the first hit on `target`, or null. */
     hit(target: THREE.Object3D, from: THREE.Vector3, dir: THREE.Vector3) {
@@ -240,11 +220,7 @@ export default class Personal {
         });
     }
 
-    addCan(environment: THREE.Object3D, decor?: THREE.Object3D) {
-        // the baked mug goes; the can stands where it was
-        const mug = decor && decor.getObjectByName('coffee');
-        if (mug) mug.visible = false;
-
+    addCan(environment: THREE.Object3D) {
         const spot = new THREE.Vector3(1700, 2000, 905);
         const h = this.hit(environment, spot, new THREE.Vector3(0, -1, 0));
         const deskY = h ? h.point.y : -449;
@@ -605,25 +581,12 @@ export default class Personal {
     lampLevel = 0;
     lampTarget = 0;
 
-    static TINTS = NEW_ROOM
-        ? {
-              // the CRT and the desk items, matched to the baked room's light
-              day: new THREE.Color(0.9, 0.9, 0.92),
-              sunset: new THREE.Color(0.8, 0.66, 0.6),
-              night: new THREE.Color(0.36, 0.32, 0.42),
-          }
-        : LOFI_ROOM
-        ? {
-              // the bedroom: warm sunset, a dark blue-grey night lit by the LEDs and the screen
-              day: new THREE.Color(1, 1, 1),
-              sunset: new THREE.Color(1.0, 0.8, 0.66),
-              night: new THREE.Color(0.17, 0.17, 0.24),
-          }
-        : {
-              day: new THREE.Color(1, 1, 1),
-              sunset: new THREE.Color(1.0, 0.8, 0.62),
-              night: new THREE.Color(0.13, 0.15, 0.3),
-          };
+    // the CRT and the desk items, matched to the baked room's light
+    static TINTS = {
+        day: new THREE.Color(0.9, 0.9, 0.92),
+        sunset: new THREE.Color(0.8, 0.66, 0.6),
+        night: new THREE.Color(0.36, 0.32, 0.42),
+    };
 
     /** 'day', 'sunset' (5 to 7 pm IST) or 'night' (7 pm to 6 am IST): URL, then the lamp, then the clock. */
     timeOfDay(): 'day' | 'sunset' | 'night' {
@@ -679,7 +642,6 @@ export default class Personal {
             this.lampLevel = this.lampTarget;
             this.paintTime();
         }
-        if (this.room) this.room.setTime(time);
         const world = (this.application as any).world;
         if (world && world.room) {
             world.room.setTime(time, instant);
@@ -696,14 +658,13 @@ export default class Personal {
 
     paintTime() {
         this.baseColors.forEach((base, m) => m.color.copy(base).multiply(this.tint));
-        if (this.room) this.room.paint(this.lampLevel);
         const l = this.lamp;
         if (!l) return;
         const k = this.lampLevel;
         l.bulb.color.setRGB(0.6 + 0.4 * k, 0.6 + 0.37 * k, 0.6 + 0.26 * k);
         l.inner.color.setRGB(0.16 + 0.84 * k, 0.16 + 0.66 * k, 0.16 + 0.38 * k);
         // the new room has the lamp's light baked in
-        l.pool.opacity = NEW_ROOM ? 0 : 0.6 * k;
+        l.pool.opacity = 0; // the baked room has the lamp's light on the desk
         l.halo.opacity = 0.3 * k;
     }
 
