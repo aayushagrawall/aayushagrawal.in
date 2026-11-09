@@ -1,4 +1,4 @@
-import { NEW_ROOM } from './config';
+import { NEW_ROOM, ROOM_TOYS } from './config';
 
 const allSources: Resource[] = [
     {
@@ -112,8 +112,18 @@ const roomSources: Resource[] = [
     { name: 'roomLightDay', type: 'texture', path: 'models/Room/light-day.webp' },
 ];
 
+// The room with toys (ROOM_TOYS) has its own bake, with the movable props in props.glb.
+const toySources: Resource[] = [
+    { name: 'roomModel', type: 'gltfModel', path: 'models/Room2/room.glb' },
+    { name: 'roomGlowModel', type: 'gltfModel', path: 'models/Room2/glow.glb' },
+    { name: 'roomPropsModel', type: 'gltfModel', path: 'models/Room2/props.glb' },
+    { name: 'roomAlbedo', type: 'texture', path: 'models/Room2/albedo.webp' },
+    { name: 'roomLightNight', type: 'texture', path: 'models/Room2/light-night.webp' },
+    { name: 'roomLightDay', type: 'texture', path: 'models/Room2/light-day.webp' },
+];
+
 const sources: Resource[] = NEW_ROOM
-    ? [...allSources.filter((s) => !['environmentModel', 'environmentTexture', 'decorModel', 'decorTexture'].includes(s.name)), ...roomSources]
+    ? [...allSources.filter((s) => !['environmentModel', 'environmentTexture', 'decorModel', 'decorTexture'].includes(s.name)), ...(ROOM_TOYS ? toySources : roomSources)]
     : allSources;
 
 export default sources;

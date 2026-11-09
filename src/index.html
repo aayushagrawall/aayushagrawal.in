@@ -9,9 +9,15 @@
     // Desktops only: phones see the 2D gate and shouldn't spend data on these.
     (function () {
       if (!(window.matchMedia && matchMedia('(pointer: fine)').matches)) return;
-      [['models/Computer/baked_computer.webp', 'image'], ['models/Decor/baked_decor_modified.webp', 'image'],
-       ['models/World/baked_environment.webp', 'image'], ['models/Computer/computer_setup.glb', 'fetch'],
-       ['models/World/environment.glb', 'fetch'], ['models/Decor/decor.glb', 'fetch']].forEach(function (f) {
+      // the room's bake (Room2 for the room toys preview: ?toys=1, see src/Application/config.ts)
+      var room = 'models/Room/';
+      try {
+        var q = new URLSearchParams(location.search).get('toys');
+        if (q === '1' || (q !== '0' && sessionStorage.getItem('aayushos-toys') === '1')) room = 'models/Room2/';
+      } catch (e) {}
+      [['models/Computer/baked_computer.webp', 'image'], ['models/Computer/computer_setup.glb', 'fetch'],
+       [room + 'albedo.webp', 'image'], [room + 'light-night.webp', 'image'], [room + 'light-day.webp', 'image'],
+       [room + 'room.glb', 'fetch'], [room + 'glow.glb', 'fetch']].forEach(function (f) {
         var l = document.createElement('link');
         l.rel = 'preload'; l.href = f[0]; l.as = f[1]; l.crossOrigin = 'anonymous';
         document.head.appendChild(l);

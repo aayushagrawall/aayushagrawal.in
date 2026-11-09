@@ -29,3 +29,23 @@ export const NEW_ROOM: boolean = (() => {
         return false;
     }
 })();
+
+// Things to play with in the room (needs NEW_ROOM): kick the football, click the bed to sleep,
+// flick the neon sign, a cat that wakes up and watches you, a phone that gets notifications,
+// an earbuds case, and small idle animations. Uses its own bake in static/models/Room2/.
+// ROOM_TOYS_FOR_EVERYONE = false keeps it in preview: on only with ?toys=1 (remembered for
+// the visit; ?toys=0 turns it off). AayushOS reads the same sessionStorage key, and src/index.html
+// preloads Room2's files for it (switch its default too when this goes to everyone).
+export const ROOM_TOYS_FOR_EVERYONE = false;
+export const ROOM_TOYS: boolean =
+    NEW_ROOM &&
+    (() => {
+        if (ROOM_TOYS_FOR_EVERYONE) return true;
+        try {
+            const q = new URLSearchParams(window.location.search).get('toys');
+            if (q === '1' || q === '0') sessionStorage.setItem('aayushos-toys', q);
+            return sessionStorage.getItem('aayushos-toys') === '1';
+        } catch (e) {
+            return false;
+        }
+    })();

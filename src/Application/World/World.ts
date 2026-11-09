@@ -9,7 +9,8 @@ import Hitboxes from './Hitboxes';
 import AudioManager from '../Audio/AudioManager';
 import Personal from './Personal';
 import BakedRoom from './BakedRoom';
-import { NEW_ROOM } from '../config';
+import Toys from './Toys';
+import { NEW_ROOM, ROOM_TOYS } from '../config';
 export default class World {
     application: Application;
     scene: THREE.Scene;
@@ -24,6 +25,7 @@ export default class World {
     audioManager: AudioManager;
     personal: Personal;
     room?: BakedRoom;
+    toys?: Toys;
 
     constructor() {
         this.application = new Application();
@@ -38,6 +40,7 @@ export default class World {
                 this.monitorScreen = new MonitorScreen();
                 this.audioManager = new AudioManager();
                 this.personal = new Personal(this.computerSetup.bakedModel.getModel(), this.room.raycastTarget, [this.computerSetup.bakedModel.material]);
+                if (ROOM_TOYS) this.toys = new Toys(this.room);
                 return;
             }
             this.environment = new Environment();
@@ -66,5 +69,6 @@ export default class World {
         if (this.audioManager) this.audioManager.update();
         if (this.personal) this.personal.update();
         if (this.room) this.room.update();
+        if (this.toys) this.toys.update();
     }
 }
