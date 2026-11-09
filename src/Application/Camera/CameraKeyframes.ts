@@ -104,10 +104,20 @@ export class DeskKeyframe extends CameraKeyframeInstance {
             0.025;
 
         const aspect = this.sizes.height / this.sizes.width;
-        this.targetPos.z = this.origin.z + aspect * 3000 - 1800;
+        // far enough back that the desk (about 4,600 wide around the CRT) fits across the screen:
+        // this only changes anything on tall screens like phones
+        const fit = 2300 / (Math.tan((35 / 2) * (Math.PI / 180)) / aspect);
+        this.targetPos.z = Math.max(this.origin.z + aspect * 3000 - 1800, fit);
 
         this.focalPoint.copy(this.targetFoc);
         this.position.copy(this.targetPos);
+        // that far back the chair is in the way: on tall screens look over it from higher up
+        // and from a little to the left, which slides the chair (nearer the camera) out of the way
+        if (aspect > 1.2) {
+            const k = Math.min(1, aspect - 1.2);
+            this.position.y += 2600 * k;
+            this.position.x -= 1600 * k;
+        }
     }
 }
 
@@ -155,7 +165,7 @@ export class IdleKeyframe extends CameraKeyframeInstance {
         v.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
         // tall screens (phones, tablets held upright): step back so the whole room fits across
         const aspect = this.sizes ? this.sizes.width / this.sizes.height : 1.6;
-        v.multiplyScalar(Math.max(1, 1.3 / aspect));
+        v.multiplyScalar(Math.max(1, 1.1 / aspect));
         this.position.copy(f).add(v);
     }
 }

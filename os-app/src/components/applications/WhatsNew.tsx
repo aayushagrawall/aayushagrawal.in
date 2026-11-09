@@ -10,7 +10,7 @@ const CHANGES: { date: string; items: string[] }[] = [
         items: [
             'Click the window in the 3D room and it starts to rain: drops run down the glass and you can hear it. It also rains there when it is really raining in Bangalore.',
             'Drag to look around the room (with a mouse or a finger); a click still takes you to the desk.',
-            'On phones the site opens on the room at night, and the 3D room now fits a phone screen and works with taps.',
+            'On phones the site opens on the room at night, and the 3D room now fits a phone screen and works with taps. Tap the computer on a phone and AayushOS Lite opens, made for small screens.',
             'The phone version lists every achievement too, the room moves less if you have "reduce motion" on, the sounds are better balanced, and every page has a new picture for when it is shared.',
         ],
     },

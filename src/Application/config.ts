@@ -35,3 +35,15 @@ export const REDUCED_MOTION: boolean = (() => {
         return false;
     }
 })();
+
+// A touch screen, and a phone (a touch screen under 768 px on its short side: the same test as the
+// choice screen in src/index.html). On a phone the 3D room is framed for a tall screen and the
+// monitor opens AayushOS Lite (UI/PhoneLite.ts) instead of the desktop AayushOS.
+export const TOUCH: boolean = (() => {
+    try {
+        return typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
+    } catch (e) {
+        return false;
+    }
+})();
+export const PHONE: boolean = TOUCH && Math.min(window.screen.width, window.screen.height) < 768;
