@@ -585,7 +585,7 @@ export default class Personal {
     static TINTS = {
         day: new THREE.Color(0.9, 0.9, 0.92),
         sunset: new THREE.Color(0.8, 0.66, 0.6),
-        night: new THREE.Color(0.36, 0.32, 0.42),
+        night: new THREE.Color(0.8, 0.74, 0.86),
     };
 
     /** 'day', 'sunset' (5 to 7 pm IST) or 'night' (7 pm to 6 am IST): URL, then the lamp, then the clock. */
@@ -634,7 +634,7 @@ export default class Personal {
         this.tintTarget.copy(Personal.TINTS[time]);
         this.lampTarget = time === 'night' ? 1 : time === 'sunset' ? 0.55 : 0;
         if (this.sleeping) {
-            this.tintTarget.copy(Personal.TINTS.night).multiplyScalar(0.45);
+            this.tintTarget.setRGB(0.16, 0.14, 0.19); // lights out
             this.lampTarget = 0;
         }
         if (instant) {
