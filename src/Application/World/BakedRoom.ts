@@ -29,7 +29,7 @@ type Time = 'day' | 'sunset' | 'night';
 const BACKGROUND: { [k in Time]: THREE.Color } = {
     day: new THREE.Color('#aeb6c2'),
     sunset: new THREE.Color('#3b2c33'),
-    night: new THREE.Color('#0b0c10'),
+    night: new THREE.Color('#181a29'),
 };
 const SLEEP_TINT = new THREE.Color(0.13, 0.14, 0.22); // lights out: only a little moonlight
 const SLEEP_BG = new THREE.Color('#050509');
@@ -77,7 +77,7 @@ float rainOutside( vec2 uv, float t ) {
 }
 `;
 
-const LIGHT_HEADER = 'uniform sampler2D lightMapB;\nuniform float lightMapBIntensity;\nuniform float lightMix;\nuniform vec3 lightTint;\nuniform float uTime;\nuniform float lightCrush;\n';
+const LIGHT_HEADER = 'uniform sampler2D lightMapB;\nuniform float lightMapBIntensity;\nuniform float lightMix;\nuniform vec3 lightTint;\nuniform float uTime;\nuniform float lightCrush;\nuniform float lightGain;\nuniform vec3 lightLift;\n';
 
 export default class BakedRoom {
     application: Application;
@@ -94,6 +94,8 @@ export default class BakedRoom {
         lightTint: { value: new THREE.Color(1, 1, 1) },
         uTime: { value: 0 },
         lightCrush: { value: 0 },
+        lightGain: { value: 1 },
+        lightLift: { value: new THREE.Color(0, 0, 0) },
     };
     // the time of day, eased (composed with sleep and the neon into the uniforms each frame)
     mix = 0;
@@ -116,6 +118,9 @@ export default class BakedRoom {
     sleep = 0;
     sleepTarget = 0;
     neonMul = 1; // the neon sign's brightness (Toys flickers it)
+    // the night bake is moody; on screen it's lifted so the room looks lively at first sight
+    nightGain = 2.8;
+    nightLift = new THREE.Color(0.1, 0.095, 0.13);
     rain = { value: 0 }; // rain on the window, eased (Toys turns it on and off)
     rainTarget = 0;
 
@@ -176,6 +181,8 @@ export default class BakedRoom {
                     'vec3 lightB = texture2D( lightMapB, vUv2 ).rgb * lightMapBIntensity;',
                     'vec3 roomLight = mix( lightA, lightB, lightMix ) * lightTint;',
                     // lights out: squash the bright baked spots (the desk lamp, the LEDs) too
+                    // the night, brighter than the bake: more exposure and a little fill in the shadows
+                    'roomLight = roomLight * lightGain + lightLift;',
                     'roomLight /= 1.0 + lightCrush * max( max( roomLight.r, roomLight.g ), roomLight.b );',
                     'reflectedLight.indirectDiffuse += roomLight;',
                 ].join('\n')
@@ -347,6 +354,9 @@ export default class BakedRoom {
         const s = this.sleep;
         u.lightMix.value = this.mix * (1 - s);
         u.lightCrush.value = 5 * s;
+        const k = (1 - this.mix) * (1 - s); // how much it's (awake) night
+        u.lightGain.value = 1 + (this.nightGain - 1) * k;
+        u.lightLift.value.copy(this.nightLift).multiplyScalar(k);
         const tint = u.lightTint.value;
         tint.copy(this.tint).lerp(SLEEP_TINT, s);
         {
