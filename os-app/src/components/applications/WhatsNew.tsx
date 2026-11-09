@@ -11,6 +11,7 @@ const CHANGES: { date: string; items: string[] }[] = [
             'On phones the first screen now has a Resume button, so the resume is one tap away, and it says what AayushOS Lite is.',
             'After you tap "Explore the 3D room" on a phone, the room picture stays up with "Loading the room" instead of a black screen, and if the download fails you can try again.',
             'The picture of the room no longer shows hard edges on shorter phones, and the red button is easier to read.',
+            'The start-up screen now has a link to the resume, says whose computer it is, and works with the keyboard and screen readers. If your browser cannot draw 3D you get a message with links, not a black page.',
         ],
     },
     {

@@ -18,6 +18,16 @@ import Stats from 'stats.js';
 import Loading from './Utils/Loading';
 
 import UI from './UI';
+import { createUI } from './UI/App';
+
+const hasWebGL = () => {
+    try {
+        const canvas = document.createElement('canvas');
+        return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+    } catch (e) {
+        return false;
+    }
+};
 
 let instance: Application | null = null;
 
@@ -58,6 +68,13 @@ export default class Application {
         this.scene = new THREE.Scene();
         this.cssScene = new THREE.Scene();
         this.overlayScene = new THREE.Scene();
+        // No WebGL (switched off, blocked on an office machine, a very old browser): the renderer
+        // would throw before anything is on the page. Put up the loading screen alone; it shows
+        // the "No WebGL" message with the ways to the same content without 3D.
+        if (!hasWebGL()) {
+            createUI();
+            return;
+        }
         this.resources = new Resources(sources);
         this.camera = new Camera();
         this.renderer = new Renderer();

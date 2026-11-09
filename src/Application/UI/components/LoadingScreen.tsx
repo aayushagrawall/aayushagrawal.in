@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import eventBus from '../EventBus';
-import { PHONE, TOUCH } from '../../config';
+import { OPEN_TO_INTERNSHIPS, PHONE, TOUCH } from '../../config';
 
 type LoadingProps = {};
 
@@ -107,6 +107,19 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
         } catch (e) {}
     };
     const started = useRef(false);
+    const startButton = useRef<HTMLButtonElement>(null);
+    // the START 3D / SKIP box has just appeared: put the keyboard on START 3D
+    useEffect(() => {
+        if (startPopupOpacity === 1 && startButton.current) startButton.current.focus();
+    }, [startPopupOpacity]);
+    // what a screen reader hears while the room loads: quarters, not every file
+    const spoken = webGLError
+        ? ''
+        : progress >= 1
+        ? slow
+            ? 'Loaded. Choose Start 3D or skip to the desktop.'
+            : 'Loaded. Opening the room.'
+        : `Loading the room, ${Math.floor(progress * 4) * 25} percent`;
 
     // ESC on the loading screen goes straight to AayushOS without the 3D
     useEffect(() => {
@@ -230,6 +243,9 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                 transform: `scale(${overlayOpacity === 0 ? 1.1 : 1})`,
             })}
         >
+            <p role="status" style={styles.srOnly}>
+                {spoken}
+            </p>
             {/* the room, blurred, behind the start box (and the whole short screen) */}
             <div style={Object.assign({}, styles.roomBg, { opacity: quick && !webGLError ? 1 : startPopupOpacity * 0.9 })} />
             {quick && !webGLError && (
@@ -237,9 +253,15 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                     <p className={progress >= 1 ? undefined : 'loading'}>
                         {progress >= 1 ? 'READY' : `LOADING THE ROOM ${Math.round(progress * 100)}%`}
                     </p>
-                    <a href="/os/" onClick={skip} style={styles.quickSkip}>
-                        {TOUCH ? 'skip to the desktop' : 'ESC: skip to the desktop'}
-                    </a>
+                    <p style={styles.quickLinks}>
+                        <a href="/os/" onClick={skip} style={styles.quickSkip}>
+                            {TOUCH ? 'skip to the desktop' : 'ESC: skip to the desktop'}
+                        </a>
+                        {' · '}
+                        <a href="/cv/" style={styles.quickSkip}>
+                            resume
+                        </a>
+                    </p>
                 </div>
             )}
             {startPopupOpacity === 0 && loadingTextOpacity === 0 && (
@@ -278,6 +300,10 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                         {showBiosInfo && (
                             <>
                                 <p>
+                                    Owner : Aayush Agrawal, AI &amp; ML student
+                                    {OPEN_TO_INTERNSHIPS ? ', open to internships' : ''}
+                                </p>
+                                <p>
                                     CPU : {device.cores ? `${device.cores} cores detected` : 'Detected'}
                                 </p>
                                 <p>
@@ -305,7 +331,7 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                             </>
                         )}
                         <div style={styles.spacer} />
-                        <div style={styles.resourcesLoadingList}>
+                        <div style={styles.resourcesLoadingList} aria-hidden="true">
                             {resources.map((sourceName) => (
                                 <p key={sourceName}>{sourceName}</p>
                             ))}
@@ -328,9 +354,13 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                         className="loading-screen-footer"
                     >
                         <p>
-                            Press <b>DEL</b> to enter SETUP ,{' '}
+                            Press{' '}
                             <a href="/os/" onClick={skip} style={styles.footerLink}>
                                 <b>ESC</b> to skip to the desktop (no 3D)
+                            </a>{' '}
+                            , or read the{' '}
+                            <a href="/cv/" style={styles.footerLink}>
+                                <b>RESUME</b>
                             </a>
                         </p>
                         <p>{getCurrentDate()}</p>
@@ -340,6 +370,8 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
             <div
                 style={Object.assign({}, styles.popupContainer, {
                     opacity: startPopupOpacity,
+                    // while it's invisible it must not take clicks or the Tab key
+                    visibility: startPopupOpacity === 0 ? 'hidden' : 'visible',
                 })}
             >
                 <div style={styles.startPopup}>
@@ -382,9 +414,9 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                             gap: 16,
                         }}
                     >
-                        <div className="bios-start-button" onClick={start}>
+                        <button type="button" className="bios-start-button" onClick={start} ref={startButton}>
                             <p>{slow ? 'START 3D' : 'START'}</p>
-                        </div>
+                        </button>
                         {slow && (
                             <a className="bios-start-button" href="/os/" onClick={skip} style={styles.skipButton}>
                                 <p>{PHONE ? 'OPEN LITE' : 'SKIP TO DESKTOP'}</p>
@@ -404,7 +436,7 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                         opacity: webGLErrorOpacity,
                     })}
                 >
-                    <div style={styles.startPopup}>
+                    <div style={styles.startPopup} role="alert">
                         <p>
                             <b style={{ color: 'red' }}>CRITICAL ERROR:</b> No
                             WebGL Detected
@@ -422,6 +454,10 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                             Or open the same portfolio without 3D:{' '}
                             <a href="/os/" onClick={skip} style={styles.inlineLink}>
                                 AayushOS
+                            </a>
+                            {' , or the '}
+                            <a href="/cv/" style={styles.inlineLink}>
+                                resume
                             </a>
                         </p>
                     </div>
@@ -468,6 +504,7 @@ const styles: StyleSheetCSS = {
         pointerEvents: 'none',
     },
     header: {
+        flexShrink: 0,
         width: '100%',
         boxSizing: 'border-box',
         display: 'flex',
@@ -500,7 +537,20 @@ const styles: StyleSheetCSS = {
     },
     footerLink: {
         color: 'inherit',
-        textDecoration: 'none',
+        textDecoration: 'underline',
+        textUnderlineOffset: 3,
+    },
+    quickLinks: {
+        color: '#aaa',
+        fontSize: 14,
+    },
+    srOnly: {
+        position: 'absolute',
+        width: 1,
+        height: 1,
+        overflow: 'hidden',
+        clip: 'rect(0 0 0 0)',
+        whiteSpace: 'nowrap',
     },
     quick: {
         position: 'absolute',
@@ -514,7 +564,8 @@ const styles: StyleSheetCSS = {
         color: '#aaa',
         fontFamily: 'monospace',
         fontSize: 14,
-        textDecoration: 'none',
+        textDecoration: 'underline',
+        textUnderlineOffset: 3,
     },
     inlineLink: {
         color: '#ff6a1a',
@@ -560,6 +611,9 @@ const styles: StyleSheetCSS = {
     },
     body: {
         flex: 1,
+        // in a short window the list is cut off, so the footer (skip, resume) stays on screen
+        minHeight: 0,
+        overflow: 'hidden',
         display: 'flex',
         width: '100%',
         boxSizing: 'border-box',
@@ -582,6 +636,7 @@ const styles: StyleSheetCSS = {
         marginRight: 16,
     },
     footer: {
+        flexShrink: 0,
         boxSizing: 'border-box',
         width: '100%',
     },
