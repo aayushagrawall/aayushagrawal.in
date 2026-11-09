@@ -6,6 +6,15 @@ export interface WhatsNewProps extends WindowAppProps {}
 // The changelog. Newest first; add a new entry at the top when the site changes.
 const CHANGES: { date: string; items: string[] }[] = [
     {
+        date: '10 November 2026',
+        items: [
+            'Click the window in the 3D room and it starts to rain: drops run down the glass and you can hear it. It also rains there when it is really raining in Bangalore.',
+            'Drag to look around the room (with a mouse or a finger); a click still takes you to the desk.',
+            'On phones the site opens on the room at night, and the 3D room now fits a phone screen and works with taps.',
+            'The phone version lists every achievement too, the room moves less if you have "reduce motion" on, the sounds are better balanced, and every page has a new picture for when it is shared.',
+        ],
+    },
+    {
         date: '9 November 2026, night',
         items: [
             'The 3D room is now something to play with: kick the football around, click the bed to turn the lights out, flick the STAY UP neon, and say hi to the cat on the bed (it wakes up and watches you).',
