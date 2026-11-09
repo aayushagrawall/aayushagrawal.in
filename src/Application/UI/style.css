@@ -146,6 +146,12 @@ br {
     padding-bottom: 64px;
 }
 
+/* the short loading line returning visitors get */
+.loading-quick {
+    left: 48px;
+    bottom: 64px;
+}
+
 .info-wrapper {
     top: 64px;
     left: 64px;
@@ -181,5 +187,10 @@ br {
     .loading-screen-footer {
         padding: 16px;
         padding-bottom: 32px;
+    }
+
+    .loading-quick {
+        left: 16px;
+        bottom: 32px;
     }
 }

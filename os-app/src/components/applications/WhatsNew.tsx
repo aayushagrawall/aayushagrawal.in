@@ -12,6 +12,8 @@ const CHANGES: { date: string; items: string[] }[] = [
             'Drag to look around the room (with a mouse or a finger); a click still takes you to the desk.',
             'On phones the site opens on the room at night, and the 3D room now fits a phone screen and works with taps. Tap the computer on a phone and AayushOS Lite opens, made for small screens.',
             'The phone version lists every achievement too, the room moves less if you have "reduce motion" on, the sounds are better balanced, and every page has a new picture for when it is shared.',
+            'No more START button: the 3D room opens by itself as soon as it has loaded, and if you have been here before you skip the start-up screen. Press Esc while it loads to go straight to the desktop.',
+            'Much faster on phones: the 3D room is downloaded only when you choose it.',
         ],
     },
     {

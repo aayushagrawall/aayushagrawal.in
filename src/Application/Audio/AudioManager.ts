@@ -32,14 +32,12 @@ export default class Audio {
             rain: new RainAudio(this),
         };
 
+        // The room opens by itself (no START click), so the browser may not allow sound yet:
+        // the ambience and the startup chime wait in the paused audio context, and the first
+        // click, tap or key press anywhere starts it (every browser counts that as a gesture).
         UIEventBus.on('loadingScreenDone', () => {
-            setTimeout(() => {
-                const AudioContext =
-                    // @ts-ignore
-                    window.AudioContext || window.webkitAudioContext;
-                this.context = new AudioContext();
-                this.context.resume();
-            }, 100);
+            this.context = this.listener.context as AudioContext;
+            this.unlock();
         });
 
         UIEventBus.on('muteToggle', (mute: boolean) => {
@@ -53,6 +51,19 @@ export default class Audio {
         window.addEventListener('storage', (e) => {
             if (e.key === 'aayushos-muted') this.listener.setMasterVolume(e.newValue === '1' ? 0 : 1);
         });
+    }
+
+    unlock() {
+        const ctx = this.context;
+        const events = ['pointerdown', 'touchend', 'keydown', 'mousedown'];
+        const done = () => events.forEach((e) => window.removeEventListener(e, onGesture, true));
+        const resume = () => {
+            const p = ctx.resume();
+            if (p && p.then) p.then(() => ctx.state === 'running' && done()).catch(() => {});
+        };
+        const onGesture = () => resume();
+        events.forEach((e) => window.addEventListener(e, onGesture, true));
+        resume();
     }
 
     playAudio(

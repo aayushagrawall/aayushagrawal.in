@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import eventBus from '../EventBus';
+import { TOUCH } from '../../config';
 
 type LoadingProps = {};
 
@@ -47,6 +48,22 @@ const slowReason = (): string => {
     return '';
 };
 
+/**
+ * Someone who has been in the room before (on this browser) skips the BIOS screen: they get
+ * the blurred room and a small progress line, then the room itself.
+ */
+const SEEN_KEY = 'aayushos-seen-room';
+const seenBefore = () => {
+    try {
+        return localStorage.getItem(SEEN_KEY) === '1';
+    } catch (e) {
+        return false;
+    }
+};
+
+/** How long "All Content Loaded, launching ..." stays up before the room fades in. */
+const LAUNCH_DELAY = 900;
+
 const LoadingScreen: React.FC<LoadingProps> = () => {
     const [progress, setProgress] = useState(0);
     const [toLoad, setToLoad] = useState(0);
@@ -66,6 +83,9 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
     const [mobileWarning, setMobileWarning] = useState(window.innerWidth < 768);
     const [slow] = useState(slowReason);
     const [device] = useState(deviceInfo);
+    // a returning visitor gets the short screen; a device that may struggle always gets the
+    // START / SKIP choice (it's the only case that still has a button)
+    const [quick] = useState(() => seenBefore() && !slow);
     // the RAM check counts up like an old BIOS memory test
     const [ramShown, setRamShown] = useState(0);
     useEffect(() => {
@@ -87,6 +107,18 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
             if (gc && gc.count) gc.count({ path: '3d/skip', title: 'Skipped the 3D room', event: true });
         } catch (e) {}
     };
+    const started = useRef(false);
+
+    // ESC on the loading screen goes straight to AayushOS without the 3D
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key !== 'Escape' || started.current) return;
+            skip();
+            window.location.href = '/os/';
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
 
     const onResize = () => {
         if (window.innerWidth < 768) {
@@ -134,6 +166,12 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
         if (progress >= 1 && !webGLError) {
             setDoneLoading(true);
 
+            // no START button: the room opens by itself, unless this device may struggle,
+            // in which case the visitor chooses between the 3D room and the plain desktop
+            if (!slow) {
+                setTimeout(start, quick ? 250 : LAUNCH_DELAY);
+                return;
+            }
             setTimeout(() => {
                 setLoadingTextOpacity(0);
                 setTimeout(() => {
@@ -152,6 +190,11 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
     }, [webGLError]);
 
     const start = useCallback(() => {
+        if (started.current) return;
+        started.current = true;
+        try {
+            localStorage.setItem(SEEN_KEY, '1');
+        } catch (e) {}
         setLoadingOverlayOpacity(0);
         eventBus.dispatch('loadingScreenDone', {});
         const ui = document.getElementById('ui');
@@ -198,14 +241,24 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                 transform: `scale(${overlayOpacity === 0 ? 1.1 : 1})`,
             })}
         >
-            {/* the room, blurred, behind the start box */}
-            <div style={Object.assign({}, styles.roomBg, { opacity: startPopupOpacity * 0.9 })} />
+            {/* the room, blurred, behind the start box (and the whole short screen) */}
+            <div style={Object.assign({}, styles.roomBg, { opacity: quick && !webGLError ? 1 : startPopupOpacity * 0.9 })} />
+            {quick && !webGLError && (
+                <div style={styles.quick} className="loading-quick">
+                    <p className={progress >= 1 ? undefined : 'loading'}>
+                        {progress >= 1 ? 'READY' : `LOADING THE ROOM ${Math.round(progress * 100)}%`}
+                    </p>
+                    <a href="/os/" onClick={skip} style={styles.quickSkip}>
+                        {TOUCH ? 'skip to the desktop' : 'ESC: skip to the desktop'}
+                    </a>
+                </div>
+            )}
             {startPopupOpacity === 0 && loadingTextOpacity === 0 && (
                 <div style={styles.blinkingContainer}>
                     <span className="blinking-cursor" />
                 </div>
             )}
-            {!webGLError && (
+            {!webGLError && !quick && (
                 <div
                     style={Object.assign({}, styles.overlayText, {
                         opacity: loadingTextOpacity,
@@ -286,8 +339,10 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                         className="loading-screen-footer"
                     >
                         <p>
-                            Press <b>DEL</b> to enter SETUP , <b>ESC</b> to skip
-                            memory test
+                            Press <b>DEL</b> to enter SETUP ,{' '}
+                            <a href="/os/" onClick={skip} style={styles.footerLink}>
+                                <b>ESC</b> to skip to the desktop (no 3D)
+                            </a>
                         </p>
                         <p>{getCurrentDate()}</p>
                     </div>
@@ -398,17 +453,14 @@ const styles: StyleSheetCSS = {
         width: '100%',
         height: '100%',
         display: 'flex',
-        transition: 'opacity 0.2s, transform 0.2s',
-        MozTransition: 'opacity 0.2s, transform 0.2s',
-        WebkitTransition: 'opacity 0.2s, transform 0.2s',
-        OTransition: 'opacity 0.2s, transform 0.2s',
-        msTransition: 'opacity 0.2s, transform 0.2s',
+        transition: 'opacity 0.6s, transform 0.6s',
 
         transitionTimingFunction: 'ease-in-out',
         MozTransitionTimingFunction: 'ease-in-out',
         WebkitTransitionTimingFunction: 'ease-in-out',
         OTransitionTimingFunction: 'ease-in-out',
         msTransitionTimingFunction: 'ease-in-out',
+        position: 'relative',
 
         boxSizing: 'border-box',
         fontSize: 16,
@@ -461,6 +513,24 @@ const styles: StyleSheetCSS = {
         fontSize: 14,
         textAlign: 'center',
         textDecoration: 'underline',
+    },
+    footerLink: {
+        color: 'inherit',
+        textDecoration: 'none',
+    },
+    quick: {
+        position: 'absolute',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        background: '#000',
+        padding: '6px 14px',
+    },
+    quickSkip: {
+        color: '#aaa',
+        fontFamily: 'monospace',
+        fontSize: 14,
+        textDecoration: 'none',
     },
     inlineLink: {
         color: '#ff6a1a',
