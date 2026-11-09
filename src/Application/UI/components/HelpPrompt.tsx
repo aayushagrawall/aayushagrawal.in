@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import eventBus from '../EventBus';
 import { motion } from 'framer-motion';
 import UIEventBus from '../EventBus';
+import { TOUCH } from '../../config';
 
-const HELP_TEXT = 'Click anywhere to begin';
+const HELP_TEXT = TOUCH ? 'Tap anywhere to begin' : 'Click anywhere to begin';
 
 type HelpPromptProps = {};
 

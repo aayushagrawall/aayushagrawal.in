@@ -9,7 +9,8 @@ import Resources from '../Utils/Resources';
 import UIEventBus from '../UI/EventBus';
 import Time from '../Utils/Time';
 import BezierEasing from 'bezier-easing';
-import { NEXT } from '../config';
+import { NEXT, PHONE } from '../config';
+import { openPhoneLite } from '../UI/PhoneLite';
 import {
     CameraKeyframeInstance,
     MonitorKeyframe,
@@ -195,10 +196,13 @@ export default class Camera extends EventEmitter {
 
     setMonitorListeners() {
         this.on('enterMonitor', () => {
+            // phones: the desktop AayushOS is too small to use there, open AayushOS Lite instead
+            if (PHONE) return openPhoneLite();
             this.transition(CameraKey.MONITOR, 1000);
             UIEventBus.dispatch('enterMonitor', {});
         });
         this.on('leftMonitor', () => {
+            if (PHONE) return; // the camera never went to the monitor
             this.transition(CameraKey.DESK);
             UIEventBus.dispatch('leftMonitor', {});
         });
