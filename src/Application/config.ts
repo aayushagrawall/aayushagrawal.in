@@ -36,7 +36,7 @@ export const NEW_ROOM: boolean = (() => {
 // ROOM_TOYS_FOR_EVERYONE = false keeps it in preview: on only with ?toys=1 (remembered for
 // the visit; ?toys=0 turns it off). AayushOS reads the same sessionStorage key, and src/index.html
 // preloads Room2's files for it (switch its default too when this goes to everyone).
-export const ROOM_TOYS_FOR_EVERYONE = false;
+export const ROOM_TOYS_FOR_EVERYONE = true;
 export const ROOM_TOYS: boolean =
     NEW_ROOM &&
     (() => {

@@ -5,7 +5,7 @@ export type Achievement = { id: string; title: string; hint: string; done: strin
 
 // The room toys (src/Application/config.ts ROOM_TOYS) add three achievements in the 3D room.
 // In preview they are on only when the page was opened with ?toys=1 (the page sets this key).
-export const ROOM_TOYS_FOR_EVERYONE = false;
+export const ROOM_TOYS_FOR_EVERYONE = true;
 const ROOM_TOYS = (() => {
     if (ROOM_TOYS_FOR_EVERYONE) return true;
     try {

@@ -9,12 +9,8 @@
     // Desktops only: phones see the 2D gate and shouldn't spend data on these.
     (function () {
       if (!(window.matchMedia && matchMedia('(pointer: fine)').matches)) return;
-      // the room's bake (Room2 for the room toys preview: ?toys=1, see src/Application/config.ts)
-      var room = 'models/Room/';
-      try {
-        var q = new URLSearchParams(location.search).get('toys');
-        if (q === '1' || (q !== '0' && sessionStorage.getItem('aayushos-toys') === '1')) room = 'models/Room2/';
-      } catch (e) {}
+      // the room's bake (Room2: the room with the toys, see src/Application/config.ts)
+      var room = 'models/Room2/';
       [['models/Computer/baked_computer.webp', 'image'], ['models/Computer/computer_setup.glb', 'fetch'],
        [room + 'albedo.webp', 'image'], [room + 'light-night.webp', 'image'], [room + 'light-day.webp', 'image'],
        [room + 'room.glb', 'fetch'], [room + 'glow.glb', 'fetch']].forEach(function (f) {
@@ -102,17 +98,17 @@
   <meta property="og:url" content="https://aayushagrawal.in/">
   <meta property="og:title" content="Aayush Agrawal - 3D Portfolio">
   <meta property="og:description" content="Walk up to a retro computer and explore my projects, resume and experience.">
-  <meta property="og:image" content="https://aayushagrawal.in/images/og-image.jpg">
+  <meta property="og:image" content="https://aayushagrawal.in/images/og-room.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="A 3D desk with a retro computer showing Aayush Agrawal's portfolio">
+  <meta property="og:image:alt" content="Aayush Agrawal's 3D bedroom portfolio at night: a retro computer on the desk, a STAY UP neon sign, sneakers and a cat on the bed">
   <meta property="og:locale" content="en_IN">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Aayush Agrawal - 3D Portfolio">
   <meta name="twitter:description" content="Walk up to a retro computer and explore my projects, resume and experience.">
-  <meta name="twitter:image" content="https://aayushagrawal.in/images/og-image.jpg">
+  <meta name="twitter:image" content="https://aayushagrawal.in/images/og-room.jpg">
 
   <!-- stable, absolute icon URLs: Google and link previews cache favicons by URL, and a
        hashed file name or a missing /favicon.ico makes them keep showing an old icon -->
