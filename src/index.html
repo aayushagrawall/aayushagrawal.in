@@ -229,9 +229,10 @@
         var coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
         var small = Math.min(screen.width, screen.height) < 768;
         if (!(coarse && small)) return;
-        // the new choice screen is in preview (?next=1, see NEXT in src/Application/config.ts)
-        var next = false;
-        try {
+        // the choice screen with the room (preview switch: NEXT in src/Application/config.ts)
+        var NEXT_FOR_EVERYONE = true;
+        var next = NEXT_FOR_EVERYONE;
+        if (!next) try {
           var q = new URLSearchParams(location.search).get('next');
           if (q === '1' || q === '0') sessionStorage.setItem('aayushos-next', q);
           next = sessionStorage.getItem('aayushos-next') === '1';

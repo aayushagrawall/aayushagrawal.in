@@ -10,11 +10,11 @@ export const OPEN_TO_INTERNSHIPS = true;
 export const SHOW_NAMEPLATE = false; // walnut nameplate with the name and title
 export const SHOW_RESUME_FRAME = true; // framed resume with a QR code (click opens /cv/)
 
-// New things in preview, before they go live: on only with ?next=1 (remembered for the visit;
-// ?next=0 turns them off). NEXT_FOR_EVERYONE = true puts them live for everyone. Right now:
-// rain on the window (click it), drag to look around the room, and the room on the phone
-// choice screen (src/index.html reads the same sessionStorage key).
-export const NEXT_FOR_EVERYONE = false;
+// New things in preview, before they go live: with NEXT_FOR_EVERYONE = false they're on only
+// with ?next=1 (remembered for the visit; ?next=0 turns them off). Live now: rain on the window
+// (click it), drag to look around the room, and the room on the phone choice screen
+// (src/index.html has its own copy of the switch: NEXT_FOR_EVERYONE there too).
+export const NEXT_FOR_EVERYONE = true;
 export const NEXT: boolean = (() => {
     if (NEXT_FOR_EVERYONE) return true;
     try {
