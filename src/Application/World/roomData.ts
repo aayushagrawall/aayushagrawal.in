@@ -1,8 +1,8 @@
 // Written by scripts/room-blender/install.sh from the bake's room.json. Don't edit by hand.
 export const ROOM2 = {
     "lightMapIntensity": {
-        "night": 11.1622,
-        "day": 18.0787
+        "night": 11.0721,
+        "day": 17.178
     },
     "props": {
         "cat": {
@@ -36,9 +36,9 @@ export const ROOM2 = {
         },
         "phone": {
             "center": [
-                2080.0,
+                -1320.0,
                 -422.0,
-                1300.0
+                1330.0
             ],
             "size": [
                 228,
@@ -47,14 +47,14 @@ export const ROOM2 = {
         },
         "case": {
             "hinge": [
-                1271.0,
+                1266.9,
                 -381.0,
-                1397.6
+                1066.7
             ],
             "axis": [
-                968.9,
+                980.1,
                 0.0,
-                247.4
+                198.7
             ]
         }
     },
