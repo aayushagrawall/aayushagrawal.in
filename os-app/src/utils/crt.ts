@@ -3,6 +3,10 @@
 const KEY = 'aayushos-crt';
 
 export const crtOn = () => {
+    // not on phones and tablets: the full-screen video layers get in the way of scrolling and taps there
+    try {
+        if (window.matchMedia('(pointer: coarse)').matches) return false;
+    } catch (e) {}
     try {
         return localStorage.getItem(KEY) !== '0';
     } catch (e) {

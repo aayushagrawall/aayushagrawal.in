@@ -29,12 +29,15 @@ export function openPhoneLite() {
         frame.style.cssText = 'position:absolute;left:0;right:0;bottom:0;top:calc(46px + env(safe-area-inset-top));width:100%;height:calc(100% - 46px - env(safe-area-inset-top));border:0';
         back.onclick = () => {
             box!.style.display = 'none';
+            document.body.style.touchAction = 'none'; // the room handles drags itself again
         };
         box.appendChild(bar);
         box.appendChild(frame);
         document.body.appendChild(box);
     }
     box.style.display = 'block';
+    // the room turns the browser's own touch scrolling off; Lite needs it back to scroll its pages
+    document.body.style.touchAction = 'auto';
     try {
         const gc = (window as any).goatcounter;
         if (gc && gc.count) gc.count({ path: '3d/phone-lite', title: 'Phone: AayushOS Lite from the 3D room', event: true });

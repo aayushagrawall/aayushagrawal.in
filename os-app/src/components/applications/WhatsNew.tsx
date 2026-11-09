@@ -14,6 +14,7 @@ const CHANGES: { date: string; items: string[] }[] = [
             'The phone version lists every achievement too, the room moves less if you have "reduce motion" on, the sounds are better balanced, and every page has a new picture for when it is shared.',
             'No more START button: the 3D room opens by itself as soon as it has loaded, and if you have been here before you skip the start-up screen. Press Esc while it loads to go straight to the desktop.',
             'Much faster on phones: the 3D room is downloaded only when you choose it.',
+            'Phone fixes: pages scroll properly, a tap opens files in the Recycle Bin and devices in Skills, achievement pop-ups no longer cover the close button, and Paint fits the screen.',
         ],
     },
     {

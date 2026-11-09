@@ -404,7 +404,7 @@
       render: function () {
         return '<div class="rb-bar"><button id="rb-restore">Restore</button><button id="rb-empty">Empty Recycle Bin</button></div>' +
           '<div class="sunken-panel rb-panel"><table class="interactive rb-table"><thead><tr><th>Name</th><th>Type</th><th>Size</th></tr></thead><tbody id="rb-list"></tbody></table></div>' +
-          '<div class="status-bar"><p class="status-bar-field" id="rb-count"></p><p class="status-bar-field">Double-click a file to peek inside</p></div>';
+          '<div class="status-bar"><p class="status-bar-field" id="rb-count"></p><p class="status-bar-field">' + (TOUCH ? 'Tap' : 'Double-click') + ' a file to peek inside</p></div>';
       },
       mount: Recycle
     },
@@ -430,7 +430,7 @@
 
     skills: {
       title: 'Device Manager', short: 'Skills', icon: 'chip', w: 580, h: 650, x: 360, y: 40,
-      status: 'Double-click a device for details',
+      status: (TOUCH ? 'Tap' : 'Double-click') + ' a device for details',
       render: function () {
         var tree = DEVICES.map(function (cat, ci) {
           return '<li><details open><summary>' + DI[cat[1]] + esc(cat[0]) + '</summary><ul>' +
@@ -465,6 +465,7 @@
             e.preventDefault();
             win.querySelectorAll('.dm-dev.sel').forEach(function (x) { x.classList.remove('sel'); });
             a.classList.add('sel'); sel = a;
+            if (TOUCH) props(+a.dataset.c, +a.dataset.d);
             return;
           }
           var b = e.target.closest('[data-dm]'); if (!b) return;
@@ -785,7 +786,8 @@
   // added over the page like light. Shared setting with AayushOS: 'aayushos-crt'.
   var Crt = (function () {
     var KEY = 'aayushos-crt', layers = [];
-    function on() { try { return localStorage.getItem(KEY) !== '0'; } catch (e) { return true; } }
+    // not on phones and tablets: the full-screen video layers get in the way of scrolling and taps there
+    function on() { if (TOUCH) return false; try { return localStorage.getItem(KEY) !== '0'; } catch (e) { return true; } }
     function show() {
       if (layers.length || SINGLE) return;
       var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -850,6 +852,7 @@
   START.forEach(function (item) {
     if (item === '-') { startList.appendChild(el('<hr>')); return; }
     if (item === 'crt') {
+      if (TOUCH) return;
       // the vintage CRT look (same setting as AayushOS)
       var c = el('<li>' + I.computer + '<span></span></li>');
       var paint = function () { c.querySelector('span').textContent = 'CRT effect: ' + (Crt.on() ? 'On' : 'Off'); };
@@ -874,7 +877,7 @@
     var app = APPS[item[0]];
     var icon = item[1] === 'contact' ? I.mail : item[1] === 'projects' ? I.folder : (item[1] ? I.doc : I[app.icon]);
     var li = el('<li>' + icon + '<span>' + esc(item[2] || label(app)) + '</span></li>');
-    li.addEventListener('click', function () { openApp(item[0], item[1]); });
+    li.addEventListener('click', function () { closeStart(); openApp(item[0], item[1]); });
     startList.appendChild(li);
   });
   function closeStart() { startMenu.hidden = true; startBtn.classList.remove('active'); }
@@ -1084,8 +1087,9 @@
       }).join('');
       win.querySelector('#rb-count').textContent = TRASH.length + ' object(s)';
     }
-    tbody.addEventListener('click', function (e) { var tr = e.target.closest('tr'); if (tr) { sel = +tr.dataset.i; render(); } });
-    tbody.addEventListener('dblclick', function (e) { var tr = e.target.closest('tr'); if (tr) achieve('dumpster'); if (tr) msgBox(TRASH[+tr.dataset.i].name, esc(TRASH[+tr.dataset.i].note)); });
+    function peek(i) { achieve('dumpster'); msgBox(TRASH[i].name, esc(TRASH[i].note)); }
+    tbody.addEventListener('click', function (e) { var tr = e.target.closest('tr'); if (tr) { sel = +tr.dataset.i; render(); if (TOUCH) peek(sel); } });
+    tbody.addEventListener('dblclick', function (e) { var tr = e.target.closest('tr'); if (tr && !TOUCH) peek(+tr.dataset.i); });
     win.querySelector('#rb-restore').addEventListener('click', function () {
       if (sel < 0) return msgBox('Recycle Bin', 'Select a file to restore first.');
       msgBox('Restore', 'Restoring <b>' + esc(TRASH[sel].name) + '</b>?<br><br>Nope. Some things are better left in the bin.', 'warn');
@@ -1162,7 +1166,7 @@
         '<div class="pt-palette">' + PALETTE.map(function (c) { return '<button class="pt-swatch" data-color="' + c + '" style="background:' + c + '" title="' + c + '"></button>'; }).join('') + '</div>' +
         '<div class="pt-actions"><button id="pt-undo">Undo</button><button id="pt-clear">New</button><button id="pt-save">Save PNG</button></div>' +
       '</div>' +
-      '<div class="status-bar"><p class="status-bar-field" id="pt-status">Left-click draws with the foreground colour, right-click with the background colour.</p><p class="status-bar-field pt-xy" id="pt-xy"></p></div>';
+      '<div class="status-bar"><p class="status-bar-field" id="pt-status">' + (TOUCH ? 'Draw with your finger. Tap a colour to pick it.' : 'Left-click draws with the foreground colour, right-click with the background colour.') + '</p><p class="status-bar-field pt-xy" id="pt-xy"></p></div>';
 
     var cv = root.querySelector('#pt-canvas'), cx = cv.getContext('2d', { willReadFrequently: true });
     var ov = root.querySelector('#pt-overlay'), ox = ov.getContext('2d');

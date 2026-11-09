@@ -384,7 +384,8 @@ button.icon, button.icon:active, button.icon:focus { gap: 4px; padding: 3px 2px;
   html:not(.single) .pt-wrap { flex-direction: column; }
   html:not(.single) .pt-tools { grid-template-columns: repeat(8, 30px); }
   html:not(.single) .pt-sizes { grid-column: auto; grid-template-columns: repeat(4, 30px); margin: 0; }
-  html:not(.single) .pt-canvas-wrap { max-height: 50vh; }
+  html:not(.single) .pt-canvas-wrap { max-height: 50vh; overflow: hidden; }
+  html:not(.single) .pt-canvas-wrap canvas { width: 100%; height: auto; }
   html:not(.single) .pt-bottom { flex-wrap: wrap; }
   html:not(.single) .pt-palette { grid-template-columns: repeat(14, 18px); }
   html:not(.single) .pt-swatch { width: 18px; }
@@ -504,7 +505,8 @@ html.single .pt { align-self: center; }
 .tray-speaker.muted::after { content: "×"; position: relative; left: -6px; top: 2px; color: #c00; font-weight: 700; }
 
 @media (max-width: 760px) {
-  html:not(.single) .ach-toast { left: 8px; right: 8px; width: auto; }
+  /* above the taskbar, so it never covers a window's close button */
+  html:not(.single) .ach-toast { left: 8px; right: 8px; width: auto; top: auto; bottom: 52px; }
   html:not(.single) .ultra { left: 8px; right: 8px; bottom: 48px; }
   html:not(.single) .ultra-bubble { width: auto; margin-right: 20px; align-self: stretch; }
   html:not(.single) .ultra-cup svg { width: 64px; height: 70px; }
