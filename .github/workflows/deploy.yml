@@ -28,7 +28,12 @@ jobs:
             os-app/package-lock.json
       - run: npm ci
       - run: cd os-app && npm ci --legacy-peer-deps
+      # Playwright renders the resume PDF and the indexable pages (/about/, /projects/...)
+      # in scripts/prerender.js; without it the build silently skips them.
+      - run: npm i --no-save playwright@1.63.0 && npx playwright install --with-deps chromium
       - run: CI=false npm run build
+      - name: Check the indexable pages were written
+        run: grep -q 'index, follow' public/about/index.html && grep -q 'text-version' public/os-lite/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
