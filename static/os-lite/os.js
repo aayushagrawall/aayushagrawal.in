@@ -13,7 +13,7 @@
     linkedin: 'https://www.linkedin.com/in/aayush-agrawall/',
     instagram: 'https://instagram.com/_aayush.agrawal',
     site: 'https://aayushagrawal.codes',
-    resume: 'files/Aayush-Agrawal-Resume.pdf'
+    resume: '/os/files/Aayush-Agrawal-Resume.pdf'
   };
 
   var PROJECTS = [

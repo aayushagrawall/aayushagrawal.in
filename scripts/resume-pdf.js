@@ -6,8 +6,8 @@
  *
  * It renders the page in Chromium (real, selectable text that job portals can
  * read), picks the largest size that fits one A4 page, and writes the PDF to:
- *   - os-app/public/files/            (AayushOS, /os/files/...)
- *   - static/os-lite/files/           (AayushOS Lite)
+ *   - os-app/public/files/            (AayushOS, /os/files/...; Lite links to the same file,
+ *                                     so Google sees one PDF, not two copies)
  *   - ../aayushagrawal.codes/assets/docs/  (if that repo is checked out next to this one)
  *
  * Needs Playwright with Chromium once:  npm i -D playwright && npx playwright install chromium
@@ -20,7 +20,6 @@ const ROOT = path.resolve(__dirname, '..');
 const SOURCE = path.join(ROOT, 'static/cv/index.html');
 const TARGETS = [
     path.join(ROOT, 'os-app/public/files', NAME),
-    path.join(ROOT, 'static/os-lite/files', NAME),
     path.join(ROOT, '../aayushagrawal.codes/assets/docs', NAME),
 ];
 
