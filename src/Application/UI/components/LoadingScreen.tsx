@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import eventBus from '../EventBus';
-import { TOUCH } from '../../config';
+import { PHONE, TOUCH } from '../../config';
 
 type LoadingProps = {};
 
@@ -80,7 +80,6 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
     const [webGLError, setWebGLError] = useState(false);
     const [counter, setCounter] = useState(0);
     const [resources] = useState<string[]>([]);
-    const [mobileWarning, setMobileWarning] = useState(window.innerWidth < 768);
     const [slow] = useState(slowReason);
     const [device] = useState(deviceInfo);
     // a returning visitor gets the short screen; a device that may struggle always gets the
@@ -119,16 +118,6 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, []);
-
-    const onResize = () => {
-        if (window.innerWidth < 768) {
-            setMobileWarning(true);
-        } else {
-            setMobileWarning(false);
-        }
-    };
-
-    window.addEventListener('resize', onResize);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -361,32 +350,27 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                     <div style={styles.spacer} />
                     <div style={styles.spacer} /> */}
                     <p>Aayush Agrawal Portfolio Showcase 2026</p>
-                    {mobileWarning && (
-                        <>
-                            <br />
-                            <b>
-                                <p style={styles.warning}>
-                                    WARNING: This experience is best viewed on
-                                </p>
-                                <p style={styles.warning}>
-                                    a desktop or laptop computer.
-                                </p>
-                            </b>
-                            <br />
-                        </>
-                    )}
-                    {slow && !mobileWarning && (
+                    {/* this box only shows on a device that may struggle, so it always says why.
+                        A phone has already chosen the 3D on the choice screen: no "use a laptop"
+                        warning here, and the other way out is AayushOS Lite. */}
+                    {slow && (
                         <>
                             <br />
                             <b>
                                 <p style={styles.warning}>HEADS UP: {slow}</p>
                             </b>
-                            <p>You can go straight to the desktop instead. Same content, no 3D.</p>
+                            <p>
+                                {PHONE
+                                    ? 'You can open AayushOS Lite instead. Same content, no 3D.'
+                                    : 'You can go straight to the desktop instead. Same content, no 3D.'}
+                            </p>
                             <br />
                         </>
                     )}
                     <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                        <p>Click start to begin{'\xa0'}</p>
+                        <p>
+                            {TOUCH ? 'Tap' : 'Click'} {slow ? 'START 3D' : 'START'} to begin{'\xa0'}
+                        </p>
                         <span className="blinking-cursor" />
                     </div>
                     <div
@@ -403,7 +387,7 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                         </div>
                         {slow && (
                             <a className="bios-start-button" href="/os/" onClick={skip} style={styles.skipButton}>
-                                <p>SKIP TO DESKTOP</p>
+                                <p>{PHONE ? 'OPEN LITE' : 'SKIP TO DESKTOP'}</p>
                             </a>
                         )}
                     </div>
@@ -553,6 +537,7 @@ const styles: StyleSheetCSS = {
         flexDirection: 'column',
         justifyContent: 'center',
         maxWidth: 500,
+        margin: '0 16px',
         // alignItems: 'center',
     },
     headerInfo: {

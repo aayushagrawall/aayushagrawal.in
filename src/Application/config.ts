@@ -3,7 +3,8 @@
  * Change a value, run `npm run build`, deploy.
  */
 
-// The neon "Open to internships" sign on the desk. Set to false to take it down.
+// The neon "Open to internships" sign on the desk. Set to false to take it down
+// (and take "open to internships" off the phone choice screen in src/index.html).
 export const OPEN_TO_INTERNSHIPS = true;
 
 // Extra desk objects. Flip a value to put an object on the desk or take it off.

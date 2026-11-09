@@ -189,41 +189,59 @@
       <button id="phone-gate-3d" type="button" style="display:block;width:100%;padding:12px;background:#000;color:#aaa;border:2px dashed #666;font:inherit;cursor:pointer">Try the 3D version anyway</button>
     </div>
   </div>
-  <!-- Phones, new version (preview, ?next=1): the room at night, then the choices -->
+  <!-- Phones: the room at night, then the choices. A recruiter's way to the resume is one tap from here. -->
   <style>
-    #phone-gate-room { position: fixed; inset: 0; z-index: 100000; flex-direction: column; justify-content: space-between; color: #fff; background: #181a29 url(images/room-phone.webp) no-repeat center 36% / cover; }
+    #phone-gate-room { position: fixed; inset: 0; z-index: 100000; flex-direction: column; justify-content: space-between; color: #fff; background: #1d1f2f url(images/room-phone.webp) no-repeat center 36% / cover; }
     #phone-gate-room, #phone-gate-room * { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; box-sizing: border-box; }
-    #phone-gate-room .top { padding: 30px 24px 0; }
-    #phone-gate-room .kicker { margin: 0; font: 700 12px/1 'Courier New', monospace; letter-spacing: .14em; color: #ff5c5c; }
-    #phone-gate-room h1 { margin: 10px 0 6px; font-size: 32px; line-height: 1.1; font-weight: 700; }
-    #phone-gate-room .sub { margin: 0; color: #c4c5d0; font-size: 15px; }
-    #phone-gate-room .bottom { padding: 70px 24px calc(24px + env(safe-area-inset-bottom)); background: linear-gradient(rgba(8, 8, 12, 0), rgba(8, 8, 12, .88) 34%); }
-    #phone-gate-room .go { display: block; width: 100%; padding: 16px; border: 0; border-radius: 14px; background: #ff3b3b; color: #fff; font-size: 17px; font-weight: 700; cursor: pointer; }
-    #phone-gate-room .note { margin: 10px 2px 18px; color: #aeb0bd; font-size: 13px; line-height: 1.45; }
-    #phone-gate-room .lite { display: block; padding: 14px; border: 1.5px solid rgba(255, 255, 255, .5); border-radius: 14px; color: #fff; text-decoration: none; text-align: center; font-weight: 600; font-size: 15px; }
-    #phone-gate-room .lite span { color: #aeb0bd; font-weight: 400; }
-    #phone-gate-room .other { display: block; margin-top: 14px; color: #aeb0bd; text-align: center; font-size: 13px; }
-    /* short phones: the room higher and a shorter panel, so the buttons don't cover it */
+    #phone-gate-room ::selection { background: #d92626; color: #fff; }
+    #phone-gate-room a:focus-visible, #phone-gate-room button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+    #phone-gate-room .top { position: relative; padding: 30px 24px 0; }
+    #phone-gate-room h1 { margin: 0 0 6px; font-size: 32px; line-height: 1.1; font-weight: 700; }
+    #phone-gate-room .sub { margin: 0; color: #c9cadb; font-size: 15px; line-height: 1.4; text-wrap: balance; }
+    #phone-gate-room .bottom { position: relative; padding: 70px 24px calc(24px + env(safe-area-inset-bottom)); background: linear-gradient(rgba(8, 8, 12, 0), rgba(8, 8, 12, .88) 34%); }
+    #phone-gate-room .go { display: block; width: 100%; padding: 16px; border: 0; border-radius: 14px; background: #d92626; color: #fff; font-size: 17px; font-weight: 700; cursor: pointer; }
+    #phone-gate-room .go:active { background: #b81f1f; }
+    #phone-gate-room .note { margin: 10px 2px 18px; color: #b4b6c6; font-size: 13px; line-height: 1.45; }
+    #phone-gate-room .pair { display: flex; gap: 10px; }
+    #phone-gate-room .pair a { flex: 1 1 0; min-width: 0; padding: 11px 8px; border: 1.5px solid rgba(255, 255, 255, .5); border-radius: 14px; color: #fff; text-decoration: none; text-align: center; font-weight: 600; font-size: 15px; line-height: 1.3; }
+    #phone-gate-room .pair a:active { background: rgba(255, 255, 255, .12); }
+    #phone-gate-room .pair span { display: block; color: #b4b6c6; font-weight: 400; font-size: 12px; }
+    #phone-gate-room .other { display: block; margin-top: 4px; padding: 12px 0 2px; color: #b4b6c6; text-align: center; font-size: 13px; text-underline-offset: 3px; }
+    /* after "Explore the 3D room": the room stays up with one line until the 3D has arrived */
+    #phone-gate-room .wait { display: none; margin: 0; padding: 16px 0 30px; text-align: center; font-size: 15px; color: #fff; }
+    #phone-gate-room.gate-waiting .choices { display: none; }
+    #phone-gate-room.gate-waiting .wait { display: block; }
+    #phone-gate-room .problem { margin: 0 2px 12px; color: #ffd9d9; font-size: 13px; line-height: 1.45; }
+    /* short phones: the whole room, higher up, and a shorter panel so the buttons don't cover it.
+       The picture is then narrower than the screen, so it sits in its own layer with soft sides. */
     @media (max-height: 740px) {
-      #phone-gate-room { background-size: auto 100%; background-position: center -28px; }
+      #phone-gate-room { background-image: none; }
+      #phone-gate-room::before { content: ''; position: absolute; top: -28px; left: 50%; height: 100%; aspect-ratio: 860 / 1864; transform: translateX(-50%); background: url(images/room-phone.webp) no-repeat center / 100% 100%; -webkit-mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent); }
       #phone-gate-room .top { padding-top: 22px; }
       #phone-gate-room h1 { font-size: 26px; }
       #phone-gate-room .bottom { padding-top: 40px; }
       #phone-gate-room .note { display: none; }
-      #phone-gate-room .lite { margin-top: 12px; }
+      #phone-gate-room .pair { margin-top: 12px; }
     }
   </style>
-  <div id="phone-gate-room" hidden>
+  <div id="phone-gate-room" role="region" aria-label="Choose how to look around" hidden>
     <div class="top">
-      <p class="kicker">PORTFOLIO 2026</p>
       <h1>Aayush Agrawal</h1>
-      <p class="sub">AI &amp; ML student &middot; Bengaluru</p>
+      <!-- "open to internships" goes with OPEN_TO_INTERNSHIPS in src/Application/config.ts -->
+      <p class="sub">AI &amp; ML student in Bengaluru, open to internships</p>
     </div>
     <div class="bottom">
-      <button class="go gate-3d" type="button">Explore the 3D room</button>
-      <p class="note">Kick the ball, wake the cat, make it rain. Drag to look around. Best on a laptop, fine on a phone.</p>
-      <a class="lite" href="os-lite/">Open AayushOS Lite <span>(made for phones)</span></a>
-      <a class="other" href="https://aayushagrawal.codes">or visit aayushagrawal.codes</a>
+      <div class="choices">
+        <p class="problem" role="alert" hidden>The 3D room didn't load. Check your connection and try again, or use one of the other two.</p>
+        <button class="go gate-3d" type="button">Explore the 3D room</button>
+        <p class="note">Kick the ball, wake the cat, make it rain. Drag to look around. Best on a laptop, fine on a phone.</p>
+        <div class="pair">
+          <a href="/cv/">Resume <span>one page, with PDF</span></a>
+          <a href="os-lite/">AayushOS Lite <span>projects, contact</span></a>
+        </div>
+        <a class="other" href="https://aayushagrawal.codes">or visit aayushagrawal.codes</a>
+      </div>
+      <p class="wait" role="status">Loading the room…</p>
     </div>
   </div>
   <!-- on phones: a small button to bring the choice screen back -->
@@ -246,13 +264,26 @@
         } catch (e) {}
         var g = document.getElementById(next ? 'phone-gate-room' : 'phone-gate');
         var sw = document.getElementById('phone-switch');
-        function showGate() { g.hidden = false; g.style.display = 'flex'; sw.hidden = true; }
+        var problem = g.querySelector('.problem');
+        function showGate() { g.classList.remove('gate-waiting'); g.hidden = false; g.style.display = 'flex'; sw.hidden = true; }
+        function closeGate() { g.classList.remove('gate-waiting'); g.style.display = 'none'; sw.hidden = false; }
         // the 3D app waits until it's asked for (src/script.ts)
         window.__aosHold3D = true;
         function hideGate() {
-          g.style.display = 'none'; sw.hidden = false;
-          if (window.__aosHold3D) { window.__aosHold3D = false; window.dispatchEvent(new Event('aos-start-3d')); }
+          if (!window.__aosHold3D) return closeGate();
+          window.__aosHold3D = false;
+          if (!next) { closeGate(); window.dispatchEvent(new Event('aos-start-3d')); return; }
+          // keep the room on screen until the 3D's own loading screen is there (no black gap)
+          if (problem) problem.hidden = true;
+          g.classList.add('gate-waiting');
+          window.dispatchEvent(new Event('aos-start-3d'));
         }
+        addEventListener('aos-3d-ready', closeGate);
+        addEventListener('aos-3d-failed', function () {
+          window.__aosHold3D = true;
+          showGate();
+          if (problem) problem.hidden = false;
+        });
         g.querySelector(next ? '.gate-3d' : '#phone-gate-3d').onclick = hideGate;
         sw.onclick = showGate;
         showGate();

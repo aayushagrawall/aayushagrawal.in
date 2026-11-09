@@ -6,6 +6,14 @@ export interface WhatsNewProps extends WindowAppProps {}
 // The changelog. Newest first; add a new entry at the top when the site changes.
 const CHANGES: { date: string; items: string[] }[] = [
     {
+        date: '10 November 2026, later',
+        items: [
+            'On phones the first screen now has a Resume button, so the resume is one tap away, and it says what AayushOS Lite is.',
+            'After you tap "Explore the 3D room" on a phone, the room picture stays up with "Loading the room" instead of a black screen, and if the download fails you can try again.',
+            'The picture of the room no longer shows hard edges on shorter phones, and the red button is easier to read.',
+        ],
+    },
+    {
         date: '10 November 2026',
         items: [
             'Click the window in the 3D room and it starts to rain: drops run down the glass and you can hear it. It also rains there when it is really raining in Bangalore.',
