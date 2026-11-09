@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import Application from '../Application';
 import BakedModel from '../Utils/BakedModel';
 import Resources from '../Utils/Resources';
-import { ROOM_TOYS } from '../config';
-import { ROOM2 } from './roomData';
+import { ROOM_DATA } from './roomData';
+import { REDUCED_MOTION } from '../config';
 
 /**
  * The streetwear bedroom around the CRT, modelled and light-baked in Blender
@@ -15,15 +15,14 @@ import { ROOM2 } from './roomData';
  * the two light maps in the shader. Glowing parts (LED strips, the neon sign, the window)
  * come from glow.glb and are drawn unlit on top.
  *
- * With ROOM_TOYS the room comes from static/models/Room2/, and the things that move (the
- * football, the cat, the phone, the earbuds case, the curtains) are separate meshes in
- * props.glb, baked into the same atlas. World/Toys.ts makes them interactive; this class
- * also runs the small idle animations (LED strips breathing, curtains swaying, a faint
- * flicker of the CRT's light at night) and the "lights out" of sleep mode.
+ * The things that move (the football, the cat, the phone, the earbuds case, the curtains) are
+ * separate meshes in props.glb, baked into the same atlas. World/Toys.ts makes them
+ * interactive; this class also runs the small idle animations (LED strips breathing, curtains
+ * swaying, a faint flicker of the CRT's light at night) and the "lights out" of sleep mode.
  */
 
 // light map intensities written by the bake (room.json)
-const LIGHT_SCALE = ROOM_TOYS ? ROOM2.lightMapIntensity : { night: 10.7121, day: 19.1283 };
+const LIGHT_SCALE = ROOM_DATA.lightMapIntensity;
 
 type Time = 'day' | 'sunset' | 'night';
 
@@ -106,7 +105,7 @@ export default class BakedRoom {
         this.model.updateMatrixWorld(true);
 
         this.addGlow(items.gltfModel.roomGlowModel.scene as THREE.Group);
-        if (ROOM_TOYS && items.gltfModel.roomPropsModel) this.addProps(items.gltfModel.roomPropsModel.scene as THREE.Group);
+        if (items.gltfModel.roomPropsModel) this.addProps(items.gltfModel.roomPropsModel.scene as THREE.Group);
     }
 
     prepare(child: THREE.Mesh) {
@@ -266,7 +265,7 @@ export default class BakedRoom {
             } else {
                 // LED strips: off when asleep; with the toys they breathe slowly
                 k *= 1 - 0.92 * s;
-                if (ROOM_TOYS) k *= 0.86 + 0.14 * Math.sin(t * 0.9 + phase);
+                if (!REDUCED_MOTION) k *= 0.86 + 0.14 * Math.sin(t * 0.9 + phase);
             }
             m.color.setRGB(0.25 + 0.75 * k, 0.04 + 0.15 * k, 0.04 + 0.15 * k);
         });
@@ -280,13 +279,13 @@ export default class BakedRoom {
         u.lightCrush.value = 5 * s;
         const tint = u.lightTint.value;
         tint.copy(this.tint).lerp(SLEEP_TINT, s);
-        if (ROOM_TOYS) {
+        {
             const night = 1 - this.mix;
             // the neon off: a little less red light in the room at night
             const n = (1 - this.neonMul) * night * (1 - s);
             if (n > 0) tint.multiply(new THREE.Color(1 - 0.12 * n, 1 - 0.05 * n, 1 - 0.05 * n));
             // the CRT's light, flickering very slightly at night
-            const f = 1 + 0.012 * night * (1 - s) * (Math.sin(t * 13.1) * 0.6 + Math.sin(t * 29.7) * 0.4);
+            const f = REDUCED_MOTION ? 1 : 1 + 0.012 * night * (1 - s) * (Math.sin(t * 13.1) * 0.6 + Math.sin(t * 29.7) * 0.4);
             tint.multiplyScalar(f);
         }
         if (!(this.scene.background instanceof THREE.Color)) this.scene.background = new THREE.Color();
@@ -310,7 +309,7 @@ export default class BakedRoom {
         const dt = this.lastTick ? Math.min(0.1, (now - this.lastTick) / 1000) : 0;
         this.lastTick = now;
         const t = now / 1000;
-        this.uniforms.uTime.value = t;
+        this.uniforms.uTime.value = REDUCED_MOTION ? 0 : t; // 0: the curtains hang still
         const a = Math.min(1, dt * 3);
         this.mix += (this.mixTarget - this.mix) * a;
         this.tint.lerp(this.tintTarget, a);

@@ -1,5 +1,5 @@
 // Written by scripts/room-blender/install.sh from the bake's room.json. Don't edit by hand.
-export const ROOM2 = {
+export const ROOM_DATA = {
     "lightMapIntensity": {
         "night": 11.0721,
         "day": 17.178

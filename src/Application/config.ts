@@ -10,42 +10,28 @@ export const OPEN_TO_INTERNSHIPS = true;
 export const SHOW_NAMEPLATE = false; // walnut nameplate with the name and title
 export const SHOW_RESUME_FRAME = true; // framed resume with a QR code (click opens /cv/)
 
-// The lo-fi bedroom around the desk (walls, window, LED backlight, shelf, fairy lights).
-// false = the original studio backdrop.
-export const LOFI_ROOM = false;
-
-// The streetwear bedroom, modelled and light-baked in Blender (scripts/room-blender/).
-// Replaces Henry's desk, chair, backdrop and desk props; the CRT and the desk items stay.
-// NEW_ROOM_FOR_EVERYONE = false puts it back in preview: then it's on only with ?room=new
-// (remembered for the visit; ?room=old turns it off again).
-export const NEW_ROOM_FOR_EVERYONE = true;
-export const NEW_ROOM: boolean = (() => {
-    if (NEW_ROOM_FOR_EVERYONE) return true;
+// New things in preview, before they go live: on only with ?next=1 (remembered for the visit;
+// ?next=0 turns them off). NEXT_FOR_EVERYONE = true puts them live for everyone. Right now:
+// rain on the window (click it), drag to look around the room, and the room on the phone
+// choice screen (src/index.html reads the same sessionStorage key).
+export const NEXT_FOR_EVERYONE = false;
+export const NEXT: boolean = (() => {
+    if (NEXT_FOR_EVERYONE) return true;
     try {
-        const q = new URLSearchParams(window.location.search).get('room');
-        if (q === 'new' || q === 'old') sessionStorage.setItem('aayushos-room', q);
-        return sessionStorage.getItem('aayushos-room') === 'new';
+        const q = new URLSearchParams(window.location.search).get('next');
+        if (q === '1' || q === '0') sessionStorage.setItem('aayushos-next', q);
+        return sessionStorage.getItem('aayushos-next') === '1';
     } catch (e) {
         return false;
     }
 })();
 
-// Things to play with in the room (needs NEW_ROOM): kick the football, click the bed to sleep,
-// flick the neon sign, a cat that wakes up and watches you, a phone that gets notifications,
-// an earbuds case, and small idle animations. Uses its own bake in static/models/Room2/.
-// ROOM_TOYS_FOR_EVERYONE = false keeps it in preview: on only with ?toys=1 (remembered for
-// the visit; ?toys=0 turns it off). AayushOS reads the same sessionStorage key, and src/index.html
-// preloads Room2's files for it (switch its default too when this goes to everyone).
-export const ROOM_TOYS_FOR_EVERYONE = true;
-export const ROOM_TOYS: boolean =
-    NEW_ROOM &&
-    (() => {
-        if (ROOM_TOYS_FOR_EVERYONE) return true;
-        try {
-            const q = new URLSearchParams(window.location.search).get('toys');
-            if (q === '1' || q === '0') sessionStorage.setItem('aayushos-toys', q);
-            return sessionStorage.getItem('aayushos-toys') === '1';
-        } catch (e) {
-            return false;
-        }
-    })();
+// The system's "reduce motion" setting: the room's idle animations (LED strips breathing, curtains
+// swaying, the CRT's flicker, floating Zzz, the cat breathing, the phone shivering) stay still.
+export const REDUCED_MOTION: boolean = (() => {
+    try {
+        return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (e) {
+        return false;
+    }
+})();

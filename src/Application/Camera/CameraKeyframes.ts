@@ -114,22 +114,49 @@ export class DeskKeyframe extends CameraKeyframeInstance {
 export class IdleKeyframe extends CameraKeyframeInstance {
     time: Time;
     origin: THREE.Vector3;
+    sizes: Sizes;
+    // looking around by dragging (Camera.ts): an extra turn about the room, eased, that drifts
+    // back to the slow automatic sway a few seconds after the last drag
+    yaw = 0;
+    yawTarget = 0;
+    lastDrag = 0;
+    lastTick = 0;
 
     constructor() {
         const keyframe = keys.idle;
         super(keyframe);
         this.origin = new THREE.Vector3().copy(keyframe.position);
         this.time = new Time();
+        this.sizes = new Application().sizes;
+    }
+
+    /** Turn by `radians` (from a drag). */
+    turn(radians: number) {
+        this.yawTarget += radians;
+        this.lastDrag = performance.now();
     }
 
     update() {
-        this.position.x =
-            Math.sin((this.time.elapsed + 19000) * 0.00008) * this.origin.x;
-        this.position.y =
-            Math.sin((this.time.elapsed + 1000) * 0.000004) * 4000 +
-            this.origin.y -
-            3000;
-        this.position.z = this.position.z;
+        const now = performance.now();
+        const dt = this.lastTick ? Math.min(0.1, (now - this.lastTick) / 1000) : 0;
+        this.lastTick = now;
+        // the slow sway from side to side
+        const x = Math.sin((this.time.elapsed + 19000) * 0.00008) * this.origin.x;
+        const y = Math.sin((this.time.elapsed + 1000) * 0.000004) * 4000 + this.origin.y - 3000;
+        const z = this.origin.z;
+        const f = this.focalPoint;
+        const v = new THREE.Vector3(x - f.x, y - f.y, z - f.z);
+        // the drag turn: keep the camera in front of the room (it's open on the front two sides)
+        const sway = Math.atan2(v.x, v.z);
+        const limit = (80 * Math.PI) / 180;
+        this.yawTarget = Math.max(-limit - sway, Math.min(limit - sway, this.yawTarget));
+        if (now - this.lastDrag > 6000) this.yawTarget *= Math.pow(0.5, dt / 1.5); // drift back
+        this.yaw += (this.yawTarget - this.yaw) * Math.min(1, dt * 8);
+        v.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
+        // tall screens (phones, tablets held upright): step back so the whole room fits across
+        const aspect = this.sizes ? this.sizes.width / this.sizes.height : 1.6;
+        v.multiplyScalar(Math.max(1, 1.3 / aspect));
+        this.position.copy(f).add(v);
     }
 }
 
