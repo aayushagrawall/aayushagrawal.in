@@ -214,7 +214,9 @@ class Sfx {
     }
 }
 
-type Target = { meshes: THREE.Object3D[]; click: (hit: THREE.Intersection, ray: THREE.Ray) => void; hover?: () => void };
+// `desk`: only from the desk view (the phone and the case are too small to aim at from the room
+// view, where a click on the desk should zoom in)
+type Target = { meshes: THREE.Object3D[]; click: (hit: THREE.Intersection, ray: THREE.Ray) => void; hover?: () => void; desk?: boolean };
 
 export default class Toys {
     application: Application;
@@ -281,7 +283,10 @@ export default class Toys {
             if (!cam || this.pointer.x < -2) return null;
             this.raycaster.setFromCamera(this.pointer, cam);
             // the first target (in order of priority) under the pointer: small things before the bed
+            const camera = (this.application as any).camera;
+            const roomView = !camera || camera.currentKeyframe === 'idle' || camera.targetKeyframe === 'idle';
             for (const t of this.targets) {
+                if (t.desk && roomView) continue;
                 const hits = this.raycaster.intersectObjects(t.meshes, false);
                 if (hits.length) return { t, hit: hits[0] };
             }
@@ -696,6 +701,7 @@ export default class Toys {
         this.phone = { mesh, screen, canvas, tex, base: mesh.position.clone(), screenBase: screen.position.clone(), spill, lit: 0, litUntil: 0, nextAt: performance.now() + 9000, buzzUntil: 0, i: 0, social: 0, drawn: '' };
         this.drawPhone();
         this.targets.push({
+            desk: true,
             meshes: [mesh, screen],
             click: () => {
                 const p = this.phone!;
@@ -836,6 +842,7 @@ export default class Toys {
         if (!lid || !base) return;
         this.lid = { mesh: lid, axis: v3(ROOM2.props.case.axis).normalize(), hinge: v3(ROOM2.props.case.hinge), base: lid.position.clone(), angle: 0, vel: 0, target: 0, closeAt: 0 };
         this.targets.push({
+            desk: true,
             meshes: [lid, base, ...(this.room.props['case_buds'] ? [this.room.props['case_buds']] : [])],
             click: () => {
                 const l = this.lid!;
