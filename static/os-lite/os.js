@@ -1638,7 +1638,7 @@
       ['Who is Aayush?', "He's an AI & Machine Learning undergrad at BMS College of Engineering in Bangalore, graduating in 2028. He builds small, useful software: Python tools, Discord bots and websites.", [['About me', 'showcase', 'about']]],
       ["What's his tech stack?", 'Python, JavaScript, Java and C, plus HTML & CSS, Node.js, Discord.js, MySQL, MongoDB, machine learning and Git.', []],
       ['Which project should I look at first?', 'Start with clienterr.com and imgurr.me on the Projects page. If you like bots, the Discord moderation bot is there too.', [['Projects', 'showcase', 'projects']]],
-      ['Can I see his resume?', "Of course. It's one page, and you can download it too. There's also a web version at aayushagrawal.in/cv that's easy to read on a phone.", [['Open resume', 'resume']]],
+      ['Can I see his resume?', "Of course. It's one page, and you can download it too. There's also a web version at aayushagrawal.in/cv/ that's easy to read on a phone.", [['Open resume', 'resume']]],
       ['Is he open to internships?', "Best to ask him directly! Send a message from the Contact page or email agrawal.aayush38@gmail.com and he'll get back to you.", [['Contact', 'showcase', 'contact']]],
       ['How was this site built?', "On a big screen, the desk is a Three.js scene running a React desktop adapted from Henry Heffernan's portfolio, with his permission. This phone-friendly version, with its Terminal, Tetris and Paint, is Aayush's own.", [['Credits', 'credits']]],
       ['Any secrets?', 'A few. Type "sudo hire aayush" in the Terminal, try the Konami code, peek in the Recycle Bin, or keep pressing Shut Down. Your progress is in Achievements.', [['Achievements', 'achievements']]]
