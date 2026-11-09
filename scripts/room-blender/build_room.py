@@ -468,8 +468,8 @@ def build():
 
 BALL = (400, FLOOR + 330, 6400)
 CAT = dict(at=(-4750, -2060, 5000), yaw=-1.98)  # on the duvet; yaw is Blender's Z rotation
-PHONE = dict(at=(2080, DESK_Y, 1300), yaw=0.32, w=250, l=520, t=30)
-CASE = dict(at=(1250, DESK_Y, 1480), yaw=-0.25, w=220, d=170, hb=70, hl=36)
+PHONE = dict(at=(-1320, DESK_Y, 1330), yaw=0.15, w=250, l=520, t=30)
+CASE = dict(at=(1250, DESK_Y, 1150), yaw=-0.2, w=220, d=170, hb=70, hl=36)
 META = {}  # positions the site needs (pivots, eyes, screen), written to room.json
 
 
@@ -812,7 +812,7 @@ def preview(out, mode='night', samples=24, view='idle'):
     elif view == 'cat':
         frm, to = (-2600, 600, 9000), (-4750, -1800, 5000)
     elif view == 'phone':
-        frm, to = (1700, 1100, 3600), (1700, DESK_Y, 1300)
+        frm, to = (0, 1100, 4200), (0, DESK_Y, 1200)
     else:
         frm, to = (0, 1500, 5300), (0, 500, 0)
     cam.location = V(*frm)
