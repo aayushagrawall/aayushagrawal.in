@@ -184,7 +184,7 @@ try {
                 '<li>LinkedIn: <a href="https://www.linkedin.com/in/aayush-agrawall/">linkedin.com/in/aayush-agrawall</a></li>' +
                 '<li>GitHub: <a href="https://github.com/aayushagrawall">github.com/aayushagrawall</a></li>' +
                 '<li>Instagram: <a href="https://instagram.com/_aayush.agrawal">@_aayush.agrawal</a></li>' +
-                '<li>Resume: <a href="/cv/">aayushagrawal.in/cv</a> (<a href="/os/files/Aayush-Agrawal-Resume.pdf">PDF</a>)</li>' +
+                '<li>Resume: <a href="/cv/">aayushagrawal.in/cv/</a> (<a href="/os/files/Aayush-Agrawal-Resume.pdf">PDF</a>)</li>' +
                 '</ul>' +
                 (byRoute['contact'] || ''),
             os: 'contact',
