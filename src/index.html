@@ -8,6 +8,13 @@
     // Start the big 3D downloads while the JavaScript bundle is still loading.
     // Desktops only: phones see the 2D gate and shouldn't spend data on these.
     (function () {
+      // phones: the choice screen's picture of the room, early (it's the biggest thing they see first)
+      if (window.matchMedia && matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768) {
+        var pl = document.createElement('link');
+        pl.rel = 'preload'; pl.as = 'image'; pl.href = 'images/room-phone.webp';
+        document.head.appendChild(pl);
+        return;
+      }
       if (!(window.matchMedia && matchMedia('(pointer: fine)').matches)) return;
       // the room's bake (scripts/room-blender/)
       var room = 'models/Room/';
@@ -240,7 +247,12 @@
         var g = document.getElementById(next ? 'phone-gate-room' : 'phone-gate');
         var sw = document.getElementById('phone-switch');
         function showGate() { g.hidden = false; g.style.display = 'flex'; sw.hidden = true; }
-        function hideGate() { g.style.display = 'none'; sw.hidden = false; }
+        // the 3D app waits until it's asked for (src/script.ts)
+        window.__aosHold3D = true;
+        function hideGate() {
+          g.style.display = 'none'; sw.hidden = false;
+          if (window.__aosHold3D) { window.__aosHold3D = false; window.dispatchEvent(new Event('aos-start-3d')); }
+        }
         g.querySelector(next ? '.gate-3d' : '#phone-gate-3d').onclick = hideGate;
         sw.onclick = showGate;
         showGate();
@@ -269,9 +281,9 @@
   <div id="ui-interactive"></div>
   <div id="ui"></div>
   <div id="monitor-videos">
-    <video id="video-1" muted loop autoplay width="0" height="0" src="../static/textures/monitor/video/base-static.mp4"
+    <video id="video-1" muted loop playsinline preload="none" width="0" height="0" src="../static/textures/monitor/video/base-static.mp4"
       style="opacity: 0;"></video>
-    <video id="video-2" muted loop autoplay width="0" height="0"
+    <video id="video-2" muted loop playsinline preload="none" width="0" height="0"
       src="../static/textures/monitor/video/static-texture-layer.mp4" style="opacity: 0;"></video>
   </div>
 </body>

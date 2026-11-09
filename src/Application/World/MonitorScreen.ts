@@ -322,9 +322,13 @@ export default class MonitorScreen extends EventEmitter {
                 this.getVideoTextures(videoId);
             }, 100);
         } else {
-            this.videoTextures[videoId] = new THREE.VideoTexture(
-                video as HTMLVideoElement
-            );
+            // the CRT's static: the videos don't autoplay (a phone that never opens the 3D
+            // shouldn't download them), they start here
+            const v = video as HTMLVideoElement;
+            v.muted = true;
+            const p = v.play();
+            if (p && p.catch) p.catch(() => {});
+            this.videoTextures[videoId] = new THREE.VideoTexture(v);
         }
     }
 

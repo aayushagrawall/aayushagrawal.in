@@ -12,6 +12,7 @@ import World from './World/World';
 import Resources from './Utils/Resources';
 
 import sources from './sources';
+import UIEventBus from './UI/EventBus';
 
 import Stats from 'stats.js';
 import Loading from './Utils/Loading';
@@ -78,6 +79,10 @@ export default class Application {
             this.resize();
         });
 
+        UIEventBus.on('loadingScreenDone', () => {
+            this.started = true;
+        });
+
         // Time tick event
         this.time.on('tick', () => {
             this.update();
@@ -89,7 +94,17 @@ export default class Application {
         this.renderer.resize();
     }
 
+    // Behind the loading screen nothing needs drawing: draw one frame once everything has
+    // loaded (to compile the shaders and upload the textures while the BIOS text runs), then
+    // wait for START.
+    started = false;
+    warmedUp = false;
+
     update() {
+        if (!this.started) {
+            if (this.warmedUp || !this.world || !this.world.room) return;
+            this.warmedUp = true;
+        }
         if (this.stats) this.stats.begin();
         this.camera.update();
         this.world.update();
