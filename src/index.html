@@ -182,6 +182,43 @@
       <button id="phone-gate-3d" type="button" style="display:block;width:100%;padding:12px;background:#000;color:#aaa;border:2px dashed #666;font:inherit;cursor:pointer">Try the 3D version anyway</button>
     </div>
   </div>
+  <!-- Phones, new version (preview, ?next=1): the room at night, then the choices -->
+  <style>
+    #phone-gate-room { position: fixed; inset: 0; z-index: 100000; flex-direction: column; justify-content: space-between; color: #fff; background: #0b0c10 url(images/room-phone.webp) no-repeat center 36% / cover; }
+    #phone-gate-room, #phone-gate-room * { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; box-sizing: border-box; }
+    #phone-gate-room .top { padding: 30px 24px 0; }
+    #phone-gate-room .kicker { margin: 0; font: 700 12px/1 'Courier New', monospace; letter-spacing: .14em; color: #ff5c5c; }
+    #phone-gate-room h1 { margin: 10px 0 6px; font-size: 32px; line-height: 1.1; font-weight: 700; }
+    #phone-gate-room .sub { margin: 0; color: #c4c5d0; font-size: 15px; }
+    #phone-gate-room .bottom { padding: 70px 24px calc(24px + env(safe-area-inset-bottom)); background: linear-gradient(rgba(8, 8, 12, 0), rgba(8, 8, 12, .88) 34%); }
+    #phone-gate-room .go { display: block; width: 100%; padding: 16px; border: 0; border-radius: 14px; background: #ff3b3b; color: #fff; font-size: 17px; font-weight: 700; cursor: pointer; }
+    #phone-gate-room .note { margin: 10px 2px 18px; color: #aeb0bd; font-size: 13px; line-height: 1.45; }
+    #phone-gate-room .lite { display: block; padding: 14px; border: 1.5px solid rgba(255, 255, 255, .5); border-radius: 14px; color: #fff; text-decoration: none; text-align: center; font-weight: 600; font-size: 15px; }
+    #phone-gate-room .lite span { color: #aeb0bd; font-weight: 400; }
+    #phone-gate-room .other { display: block; margin-top: 14px; color: #aeb0bd; text-align: center; font-size: 13px; }
+    /* short phones: the room higher and a shorter panel, so the buttons don't cover it */
+    @media (max-height: 740px) {
+      #phone-gate-room { background-size: auto 100%; background-position: center -28px; }
+      #phone-gate-room .top { padding-top: 22px; }
+      #phone-gate-room h1 { font-size: 26px; }
+      #phone-gate-room .bottom { padding-top: 40px; }
+      #phone-gate-room .note { display: none; }
+      #phone-gate-room .lite { margin-top: 12px; }
+    }
+  </style>
+  <div id="phone-gate-room" hidden>
+    <div class="top">
+      <p class="kicker">PORTFOLIO 2026</p>
+      <h1>Aayush Agrawal</h1>
+      <p class="sub">AI &amp; ML student &middot; Bengaluru</p>
+    </div>
+    <div class="bottom">
+      <button class="go gate-3d" type="button">Explore the 3D room</button>
+      <p class="note">Kick the ball, wake the cat, make it rain. Drag to look around. Best on a laptop, fine on a phone.</p>
+      <a class="lite" href="os-lite/">Open AayushOS Lite <span>(made for phones)</span></a>
+      <a class="other" href="https://aayushagrawal.codes">or visit aayushagrawal.codes</a>
+    </div>
+  </div>
   <!-- on phones: a small button to bring the choice screen back -->
   <button id="phone-switch" type="button" hidden style="position:fixed;left:10px;bottom:10px;z-index:99999;padding:8px 12px;background:#000;color:#fff;border:2px solid #fff;font:13px 'Courier New',monospace;cursor:pointer">Switch view</button>
   <script>
@@ -192,11 +229,18 @@
         var coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
         var small = Math.min(screen.width, screen.height) < 768;
         if (!(coarse && small)) return;
-        var g = document.getElementById('phone-gate');
+        // the new choice screen is in preview (?next=1, see NEXT in src/Application/config.ts)
+        var next = false;
+        try {
+          var q = new URLSearchParams(location.search).get('next');
+          if (q === '1' || q === '0') sessionStorage.setItem('aayushos-next', q);
+          next = sessionStorage.getItem('aayushos-next') === '1';
+        } catch (e) {}
+        var g = document.getElementById(next ? 'phone-gate-room' : 'phone-gate');
         var sw = document.getElementById('phone-switch');
         function showGate() { g.hidden = false; g.style.display = 'flex'; sw.hidden = true; }
         function hideGate() { g.style.display = 'none'; sw.hidden = false; }
-        document.getElementById('phone-gate-3d').onclick = hideGate;
+        g.querySelector(next ? '.gate-3d' : '#phone-gate-3d').onclick = hideGate;
         sw.onclick = showGate;
         showGate();
         // coming Back to this page from another view: show the choices again

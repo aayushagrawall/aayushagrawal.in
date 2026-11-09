@@ -34,6 +34,49 @@ const BACKGROUND: { [k in Time]: THREE.Color } = {
 const SLEEP_TINT = new THREE.Color(0.13, 0.14, 0.22); // lights out: only a little moonlight
 const SLEEP_BG = new THREE.Color('#050509');
 
+// rain on the window: beads that cling to the glass and drops running down it, leaving a trail.
+// Returns the refraction offset (xy) and how much water there is (z). The window's v runs upward.
+const RAIN_GLSL = `
+uniform float uRain;
+uniform float uTime;
+float rainHash( vec2 p ) { return fract( sin( dot( p, vec2( 41.3, 289.1 ) ) ) * 45758.5453 ); }
+vec3 rainOnGlass( vec2 uv, float t ) {
+    vec3 o = vec3( 0.0 );
+    // beads
+    vec2 g = uv * vec2( 26.0, 32.0 );
+    vec2 id = floor( g );
+    vec2 f = fract( g ) - 0.5;
+    if ( rainHash( id ) > 0.6 ) {
+        vec2 c = ( vec2( rainHash( id + 3.1 ), rainHash( id + 7.7 ) ) - 0.5 ) * 0.5;
+        float r = 0.12 + 0.2 * rainHash( id + 1.9 );
+        vec2 d = ( f - c ) / r;
+        float m = smoothstep( 1.0, 0.6, length( d ) );
+        o += vec3( d * m, m );
+    }
+    // running drops, one per column, each at its own speed
+    float cols = 12.0;
+    float cx = uv.x * cols;
+    float cid = floor( cx );
+    float n = rainHash( vec2( cid, 4.2 ) );
+    float y = fract( n * 9.0 - t * ( 0.05 + 0.12 * n ) );
+    float x = fract( cx ) - 0.5 - ( rainHash( vec2( cid, 1.3 ) ) - 0.5 ) * 0.5;
+    x += 0.04 * sin( uv.y * 40.0 + n * 6.0 ); // a slightly wandering path
+    vec2 d2 = vec2( x / 0.2, ( uv.y - y ) / 0.02 );
+    float drop = smoothstep( 1.0, 0.55, length( d2 ) );
+    float trail = step( y, uv.y ) * smoothstep( y + 0.25, y, uv.y ) * smoothstep( 0.07, 0.0, abs( x ) ) * 0.7;
+    o += vec3( d2 * drop * 0.6 + vec2( x * 6.0 * trail, 0.0 ), drop + trail );
+    return o;
+}
+// rain falling outside, behind the glass: thin slanted streaks
+float rainOutside( vec2 uv, float t ) {
+    float sx = uv.x * 70.0 + uv.y * 10.0;
+    float id = floor( sx );
+    float r = rainHash( vec2( id, 9.1 ) );
+    float yy = fract( uv.y * 1.3 + t * ( 1.1 + r ) + r * 5.0 );
+    return smoothstep( 0.12, 0.0, abs( fract( sx ) - 0.5 ) ) * smoothstep( 0.0, 0.25, yy ) * smoothstep( 0.55, 0.25, yy ) * step( 0.55, r );
+}
+`;
+
 const LIGHT_HEADER = 'uniform sampler2D lightMapB;\nuniform float lightMapBIntensity;\nuniform float lightMix;\nuniform vec3 lightTint;\nuniform float uTime;\nuniform float lightCrush;\n';
 
 export default class BakedRoom {
@@ -73,6 +116,8 @@ export default class BakedRoom {
     sleep = 0;
     sleepTarget = 0;
     neonMul = 1; // the neon sign's brightness (Toys flickers it)
+    rain = { value: 0 }; // rain on the window, eased (Toys turns it on and off)
+    rainTarget = 0;
 
     constructor() {
         this.application = new Application();
@@ -221,6 +266,26 @@ export default class BakedRoom {
             let m: THREE.MeshBasicMaterial;
             if (name.startsWith('window_glass')) {
                 m = new THREE.MeshBasicMaterial({ map: this.windowTex.night! });
+                m.onBeforeCompile = (shader) => {
+                    shader.uniforms.uRain = this.rain;
+                    shader.uniforms.uTime = this.uniforms.uTime;
+                    shader.fragmentShader = RAIN_GLSL + shader.fragmentShader.replace(
+                        '#include <map_fragment>',
+                        [
+                            '#ifdef USE_MAP',
+                            'vec3 water = uRain > 0.001 ? rainOnGlass( vUv, uTime ) : vec3( 0.0 );',
+                            'vec4 texelColor = texture2D( map, vUv + water.xy * 0.02 * uRain );',
+                            'diffuseColor *= texelColor;',
+                            // a grey, darker sky behind the rain, and light caught in the water
+                            'float lum = dot( diffuseColor.rgb, vec3( 0.299, 0.587, 0.114 ) );',
+                            'diffuseColor.rgb = mix( diffuseColor.rgb, mix( diffuseColor.rgb, vec3( lum ), 0.45 ) * 0.62, uRain );',
+                            'diffuseColor.rgb += rainOutside( vUv, uTime ) * 0.12 * uRain;',
+                            'diffuseColor.rgb += min( water.z, 1.0 ) * ( 0.04 + 0.3 * lum ) * uRain; // the drops catch the light of the sky',
+                            '#endif',
+                        ].join('\n')
+                    );
+                };
+                m.customProgramCacheKey = () => 'baked-room-window';
             } else {
                 // LED strips and the neon sign: red light
                 m = new THREE.MeshBasicMaterial({ color: new THREE.Color('#ff3030') });
@@ -248,6 +313,11 @@ export default class BakedRoom {
             this.glowLevel = this.glowTarget;
         }
         this.compose(performance.now() / 1000);
+    }
+
+    /** Rain on the window (click it, or when it's really raining in Bangalore). */
+    setRain(on: boolean) {
+        this.rainTarget = on ? 1 : 0;
     }
 
     /** Sleep mode (click the bed): lights out, LEDs and neon off, night outside. */
@@ -285,6 +355,9 @@ export default class BakedRoom {
             const n = (1 - this.neonMul) * night * (1 - s);
             if (n > 0) tint.multiply(new THREE.Color(1 - 0.12 * n, 1 - 0.05 * n, 1 - 0.05 * n));
             // the CRT's light, flickering very slightly at night
+            // rain: a greyer, dimmer daylight
+            const r = this.rain.value * this.mix;
+            if (r > 0.001) tint.multiply(new THREE.Color(1 - 0.2 * r, 1 - 0.17 * r, 1 - 0.1 * r));
             const f = REDUCED_MOTION ? 1 : 1 + 0.012 * night * (1 - s) * (Math.sin(t * 13.1) * 0.6 + Math.sin(t * 29.7) * 0.4);
             tint.multiplyScalar(f);
         }
@@ -316,6 +389,7 @@ export default class BakedRoom {
         this.bg.lerp(this.bgTarget, a);
         this.glowLevel += (this.glowTarget - this.glowLevel) * a;
         this.sleep += (this.sleepTarget - this.sleep) * Math.min(1, dt * 2.2);
+        this.rain.value += (this.rainTarget - this.rain.value) * Math.min(1, dt * 0.8);
         if (Math.abs(this.sleep - this.sleepTarget) < 0.001) this.sleep = this.sleepTarget;
         this.compose(t);
     }
