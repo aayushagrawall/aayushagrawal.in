@@ -156,6 +156,11 @@ try {
             body: byRoute['about'],
             os: 'about',
             type: 'ProfilePage',
+            // only on the plain page (inside AayushOS the site needs no introduction)
+            extra:
+                '<h2>About this site</h2>' +
+                '<p>This portfolio is a 3D bedroom with a retro computer on the desk. The computer runs AayushOS, a small desktop with my projects, my resume, a terminal and a few games. There are things to play with in the room too: a football, a cat, and a window where it rains when it is raining in Bengaluru.</p>' +
+                '<p>The 3D scene is based on Henry Heffernan\'s open-source portfolio, and AayushOS on his inner site, used with his permission. AayushOS Lite, the version made for phones, is my own. The full credits are in the Credits app inside <a href="/os/">AayushOS</a>.</p>',
             // the one real picture on the site that image search can index: the room, at night
             image: {
                 src: '/images/about-room.webp',
@@ -173,6 +178,14 @@ try {
             body: byRoute['experience'],
             os: 'experience',
             type: 'WebPage',
+            // facts from the resume (static/cv/index.html) and the project list: keep them in step
+            extra:
+                '<h2>Projects along the way</h2>' +
+                '<p>Alongside college I build things. In my first year I made a Discord moderation bot in Python and MongoDB for the Clienterrverse community (Sep 2024), a QR code generator (Oct 2024) and a console typing test that measures words per minute, which was my first-semester project (Jan 2025). They are all on my <a href="/projects/">Projects</a> page.</p>' +
+                '<h2>Skills</h2>' +
+                '<ul><li>Programming: Python, C, HTML and CSS</li><li>Databases: MySQL and MongoDB</li><li>Languages: English, Hindi and Nepali</li></ul>' +
+                '<h2>What I\'m looking for</h2>' +
+                '<p>I\'m open to internships. My <a href="/cv/">resume</a> has all of this on one page, and my <a href="/contact/">contact details</a> are a click away.</p>',
         },
         {
             slug: 'projects',
@@ -196,7 +209,17 @@ try {
                 '<li>Instagram: <a href="https://instagram.com/_aayush.agrawal">@_aayush.agrawal</a></li>' +
                 '<li>Resume: <a href="/cv/">aayushagrawal.in/cv/</a> (<a href="/os/files/Aayush-Agrawal-Resume.pdf">PDF</a>)</li>' +
                 '</ul>' +
-                (byRoute['contact'] || ''),
+                // written for the plain page: the AayushOS page is a form, which this page doesn't have
+                (byRoute['contact']
+                    ? '<h2>What to write to me about</h2>' +
+                      '<p>I\'m open to internships, collaborations, or just a chat about AI and ML. Email is the best way to reach me, and LinkedIn works too.</p>' +
+                      '<h2>Internships</h2>' +
+                      '<p>I\'m a B.E. student in Artificial Intelligence &amp; Machine Learning at BMS College of Engineering, Bengaluru, graduating in 2028, and I\'m open to internships. My <a href="/cv/">resume</a> is one page: you can <a href="/os/files/Aayush-Agrawal-Resume.pdf">download it as a PDF</a> or <a href="/cv/aayush-agrawal.vcf">save my contact card</a>.</p>' +
+                      '<h2>Projects and open source</h2>' +
+                      '<p>I work on open-source projects with the Clienterrverse community, including a Discord moderation bot and clienterr.com. If you want to build something together, or have a question about one of my <a href="/projects/">projects</a>, write to me or find me on <a href="https://github.com/aayushagrawall">GitHub</a>.</p>' +
+                      '<h2>Where I am</h2>' +
+                      '<p>I\'m in Bengaluru, India (Indian Standard Time). I speak English, Hindi and Nepali.</p>'
+                    : ''),
             os: 'contact',
             type: 'ContactPage',
         },
@@ -287,7 +310,7 @@ try {
       <p class="btns"><a class="primary" href="/os/#${pg.os}">Open it in AayushOS</a><a href="/">See the 3D desk</a></p>
     </div>
     ${pg.image ? `<figure class="shot"><img src="${pg.image.src}" width="${pg.image.width}" height="${pg.image.height}" alt="${escAttr(pg.image.alt)}" decoding="async" /><figcaption>${pg.image.caption}</figcaption></figure>` : ''}
-    <article>${tidy(pg.body)}</article>
+    <article>${tidy(pg.body)}${pg.extra || ''}</article>
   </main>
   <footer class="foot">
     <nav aria-label="More pages">${nav}<a href="/os/">AayushOS</a><a href="https://aayushagrawal.codes">aayushagrawal.codes</a></nav>

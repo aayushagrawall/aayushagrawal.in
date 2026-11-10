@@ -7,7 +7,9 @@
   <meta name="theme-color" content="#008080" />
   <meta name="description" content="AayushOS: the desktop inside Aayush Agrawal's 3D portfolio. Projects, resume, experience and contact." />
   <base target="_parent">
-  <link rel="canonical" href="https://aayushagrawal.in/os/" />
+  <!-- /os/ and /os-lite/ carry the same text version, and phones are sent from here to /os-lite/:
+       name that one as the main copy so search engines treat the two as one page (both stay indexable) -->
+  <link rel="canonical" href="https://aayushagrawal.in/os-lite/" />
   <script>
     // This desktop needs a mouse and a big screen; phones get the touch-friendly AayushOS Lite.
     if (window.parent === window && (window.innerWidth < 900 || (window.matchMedia && matchMedia('(pointer: coarse)').matches && window.innerWidth < 1100))) {
