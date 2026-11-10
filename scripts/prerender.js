@@ -118,6 +118,8 @@ try {
         if (!fs.existsSync(file)) continue;
         let html = fs.readFileSync(file, 'utf8');
         html = html.replace(/<style id="text-version-style">[\s\S]*?<\/script>/, '').replace(/<section id="text-version"[\s\S]*?<\/section><!--\/text-version-->/, '');
+        // the text version brings the page's one h1; the no-JavaScript fallback keeps its text
+        html = html.replace(/(<noscript>\s*)<h1>Aayush Agrawal<\/h1>/, '$1');
         html = html.replace('</head>', style + '</head>');
         html = html.replace(/<body([^>]*)>/, `<body$1>${block}<!--/text-version-->`);
         fs.writeFileSync(file, html);
@@ -134,7 +136,7 @@ try {
         name: 'Aayush Agrawal',
         url: SITE + '/',
         jobTitle: 'Developer and AI & ML Student',
-        email: 'mailto:agrawal.aayush38@gmail.com',
+        email: 'agrawal.aayush38@gmail.com',
         affiliation: { '@type': 'CollegeOrUniversity', name: 'BMS College of Engineering' },
         address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressCountry: 'IN' },
         sameAs: ['https://github.com/aayushagrawall', 'https://www.linkedin.com/in/aayush-agrawall/', 'https://instagram.com/_aayush.agrawal', 'https://aayushagrawal.codes'],
@@ -154,6 +156,14 @@ try {
             body: byRoute['about'],
             os: 'about',
             type: 'ProfilePage',
+            // the one real picture on the site that image search can index: the room, at night
+            image: {
+                src: '/images/about-room.webp',
+                width: 1200,
+                height: 900,
+                alt: "Aayush Agrawal's 3D portfolio: a bedroom at night with a retro CRT computer on the desk, a STAY UP neon sign, a sneaker shelf and a cat asleep on the bed",
+                caption: 'My portfolio is this room. The computer on the desk runs AayushOS.',
+            },
         },
         {
             slug: 'experience',
@@ -221,6 +231,7 @@ try {
                     description: pg.desc,
                     isPartOf: { '@type': 'WebSite', '@id': SITE + '/#website', url: SITE + '/', name: 'Aayush Agrawal' },
                     ...(pg.type === 'ProfilePage' ? { mainEntity: PERSON } : { about: { '@id': SITE + '/#person' } }),
+                    ...(pg.image ? { primaryImageOfPage: { '@type': 'ImageObject', url: SITE + pg.image.src, width: pg.image.width, height: pg.image.height, caption: pg.image.alt } } : {}),
                 },
                 {
                     '@type': 'BreadcrumbList',
@@ -258,7 +269,7 @@ try {
   <meta name="twitter:title" content="${escAttr(pg.title)}" />
   <meta name="twitter:description" content="${escAttr(pg.desc)}" />
   <meta name="twitter:image" content="${SITE}/images/og/${pg.slug}.jpg" />
-  <link rel="stylesheet" href="/pages.css?v=1" />
+  <link rel="stylesheet" href="/pages.css?v=2" />
   <script type="application/ld+json">${JSON.stringify(ld)}</script>
   <script>window.goatcounter = { path: function (p) { return location.host + p } };</script>
   <script data-goatcounter="https://clienterr.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -275,6 +286,7 @@ try {
       <p>This is the plain version of this page. It also lives inside my 3D portfolio, on a retro computer you can use.</p>
       <p class="btns"><a class="primary" href="/os/#${pg.os}">Open it in AayushOS</a><a href="/">See the 3D desk</a></p>
     </div>
+    ${pg.image ? `<figure class="shot"><img src="${pg.image.src}" width="${pg.image.width}" height="${pg.image.height}" alt="${escAttr(pg.image.alt)}" decoding="async" /><figcaption>${pg.image.caption}</figcaption></figure>` : ''}
     <article>${tidy(pg.body)}</article>
   </main>
   <footer class="foot">
@@ -292,8 +304,9 @@ try {
 
     // ---------- Sitemap with today's date ----------
     const today = new Date().toISOString().slice(0, 10);
-    // /os/ is left out: Google crawls as a phone, and phones are sent on to /os-lite/.
-    const urls = ['/', '/about/', '/experience/', '/projects/', '/contact/', '/cv/', '/os-lite/', '/os/files/Aayush-Agrawal-Resume.pdf'];
+    // /os/ and /os-lite/ are left out: both are noindex, because they repeat the text of the
+    // four pages above, which are the ones meant to rank.
+    const urls = ['/', '/about/', '/experience/', '/projects/', '/contact/', '/cv/', '/os/files/Aayush-Agrawal-Resume.pdf'];
     const xml =
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         urls.map((u) => `  <url>\n    <loc>${SITE}${u}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`).join('\n') +

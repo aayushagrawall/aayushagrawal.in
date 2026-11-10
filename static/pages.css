@@ -31,6 +31,10 @@ article li p { margin: 0; }
 ul.links { list-style: none; padding: 0; margin: 0 0 24px; font: 16px "IBM Plex Mono", ui-monospace, monospace; }
 ul.links li { margin: 8px 0; }
 
+figure.shot { margin: 0 0 26px; }
+figure.shot img { display: block; width: 100%; height: auto; background: #1d1f2f; }
+figure.shot figcaption { margin-top: 8px; font: 13px "IBM Plex Mono", ui-monospace, monospace; color: var(--muted); }
+
 .open { background: var(--soft); border-left: 3px solid var(--accent); padding: 14px 18px; margin: 0 0 26px; }
 .open p { margin: 0; font-size: 15px; color: var(--muted); }
 .open .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
