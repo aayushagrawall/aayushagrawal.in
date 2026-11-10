@@ -304,9 +304,8 @@ try {
 
     // ---------- Sitemap with today's date ----------
     const today = new Date().toISOString().slice(0, 10);
-    // /os/ and /os-lite/ are left out: both are noindex, because they repeat the text of the
-    // four pages above, which are the ones meant to rank.
-    const urls = ['/', '/about/', '/experience/', '/projects/', '/contact/', '/cv/', '/os/files/Aayush-Agrawal-Resume.pdf'];
+    // /os/ is left out: Google crawls as a phone, and phones are sent on to /os-lite/.
+    const urls = ['/', '/about/', '/experience/', '/projects/', '/contact/', '/cv/', '/os-lite/', '/os/files/Aayush-Agrawal-Resume.pdf'];
     const xml =
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         urls.map((u) => `  <url>\n    <loc>${SITE}${u}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`).join('\n') +
