@@ -371,8 +371,12 @@ def build():
     for i, col in enumerate(hoodie_cols):
         z = rz0 + 280 + i * ((rz1 - rz0 - 560) / (len(hoodie_cols) - 1))
         hm = mat(f'hoodie{i}', col, 0.95)
-        box(f'hoodie_body{i}', rx, FLOOR + 1900, z, 760, 1150, 150, hm, bake, bevel=60, rot_y=math.pi / 2)
-        box(f'hoodie_hood{i}', rx, FLOOR + 2420, z, 420, 260, 170, hm, bake, bevel=60, rot_y=math.pi / 2)
+        # the hoodies are wider than the gap between them, so they overlap along the rail: each
+        # hangs a little further from the room than the one before, like shingles. On one plane
+        # their faces coincide and flicker against each other (seen from behind especially).
+        hx = rx + (i - (len(hoodie_cols) - 1) / 2) * 26
+        box(f'hoodie_body{i}', hx, FLOOR + 1900, z, 760, 1150, 150, hm, bake, bevel=60, rot_y=math.pi / 2)
+        box(f'hoodie_hood{i}', hx, FLOOR + 2420, z, 420, 260, 170, hm, bake, bevel=60, rot_y=math.pi / 2)
         cyl(f'hanger{i}', rx, FLOOR + 2500, z, 6, 160, rack_m, bake, seg=6)
 
     # ---- skate decks on the right wall, near the desk
