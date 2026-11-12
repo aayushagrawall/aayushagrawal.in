@@ -50,6 +50,7 @@ There is no test suite. Verify changes by building and loading the page (desktop
 - **Keep content in step.** The resume lives in `static/cv/index.html`; skills are in `DEVICES` in `static/os-lite/os.js`; Showcase pages exist in both `os-app/src/components/showcase/` and the top of `static/os-lite/os.js`. Change both.
 - **Changelog.** User-visible changes get a line at the top of `os-app/src/components/applications/WhatsNew.tsx`, in plain language.
 - **Bump cache versions** in `static/os-lite/index.html` (`os.css?v=`, `os.js?v=`) when those files change.
+- **Commits are Aayush's alone.** Author and committer are `Aayush Agrawal <mail@silkware.com.np>`: before the first commit in a session run `git config user.name "Aayush Agrawal"` and `git config user.email "mail@silkware.com.np"`. No `Co-Authored-By`, `Claude-Session`, "Generated with Claude Code" or any other AI attribution in commit messages, pull request text or code comments (`.claude/settings.json` turns the automatic lines off).
 - Don't touch the separate profile-README repo or `aayushagrawal.codes` from here. One exception is built in: `npm run resume` (and so `npm run build`) also writes the PDF into `../aayushagrawal.codes/assets/docs/` when that repo is checked out next to this one.
 
 ## Things that bite
