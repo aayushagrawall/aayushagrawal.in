@@ -258,7 +258,7 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                             {TOUCH ? 'skip to the desktop' : 'ESC: skip to the desktop'}
                         </a>
                         {' · '}
-                        <a href="/cv/" style={styles.quickSkip}>
+                        <a href="/resume/" style={styles.quickSkip}>
                             resume
                         </a>
                     </p>
@@ -359,7 +359,7 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                                 <b>ESC</b> to skip to the desktop (no 3D)
                             </a>{' '}
                             , or read the{' '}
-                            <a href="/cv/" style={styles.footerLink}>
+                            <a href="/resume/" style={styles.footerLink}>
                                 <b>RESUME</b>
                             </a>
                         </p>
@@ -456,7 +456,7 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                                 AayushOS
                             </a>
                             {' , or the '}
-                            <a href="/cv/" style={styles.inlineLink}>
+                            <a href="/resume/" style={styles.inlineLink}>
                                 resume
                             </a>
                         </p>

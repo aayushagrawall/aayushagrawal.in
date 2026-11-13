@@ -9,7 +9,7 @@ export const OPEN_TO_INTERNSHIPS = true;
 
 // Extra desk objects. Flip a value to put an object on the desk or take it off.
 export const SHOW_NAMEPLATE = false; // walnut nameplate with the name and title
-export const SHOW_RESUME_FRAME = true; // framed resume with a QR code (click opens /cv/)
+export const SHOW_RESUME_FRAME = true; // framed resume with a QR code (click opens /resume/)
 
 // New things in preview, before they go live: with NEXT_FOR_EVERYONE = false they're on only
 // with ?next=1 (remembered for the visit; ?next=0 turns them off). Live now: rain on the window

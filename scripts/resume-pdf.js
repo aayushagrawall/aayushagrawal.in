@@ -1,6 +1,6 @@
 /**
- * Builds the resume PDF from the web resume (static/cv/index.html), so the two
- * can never drift apart. Edit static/cv/index.html, then run:
+ * Builds the resume PDF from the web resume (static/resume/index.html), so the two
+ * can never drift apart. Edit static/resume/index.html, then run:
  *
  *     npm run resume
  *
@@ -17,7 +17,7 @@ const path = require('path');
 
 const NAME = 'Aayush-Agrawal-Resume.pdf';
 const ROOT = path.resolve(__dirname, '..');
-const SOURCE = path.join(ROOT, 'static/cv/index.html');
+const SOURCE = path.join(ROOT, 'static/resume/index.html');
 const TARGETS = [
     path.join(ROOT, 'os-app/public/files', NAME),
     path.join(ROOT, '../aayushagrawal.codes/assets/docs', NAME),
@@ -67,7 +67,7 @@ const countPages = (buf) => (buf.toString('latin1').match(/\/Type\s*\/Page[^s]/g
     }
     await browser.close();
     if (!pdf) {
-        console.error('[resume] The resume no longer fits on one A4 page, even at 62%. Shorten static/cv/index.html.');
+        console.error('[resume] The resume no longer fits on one A4 page, even at 62%. Shorten static/resume/index.html.');
         process.exit(1);
     }
     // ignore the timestamps and ID Chrome stamps into every PDF, so an unchanged

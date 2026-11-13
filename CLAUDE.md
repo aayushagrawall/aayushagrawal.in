@@ -14,7 +14,7 @@ Aayush Agrawal's 3D portfolio: a Three.js bedroom with a CRT computer that runs 
 | `src/index.html` | Page shell: SEO tags, phone choice screen (`#phone-gate-room`), preloads. |
 | `os-app/` | AayushOS, a React (CRA) desktop served at `/os/` and shown on the 3D monitor in an iframe (`World/MonitorScreen.ts`, placed in 3D with `CSS3DRenderer`). |
 | `static/os-lite/` | AayushOS Lite: plain HTML/CSS/JS, no build. The phone version; also runs single apps inside AayushOS via `?app=`. |
-| `static/cv/` | Web resume at `/cv/`; the PDF is rendered from it. |
+| `static/resume/` | Web resume at `/resume/`; the PDF is rendered from it. |
 | `scripts/` | `prerender.js` (indexable pages, sitemap), `resume-pdf.js`, texture/sound generators, `room-blender/` (Blender bake of the room). |
 | `public/` | Build output. Git-ignored; never edit. |
 
@@ -47,7 +47,7 @@ There is no test suite. Verify changes by building and loading the page (desktop
 
 - **Keep the credits.** The scene is based on Henry Heffernan's MIT code and AayushOS on his inner site, used with permission. Don't remove `LICENSE.md`, `NOTICE.md` or the credits in the README and the Credits app.
 - **No brand artwork or copyrighted designs.** The energy drink and the desk assistant are called "White"; the earbuds case, sneakers and posters are generic. No Microsoft or Adobe fonts (only the open-licence fonts listed in the README).
-- **Keep content in step.** The resume lives in `static/cv/index.html`; skills are in `DEVICES` in `static/os-lite/os.js`; Showcase pages exist in both `os-app/src/components/showcase/` and the top of `static/os-lite/os.js`. Change both.
+- **Keep content in step.** The resume lives in `static/resume/index.html`; skills are in `DEVICES` in `static/os-lite/os.js`; Showcase pages exist in both `os-app/src/components/showcase/` and the top of `static/os-lite/os.js`. Change both.
 - **Changelog.** User-visible changes get a line at the top of `os-app/src/components/applications/WhatsNew.tsx`, in plain language.
 - **Bump cache versions** in `static/os-lite/index.html` (`os.css?v=`, `os.js?v=`) when those files change.
 - **Commits are Aayush's alone.** Author and committer are `Aayush Agrawal <mail@silkware.com.np>`: before the first commit in a session run `git config user.name "Aayush Agrawal"` and `git config user.email "mail@silkware.com.np"`. No `Co-Authored-By`, `Claude-Session`, "Generated with Claude Code" or any other AI attribution in commit messages, pull request text or code comments (`.claude/settings.json` turns the automatic lines off).

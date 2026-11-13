@@ -101,7 +101,7 @@ try {
     const block =
         '<section id="text-version" aria-label="Text version">' +
         '<h1>Aayush Agrawal</h1><p>Developer and AI &amp; ML student at BMS College of Engineering, Bengaluru.</p>' +
-        '<p><a href="https://aayushagrawal.in/cv/">Resume (web)</a> · <a href="https://aayushagrawal.in/os/files/Aayush-Agrawal-Resume.pdf">Resume (PDF)</a> · ' +
+        '<p><a href="https://aayushagrawal.in/resume/">Resume (web)</a> · <a href="https://aayushagrawal.in/os/files/Aayush-Agrawal-Resume.pdf">Resume (PDF)</a> · ' +
         '<a href="https://github.com/aayushagrawall">GitHub</a> · <a href="https://www.linkedin.com/in/aayush-agrawall/">LinkedIn</a></p>' +
         '<p>Pages: <a href="https://aayushagrawal.in/about/">About</a> · <a href="https://aayushagrawal.in/experience/">Experience</a> · <a href="https://aayushagrawal.in/projects/">Projects</a> · <a href="https://aayushagrawal.in/contact/">Contact</a></p>' +
         sections.join('') +
@@ -178,14 +178,14 @@ try {
             body: byRoute['experience'],
             os: 'experience',
             type: 'WebPage',
-            // facts from the resume (static/cv/index.html) and the project list: keep them in step
+            // facts from the resume (static/resume/index.html) and the project list: keep them in step
             extra:
                 '<h2>Projects along the way</h2>' +
                 '<p>Alongside college I build things. In my first year I made a Discord moderation bot in Python and MongoDB for the Clienterrverse community (Sep 2024), a QR code generator (Oct 2024) and a console typing test that measures words per minute, which was my first-semester project (Jan 2025). They are all on my <a href="/projects/">Projects</a> page.</p>' +
                 '<h2>Skills</h2>' +
                 '<ul><li>Programming: Python, C, HTML and CSS</li><li>Databases: MySQL and MongoDB</li><li>Languages: English, Hindi and Nepali</li></ul>' +
                 '<h2>What I\'m looking for</h2>' +
-                '<p>I\'m open to internships. My <a href="/cv/">resume</a> has all of this on one page, and my <a href="/contact/">contact details</a> are a click away.</p>',
+                '<p>I\'m open to internships. My <a href="/resume/">resume</a> has all of this on one page, and my <a href="/contact/">contact details</a> are a click away.</p>',
         },
         {
             slug: 'projects',
@@ -207,14 +207,14 @@ try {
                 '<li>LinkedIn: <a href="https://www.linkedin.com/in/aayush-agrawall/">linkedin.com/in/aayush-agrawall</a></li>' +
                 '<li>GitHub: <a href="https://github.com/aayushagrawall">github.com/aayushagrawall</a></li>' +
                 '<li>Instagram: <a href="https://instagram.com/_aayush.agrawal">@_aayush.agrawal</a></li>' +
-                '<li>Resume: <a href="/cv/">aayushagrawal.in/cv/</a> (<a href="/os/files/Aayush-Agrawal-Resume.pdf">PDF</a>)</li>' +
+                '<li>Resume: <a href="/resume/">aayushagrawal.in/resume/</a> (<a href="/os/files/Aayush-Agrawal-Resume.pdf">PDF</a>)</li>' +
                 '</ul>' +
                 // written for the plain page: the AayushOS page is a form, which this page doesn't have
                 (byRoute['contact']
                     ? '<h2>What to write to me about</h2>' +
                       '<p>I\'m open to internships, collaborations, or just a chat about AI and ML. Email is the best way to reach me, and LinkedIn works too.</p>' +
                       '<h2>Internships</h2>' +
-                      '<p>I\'m a B.E. student in Artificial Intelligence &amp; Machine Learning at BMS College of Engineering, Bengaluru, graduating in 2028, and I\'m open to internships. My <a href="/cv/">resume</a> is one page: you can <a href="/os/files/Aayush-Agrawal-Resume.pdf">download it as a PDF</a> or <a href="/cv/aayush-agrawal.vcf">save my contact card</a>.</p>' +
+                      '<p>I\'m a B.E. student in Artificial Intelligence &amp; Machine Learning at BMS College of Engineering, Bengaluru, graduating in 2028, and I\'m open to internships. My <a href="/resume/">resume</a> is one page: you can <a href="/os/files/Aayush-Agrawal-Resume.pdf">download it as a PDF</a> or <a href="/resume/aayush-agrawal.vcf">save my contact card</a>.</p>' +
                       '<h2>Projects and open source</h2>' +
                       '<p>I work on open-source projects with the Clienterrverse community, including a Discord moderation bot and clienterr.com. If you want to build something together, or have a question about one of my <a href="/projects/">projects</a>, write to me or find me on <a href="https://github.com/aayushagrawall">GitHub</a>.</p>' +
                       '<h2>Where I am</h2>' +
@@ -266,7 +266,7 @@ try {
                 ...(pg.type === 'ProfilePage' ? [] : [PERSON]),
             ],
         };
-        const nav = NAV.map(([slug, name]) => `<a href="/${slug}/"${slug === pg.slug ? ' aria-current="page"' : ''}>${name}</a>`).join('') + '<a href="/cv/">Resume</a>';
+        const nav = NAV.map(([slug, name]) => `<a href="/${slug}/"${slug === pg.slug ? ' aria-current="page"' : ''}>${name}</a>`).join('') + '<a href="/resume/">Resume</a>';
         const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,7 +292,7 @@ try {
   <meta name="twitter:title" content="${escAttr(pg.title)}" />
   <meta name="twitter:description" content="${escAttr(pg.desc)}" />
   <meta name="twitter:image" content="${SITE}/images/og/${pg.slug}.jpg" />
-  <link rel="stylesheet" href="/pages.css?v=2" />
+  <link rel="stylesheet" href="/pages.css?v=3" />
   <script type="application/ld+json">${JSON.stringify(ld)}</script>
   <script>window.goatcounter = { path: function (p) { return location.host + p } };</script>
   <script data-goatcounter="https://clienterr.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -328,7 +328,7 @@ try {
     // ---------- Sitemap with today's date ----------
     const today = new Date().toISOString().slice(0, 10);
     // /os/ is left out: Google crawls as a phone, and phones are sent on to /os-lite/.
-    const urls = ['/', '/about/', '/experience/', '/projects/', '/contact/', '/cv/', '/os-lite/', '/os/files/Aayush-Agrawal-Resume.pdf'];
+    const urls = ['/', '/about/', '/experience/', '/projects/', '/contact/', '/resume/', '/os-lite/', '/os/files/Aayush-Agrawal-Resume.pdf'];
     const xml =
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         urls.map((u) => `  <url>\n    <loc>${SITE}${u}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`).join('\n') +

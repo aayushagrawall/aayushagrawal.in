@@ -8,6 +8,7 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '10 November 2026, later',
         items: [
+            'The web resume moved to aayushagrawal.in/resume. The old /cv address still works and forwards there.',
             'No more flickering stripes on the posters, rug and floor when you look around the room, most noticeable on phones.',
             'On phones the whole room now stays in the middle of the screen when you turn it; before, it slid off the edge.',
             'On phones the 3D room now opens with you sitting at the desk, in front of the computer. Tap away from the desk to see the whole room.',

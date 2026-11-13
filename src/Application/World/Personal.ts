@@ -216,7 +216,7 @@ export default class Personal {
         // clicking the poster opens the web resume
         this.clickable([print], () => {
             this.count('3d/poster', 'Poster click (3D)');
-            window.open('/cv/', '_blank', 'noopener');
+            window.open('/resume/', '_blank', 'noopener');
         });
     }
 

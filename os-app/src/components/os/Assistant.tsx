@@ -33,7 +33,7 @@ const QAS: QA[] = [
     },
     {
         q: 'Can I see his resume?',
-        a: "Of course. It's one page, and you can download it too. There's also a web version at aayushagrawal.in/cv/ that's easy to read on a phone.",
+        a: "Of course. It's one page, and you can download it too. There's also a web version at aayushagrawal.in/resume/ that's easy to read on a phone.",
         actions: [{ label: 'Open resume', app: 'resume' }],
     },
     {

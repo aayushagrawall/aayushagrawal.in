@@ -8,7 +8,7 @@ web
 
 ## Users
 
-The primary visitor is an internship recruiter or hiring engineer who has followed a link from a resume, LinkedIn or GitHub to check out Aayush Agrawal. They are usually short on time and want to answer one thing: is this student worth contacting? Success for this visitor is opening the resume (PDF or `/cv/`) or reaching the contact details.
+The primary visitor is an internship recruiter or hiring engineer who has followed a link from a resume, LinkedIn or GitHub to check out Aayush Agrawal. They are usually short on time and want to answer one thing: is this student worth contacting? Success for this visitor is opening the resume (PDF or `/resume/`) or reaching the contact details.
 
 Other developers and friends also visit to play with the room, but they are a secondary audience and do not outrank the recruiter.
 
@@ -24,7 +24,7 @@ The site is itself the evidence. Instead of describing skills, it lets the visit
 
 - Visitors arrive from a resume link, LinkedIn, GitHub, a shared short link (`/resume`, `/os/#projects` and similar) or search.
 - Desktop visitors get the 3D room, with AayushOS on the monitor. Phone visitors get a choice screen first and can explore the 3D room or go straight to AayushOS Lite.
-- `/cv/` is the web resume and the source of the PDF. `/about/`, `/experience/`, `/projects/` and `/contact/` are plain indexable pages for search engines and job portals.
+- `/resume/` is the web resume and the source of the PDF. `/about/`, `/experience/`, `/projects/` and `/contact/` are plain indexable pages for search engines and job portals.
 - A separate minimal portfolio lives at aayushagrawal.codes. It is a different project and is not changed from this one.
 
 ## Capabilities and Constraints
@@ -46,7 +46,7 @@ The site is itself the evidence. Instead of describing skills, it lets the visit
 
 ## Evidence on Hand
 
-- Resume: `static/cv/index.html`, and the PDF rendered from it.
+- Resume: `static/resume/index.html`, and the PDF rendered from it.
 - Real projects, listed at the top of `static/os-lite/os.js` and in `os-app/src/components/showcase/`: imgurr.me, a Discord moderation bot, a QR code generator, a typing test, clienterr.com, an attendance calculator Shortcut and aayushagrawal.codes.
 - Education, volunteering (BMSCE UTSAV, Rotaract Club of BMSCE) and two certifications, as written on the resume.
 - A demo recording at `docs/demo.gif` and preview cards in `static/images/og/`.
@@ -54,7 +54,7 @@ The site is itself the evidence. Instead of describing skills, it lets the visit
 
 ## Product Principles
 
-1. The recruiter's path is never blocked. The resume, `/cv/` and contact details stay reachable in a click or two without going through the 3D room.
+1. The recruiter's path is never blocked. The resume, `/resume/` and contact details stay reachable in a click or two without going through the 3D room.
 2. The build is the proof. Every detail a visitor can touch should work properly, because the site's finish is the argument for hiring him.
 3. Personality supports the case and never gets in its way. Toys and jokes are welcome as long as they don't slow down or hide the facts.
 4. One truth across surfaces. The resume, the two OS versions and the indexable pages say the same things.
@@ -64,4 +64,4 @@ The site is itself the evidence. Instead of describing skills, it lets the visit
 
 - Anything that moves on its own respects the system's reduce-motion setting, and the 3D room can be skipped.
 - On touch devices everything has a tap path; nothing depends on double-click or hover.
-- The content is available as plain HTML (`/cv/`, the indexable pages and the text version of the OS) for visitors and tools that can't run the 3D scene.
+- The content is available as plain HTML (`/resume/`, the indexable pages and the text version of the OS) for visitors and tools that can't run the 3D scene.

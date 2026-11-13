@@ -145,7 +145,7 @@ const InfoOverlay: React.FC<InfoOverlayProps> = ({ visible }) => {
             {resumeVisible && (
                 // a shortcut for anyone who'd rather read than explore
                 <a
-                    href="/cv/"
+                    href="/resume/"
                     target="_blank"
                     rel="noopener"
                     id="prevent-click"
