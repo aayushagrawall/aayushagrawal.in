@@ -8,6 +8,7 @@ const CHANGES: { date: string; items: string[] }[] = [
     {
         date: '10 November 2026, later',
         items: [
+            'On phones the 3D room now opens with you sitting at the desk, in front of the computer. Tap away from the desk to see the whole room.',
             'The hoodies on the clothes rack no longer flicker when you turn the room and see them from behind.',
             'On phones the first screen now has a Resume button, so the resume is one tap away, and it says what AayushOS Lite is.',
             'After you tap "Explore the 3D room" on a phone, the room picture stays up with "Loading the room" instead of a black screen, and if the download fails you can try again.',

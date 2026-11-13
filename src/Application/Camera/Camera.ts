@@ -282,7 +282,9 @@ export default class Camera extends EventEmitter {
 
     setPostLoadTransition() {
         UIEventBus.on('loadingScreenDone', () => {
-            this.transition(CameraKey.IDLE, 2500, TWEEN.Easing.Exponential.Out);
+            // phones start sitting at the desk: on a tall screen the whole-room view is small, and
+            // the computer is what there is to use. A tap away from the desk still shows the room.
+            this.transition(PHONE ? CameraKey.DESK : CameraKey.IDLE, 2500, TWEEN.Easing.Exponential.Out);
         });
     }
 

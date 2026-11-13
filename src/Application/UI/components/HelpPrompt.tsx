@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import eventBus from '../EventBus';
 import { motion } from 'framer-motion';
 import UIEventBus from '../EventBus';
-import { TOUCH } from '../../config';
+import { PHONE, TOUCH } from '../../config';
 
-const HELP_TEXT = TOUCH ? 'Tap anywhere to begin' : 'Click anywhere to begin';
+// phones start at the desk (Camera.setPostLoadTransition), so the hint says what a tap does there
+const HELP_TEXT = PHONE ? 'Tap the computer, or elsewhere to see the room' : TOUCH ? 'Tap anywhere to begin' : 'Click anywhere to begin';
 
 type HelpPromptProps = {};
 
