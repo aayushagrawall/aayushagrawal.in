@@ -131,11 +131,17 @@ export class IdleKeyframe extends CameraKeyframeInstance {
     yawTarget = 0;
     lastDrag = 0;
     lastTick = 0;
+    // what the camera circles: the desk on wide screens (the room has margin to spare there),
+    // the middle of the room's floor on tall ones, where an off-centre room slides off the edge
+    // of the screen as it turns. (The room is 12,200 wide and 10,200 deep: build_room.py.)
+    deskFocal: THREE.Vector3;
+    roomCentre = new THREE.Vector3(100, -1000, 2500);
 
     constructor() {
         const keyframe = keys.idle;
         super(keyframe);
         this.origin = new THREE.Vector3().copy(keyframe.position);
+        this.deskFocal = new THREE.Vector3().copy(keyframe.focalPoint);
         this.time = new Time();
         this.sizes = new Application().sizes;
     }
@@ -154,8 +160,12 @@ export class IdleKeyframe extends CameraKeyframeInstance {
         const x = Math.sin((this.time.elapsed + 19000) * 0.00008) * this.origin.x;
         const y = Math.sin((this.time.elapsed + 1000) * 0.000004) * 4000 + this.origin.y - 3000;
         const z = this.origin.z;
-        const f = this.focalPoint;
-        const v = new THREE.Vector3(x - f.x, y - f.y, z - f.z);
+        const aspect = this.sizes ? this.sizes.width / this.sizes.height : 1.6;
+        // 0 on screens wider than 1.2:1, 1 on screens narrower than 0.7:1
+        const tall = Math.min(1, Math.max(0, (1.2 - aspect) / 0.5));
+        const f = this.focalPoint.copy(this.deskFocal).lerp(this.roomCentre, tall);
+        const d = this.deskFocal;
+        const v = new THREE.Vector3(x - d.x, y - d.y, z - d.z);
         // the drag turn: keep the camera in front of the room (it's open on the front two sides)
         const sway = Math.atan2(v.x, v.z);
         const limit = (80 * Math.PI) / 180;
@@ -164,8 +174,8 @@ export class IdleKeyframe extends CameraKeyframeInstance {
         this.yaw += (this.yawTarget - this.yaw) * Math.min(1, dt * 8);
         v.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
         // tall screens (phones, tablets held upright): step back so the whole room fits across
-        const aspect = this.sizes ? this.sizes.width / this.sizes.height : 1.6;
-        v.multiplyScalar(Math.max(1, 1.1 / aspect));
+        // (a little further on the tallest ones, where the room's corners reach the edges)
+        v.multiplyScalar(Math.max(1, (1.1 + 0.18 * tall) / aspect));
         this.position.copy(f).add(v);
     }
 }
