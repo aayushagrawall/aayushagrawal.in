@@ -323,6 +323,7 @@ export default class Camera extends EventEmitter {
             this.position.copy(this.orbitControls.object.position);
             this.focalPoint.copy(this.orbitControls.target);
             this.orbitControls.update();
+            this.setNear(50); // free look can pass close to things
             return;
         }
 
@@ -340,5 +341,17 @@ export default class Camera extends EventEmitter {
 
         this.instance.position.copy(this.position);
         this.instance.lookAt(this.focalPoint);
+        // Depth precision: a depth buffer resolves about distance^2 / (near x 16.7 million) units.
+        // With near fixed at 10, the whole-room view on a phone (the camera some 50,000 away) could
+        // only tell surfaces 17 units apart, so posters (4 off the wall), the rug and the paper on the
+        // desk flickered in stripes as the view moved. Nothing is ever closer to the camera than a
+        // small fraction of its distance to what it looks at, so the near plane follows that.
+        this.setNear(Math.min(2000, Math.max(10, this.position.distanceTo(this.focalPoint) * 0.04)));
+    }
+
+    setNear(near: number) {
+        if (Math.abs(near - this.instance.near) < this.instance.near * 0.02) return;
+        this.instance.near = near;
+        this.instance.updateProjectionMatrix();
     }
 }
